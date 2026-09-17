@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Vitalica — mapa del sitio
+  Le dice a Google qué páginas existen y cuáles importan más.
+
+  Las fichas de producto se generan con ?id=, así que van listadas una por
+  una. Si se agrega un producto nuevo a data.js, agregalo también acá.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://vitalica.com.py/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://vitalica.com.py/productos.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Fichas de producto -->
+  <url><loc>https://vitalica.com.py/producto.html?id=whey-protein-complex</loc><priority>0.8</priority></url>
+  <url><loc>https://vitalica.com.py/producto.html?id=creatine-monohydrate</loc><priority>0.8</priority></url>
+  <url><loc>https://vitalica.com.py/producto.html?id=redweiler</loc><priority>0.8</priority></url>
+  <url><loc>https://vitalica.com.py/producto.html?id=knockout-2</loc><priority>0.8</priority></url>
+  <url><loc>https://vitalica.com.py/producto.html?id=beta-alanina-xplode</loc><priority>0.8</priority></url>
+  <url><loc>https://vitalica.com.py/producto.html?id=iso-plus-powder</loc><priority>0.8</priority></url>
+  <url><loc>https://vitalica.com.py/producto.html?id=vitamin-multiple-sport</loc><priority>0.8</priority></url>
+  <url><loc>https://vitalica.com.py/producto.html?id=vitamin-multiple-sport-40</loc><priority>0.8</priority></url>
+  <url><loc>https://vitalica.com.py/producto.html?id=gold-omega-3-sport</loc><priority>0.8</priority></url>
+  <url><loc>https://vitalica.com.py/producto.html?id=arthroblock-forte</loc><priority>0.8</priority></url>
+
+  <!-- Guías de uso: es el contenido que trae visitas desde buscadores -->
+  <url><loc>https://vitalica.com.py/guia.html</loc><priority>0.7</priority></url>
+  <url><loc>https://vitalica.com.py/guia-creatina.html</loc><priority>0.7</priority></url>
+  <url><loc>https://vitalica.com.py/guia-proteina-suero.html</loc><priority>0.7</priority></url>
+  <url><loc>https://vitalica.com.py/guia-pre-entrenos.html</loc><priority>0.7</priority></url>
+
+  <!-- Institucionales -->
+  <url><loc>https://vitalica.com.py/sobre.html</loc><priority>0.6</priority></url>
+  <url><loc>https://vitalica.com.py/contacto.html</loc><priority>0.6</priority></url>
+  <url><loc>https://vitalica.com.py/terminos.html</loc><priority>0.3</priority></url>
+  <url><loc>https://vitalica.com.py/privacidad.html</loc><priority>0.3</priority></url>
+
+</urlset>

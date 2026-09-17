@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalica · Muestra del sistema de diseño</title>
+
+  <!-- Tipografías de marca (Montserrat para títulos, Inter para texto).
+       Cargan de Google Fonts; si no hay internet, el navegador usa una
+       fuente del sistema parecida (definida en styles.css). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..900&family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/styles.css">
+
+  <!-- Estilos exclusivos de ESTA página de muestra (no del sitio final) -->
+  <style>
+    .muestra-hero {
+      background: linear-gradient(120deg, var(--color-secundario), var(--color-secundario-oscuro));
+      color: #fff; padding: var(--space-8) 0;
+    }
+    .muestra-hero .eyebrow { color: #fff; opacity: .8; }
+    .muestra-hero h1 { color: #fff; font-size: var(--fs-hero); }
+    .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: var(--space-4); }
+    .swatch { border: 1px solid var(--color-linea); border-radius: var(--radio); overflow: hidden; }
+    .swatch__color { height: 90px; }
+    .swatch__info { padding: var(--space-3); font-size: var(--fs-sm); }
+    .swatch__info b { display:block; font-family: var(--fuente-titulo); }
+    .fila { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
+    .tarjeta-doc { border:1px solid var(--color-linea); border-radius: var(--radio-lg); padding: var(--space-6); }
+    .escala-tipo > * { margin-bottom: var(--space-2); }
+  </style>
+</head>
+<body>
+
+  <!-- Encabezado de la muestra -->
+  <header class="muestra-hero">
+    <div class="contenedor">
+      <p class="eyebrow">Vitalica · Sistema de diseño</p>
+      <h1>Sin Atajos</h1>
+      <p style="max-width:55ch; margin-top:var(--space-3); opacity:.9;">
+        Esta página es solo una muestra para aprobar la identidad visual:
+        colores, tipografía, botones y componentes. No es parte del sitio final.
+      </p>
+    </div>
+  </header>
+
+  <!-- COLORES -->
+  <section class="seccion">
+    <div class="contenedor">
+      <div class="encabezado-seccion">
+        <p class="eyebrow">01 — Paleta</p>
+        <h2>Colores de marca</h2>
+        <p>Definidos como variables CSS. Cambiarlos en un solo lugar actualiza todo el sitio.</p>
+      </div>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch__color" style="background:#EF7D2A"></div><div class="swatch__info"><b>Primario</b>#EF7D2A · naranja</div></div>
+        <div class="swatch"><div class="swatch__color" style="background:#0B55A3"></div><div class="swatch__info"><b>Secundario</b>#0B55A3 · navy</div></div>
+        <div class="swatch"><div class="swatch__color" style="background:#16191D"></div><div class="swatch__info"><b>Tinta</b>#16191D · texto</div></div>
+        <div class="swatch"><div class="swatch__color" style="background:#565C66"></div><div class="swatch__info"><b>Tinta suave</b>#565C66</div></div>
+        <div class="swatch"><div class="swatch__color" style="background:#F5F6F8; border-bottom:1px solid var(--color-linea)"></div><div class="swatch__info"><b>Fondo suave</b>#F5F6F8</div></div>
+        <div class="swatch"><div class="swatch__color" style="background:#0E1116"></div><div class="swatch__info"><b>Fondo oscuro</b>#0E1116 · footer</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIPOGRAFÍA -->
+  <section class="seccion seccion--suave">
+    <div class="contenedor">
+      <div class="encabezado-seccion">
+        <p class="eyebrow">02 — Tipografía</p>
+        <h2>Jerarquía de textos</h2>
+        <p>Montserrat para títulos (deportivo, premium) · Inter para texto (legible).</p>
+      </div>
+      <div class="tarjeta-doc escala-tipo" style="background:#fff;">
+        <h1>Título H1 — Resultados por disciplina</h1>
+        <h2>Título H2 — Suplementación con respaldo</h2>
+        <h3>Título H3 — Calidad europea Olimp</h3>
+        <p class="eyebrow">Eyebrow / etiqueta superior</p>
+        <p style="font-size:var(--fs-md);">Texto destacado: proteína de suero filtrada en frío para una recuperación muscular óptima.</p>
+        <p>Texto base: creatina micronizada 200 Mesh con solubilidad inmediata y máxima absorción, sin molestias estomacales.</p>
+        <p class="texto-apagado">Texto apagado / secundario: información complementaria y detalles.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTONES + ETIQUETAS -->
+  <section class="seccion">
+    <div class="contenedor">
+      <div class="encabezado-seccion">
+        <p class="eyebrow">03 — Componentes</p>
+        <h2>Botones y etiquetas</h2>
+      </div>
+      <div class="tarjeta-doc">
+        <div class="fila" style="margin-bottom:var(--space-6)">
+          <button class="btn btn--primario">Agregar al carrito</button>
+          <button class="btn btn--secundario">Ver producto</button>
+          <button class="btn btn--contorno">Seguir comprando</button>
+          <button class="btn btn--primario btn--grande">Botón grande</button>
+        </div>
+        <div class="fila">
+          <span class="tag tag--lanzamiento">Lanzamiento</span>
+          <span class="tag tag--nuevo">Nuevo</span>
+          <span class="tag tag--oferta">Oferta</span>
+          <span class="chip">Construcción Muscular</span>
+          <span class="estrellas" style="--pct:96%"></span>
+          <span class="texto-apagado">4.8 (124 opiniones)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARDS DE PRODUCTO -->
+  <section class="seccion seccion--suave">
+    <div class="contenedor">
+      <div class="encabezado-seccion">
+        <p class="eyebrow">04 — Pieza estrella</p>
+        <h2>Card de producto</h2>
+        <p>El componente que más se repite. Foto sobre fondo suave, rating, precio, cuotas y CTA.</p>
+      </div>
+      <div class="grilla grilla--productos">
+
+        <article class="card-producto">
+          <a class="card-producto__media" href="#">
+            <span class="tag tag--lanzamiento card-producto__tag">Lanzamiento</span>
+            <img src="assets/img/products/whey-protein-complex.webp" alt="Whey Protein Complex 100%" loading="lazy" width="600" height="600">
+          </a>
+          <div class="card-producto__body">
+            <span class="card-producto__categoria">Construcción Muscular</span>
+            <h3 class="card-producto__nombre">Whey Protein Complex 100%</h3>
+            <div class="card-producto__rating"><span class="estrellas" style="--pct:96%"></span><span>(124)</span></div>
+            <div class="card-producto__precio">
+              <span class="precio">Gs. ——</span>
+              <span class="cuotas">hasta 12 cuotas sin interés</span>
+            </div>
+            <a href="#" class="btn btn--primario btn--bloque card-producto__cta">Ver producto</a>
+          </div>
+        </article>
+
+        <article class="card-producto">
+          <a class="card-producto__media" href="#">
+            <span class="tag tag--nuevo card-producto__tag">Nuevo</span>
+            <img src="assets/img/products/redweiler.webp" alt="Redweiler" loading="lazy" width="600" height="600">
+          </a>
+          <div class="card-producto__body">
+            <span class="card-producto__categoria">Fuerza · Enfoque</span>
+            <h3 class="card-producto__nombre">Redweiler Pre-Entreno</h3>
+            <div class="card-producto__rating"><span class="estrellas" style="--pct:92%"></span><span>(98)</span></div>
+            <div class="card-producto__precio">
+              <span class="precio">Gs. ——</span>
+              <span class="cuotas">hasta 12 cuotas sin interés</span>
+            </div>
+            <a href="#" class="btn btn--primario btn--bloque card-producto__cta">Ver producto</a>
+          </div>
+        </article>
+
+        <article class="card-producto">
+          <a class="card-producto__media" href="#">
+            <img src="assets/img/products/creatine-monohydrate.webp" alt="Creatine Monohydrate" loading="lazy" width="600" height="600">
+          </a>
+          <div class="card-producto__body">
+            <span class="card-producto__categoria">Fuerza</span>
+            <h3 class="card-producto__nombre">Creatine Monohydrate</h3>
+            <div class="card-producto__rating"><span class="estrellas" style="--pct:100%"></span><span>(210)</span></div>
+            <div class="card-producto__precio">
+              <span class="precio">Gs. ——</span>
+              <span class="cuotas">hasta 12 cuotas sin interés</span>
+            </div>
+            <a href="#" class="btn btn--primario btn--bloque card-producto__cta">Ver producto</a>
+          </div>
+        </article>
+
+        <article class="card-producto">
+          <a class="card-producto__media" href="#">
+            <img src="assets/img/products/gold-omega-3-sport.webp" alt="Gold Omega 3 Sport" loading="lazy" width="600" height="600">
+          </a>
+          <div class="card-producto__body">
+            <span class="card-producto__categoria">Vitalidad</span>
+            <h3 class="card-producto__nombre">Gold Omega 3 Sport</h3>
+            <div class="card-producto__rating"><span class="estrellas" style="--pct:88%"></span><span>(76)</span></div>
+            <div class="card-producto__precio">
+              <span class="precio">Gs. ——</span>
+              <span class="cuotas">hasta 12 cuotas sin interés</span>
+            </div>
+            <a href="#" class="btn btn--primario btn--bloque card-producto__cta">Ver producto</a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <footer style="background:var(--color-fondo-oscuro); color:#fff; padding:var(--space-7) 0;">
+    <div class="contenedor centrado">
+      <p class="texto-apagado" style="color:#9aa3af;">Vitalica · Muestra del sistema de diseño · Maqueta</p>
+    </div>
+  </footer>
+
+</body>
+</html>

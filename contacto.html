@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contacto y dónde comprar · Vitalica</title>
+  <meta name="description" content="Encontrá los productos de Olimp en locales de todo el Paraguay y contactate con Vitalica por WhatsApp.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..900&family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/styles.css?v=47">
+
+  <!-- PROPUESTA DE REDISEÑO (estilo BPN). Inerte hasta que tema.js pone
+       data-tema="2026" en el <html>. Ver assets/css/tema-2026.css -->
+  <link rel="stylesheet" href="assets/css/tema-2026.css?v=47">
+  <script src="assets/js/tema.js?v=47"></script>
+</head>
+<body>
+
+  <!-- Pantalla de carga: tapa el instante en que el JS todavia no armo
+       el header ni el contenido. La quita main.js; si el JS fallara, la
+       animacion de seguridad de styles.css la desvanece igual. -->
+  <div class="cargando" data-cargando aria-hidden="true">
+    <p class="cargando__marca">VITA<span>LICA</span></p>
+    <p class="cargando__sub">Olimp Sport Nutrition</p>
+    <div class="cargando__barra"><span class="cargando__relleno" data-relleno></span></div>
+    <p class="cargando__pct" data-pct>0%</p>
+  </div>
+
+
+  <div id="chrome-top"></div>
+
+  <main>
+
+    <!-- Hero -->
+    <section class="pagina-hero">
+      <div class="contenedor">
+        <p class="eyebrow">Contacto</p>
+        <h1>Dónde comprar y contacto</h1>
+        <p>Encontrá los productos de Olimp en locales de todo el país, o escribinos directo.</p>
+      </div>
+    </section>
+
+    <!-- Dónde comprar (store locator) -->
+    <section class="seccion" id="donde-comprar" style="scroll-margin-top:110px">
+      <div class="contenedor">
+        <div class="encabezado-seccion centrado">
+          <p class="eyebrow">Puntos de venta</p>
+          <h2>Dónde comprar</h2>
+          <p>Conseguí toda la línea OLIMP de Vitalica en estas cadenas, farmacias,
+             gimnasios y tiendas de suplementos de todo el país.</p>
+        </div>
+        <!-- Los logos los arma contacto.js desde VITALICA_TIENDAS, la misma
+             lista que usa la home. Se muestran los comercios, no direcciones:
+             ver el comentario en contacto.js. -->
+        <div class="aliados__grid" data-tiendas></div>
+        <p class="centrado texto-apagado mt-6" style="font-size:var(--fs-sm)">
+          ¿Buscás un local cerca tuyo, o tenés un comercio y querés vender Olimp? <a href="https://wa.me/595976383922" target="_blank" rel="noopener" style="color:var(--color-primario-texto);font-weight:600">Escribinos por WhatsApp</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- Envíos y Cambios (información) -->
+    <section class="seccion">
+      <div class="contenedor" style="max-width:820px">
+        <article id="envios" style="scroll-margin-top:110px;margin-bottom:var(--space-7)">
+          <p class="eyebrow">Logística</p>
+          <h2>Envíos y entregas</h2>
+          <p class="mt-2">Hacemos envíos a <strong>todo el Paraguay</strong>. En Gran Asunción, 24–48 h hábiles; al interior, 2–5 días hábiles según la ciudad.</p>
+          <ul class="mt-2" style="padding-left:1.25em;list-style:disc;display:grid;gap:var(--space-1)">
+            <li>El costo del envío se calcula en el checkout según la zona (Gran Asunción o interior).</li>
+            <li>También podés retirar y pagar en los locales adheridos (ver “Dónde comprar”).</li>
+            <li>Coordinamos el seguimiento del pedido por WhatsApp.</li>
+          </ul>
+        </article>
+        <article id="cambios" style="scroll-margin-top:110px">
+          <p class="eyebrow">Tu tranquilidad</p>
+          <h2>Cambios y devoluciones</h2>
+          <p class="mt-2">Si un producto llega <strong>dañado o equivocado</strong>, lo cambiamos sin costo. Escribinos dentro de las 48 h de recibido.</p>
+          <ul class="mt-2" style="padding-left:1.25em;list-style:disc;display:grid;gap:var(--space-1)">
+            <li>Por seguridad alimentaria, no se aceptan suplementos abiertos: el producto debe estar cerrado.</li>
+            <li>Conservá la factura o el comprobante de compra.</li>
+            <li>Todos los productos son Olimp originales, con respaldo del representante oficial.</li>
+          </ul>
+        </article>
+        <p class="centrado texto-apagado mt-6" style="font-size:var(--fs-sm)">
+          Información de demostración para la maqueta — las políticas finales las define Vitalica.
+        </p>
+      </div>
+    </section>
+
+    <!-- Contacto -->
+    <section class="seccion seccion--suave">
+      <div class="contenedor contacto-grid">
+        <div class="contacto-info">
+          <p class="eyebrow">Contactanos</p>
+          <h2 id="hablemos" style="scroll-margin-top:110px">Hablemos</h2>
+          <p>¿Consultas sobre productos, envíos o asesoramiento? Te respondemos rápido por WhatsApp.</p>
+          <a class="btn btn--primario btn--grande" target="_blank" rel="noopener" href="https://wa.me/595976383922?text=Hola%20Vitalica%2C%20vengo%20de%20la%20p%C3%A1gina%20web.">Escribinos por WhatsApp</a>
+          <ul class="contacto-datos">
+            <li><strong>WhatsApp:</strong> +595 976 383922</li>
+            <li><strong>Instagram:</strong> @vitalica.py</li>
+            <li><strong>TikTok:</strong> @vitalica.py</li>
+            <li><strong>Envíos:</strong> a todo el Paraguay (Gran Asunción e interior)</li>
+          </ul>
+        </div>
+
+        <form class="contacto-form" data-form-demo="¡Gracias! Tu mensaje fue enviado (demostración).">
+          <div class="campo">
+            <label for="c-nombre">Nombre</label>
+            <input id="c-nombre" name="nombre" type="text" required>
+          </div>
+          <div class="campo">
+            <label for="c-email">Email</label>
+            <input id="c-email" name="email" type="email" required>
+          </div>
+          <div class="campo">
+            <label for="c-mensaje">Mensaje</label>
+            <textarea id="c-mensaje" name="mensaje" rows="4" required></textarea>
+          </div>
+          <button type="submit" class="btn btn--primario btn--bloque btn--grande">Enviar mensaje</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="chrome-bottom"></div>
+
+  <!-- Precios de Odoo: los genera sync-odoo-precios.py. Va ANTES de data.js. -->
+  <script src="assets/js/precios.js?v=47"></script>
+  <script src="assets/js/data.js?v=47"></script>
+  <script src="assets/js/analitica.js?v=47"></script>
+  <script src="assets/js/cart.js?v=47"></script>
+  <script src="assets/js/components.js?v=47"></script>
+  <script src="assets/js/main.js?v=47"></script>
+  <script src="assets/js/popups.js?v=47"></script>
+  <script src="assets/js/pages/contacto.js?v=47"></script>
+
+</body>
+</html>

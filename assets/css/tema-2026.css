@@ -1,0 +1,2196 @@
+
+/* ==========================================================================
+   VITALICA — TEMA 2026  ·  propuesta de rediseño
+   --------------------------------------------------------------------------
+   Referencia pedida por Diego: bareperformancenutrition.com
+
+   QUÉ ES ESTE ARCHIVO
+   -------------------
+   NO reemplaza a styles.css: se carga DESPUÉS y lo pisa. Todo lo que hay acá
+   está encerrado en [data-tema="2026"], así que mientras el <html> no tenga
+   ese atributo el sitio se ve exactamente igual que siempre.
+
+   Se prende y se apaga con ?tema=2026 y ?tema=actual (ver assets/js/tema.js).
+   Sirve para comparar A/B navegando el sitio de verdad, no una maqueta
+   suelta, y para que marketing pueda seguir revisando lo de siempre sin que
+   le cambie la web abajo de los pies.
+
+   QUÉ SE TOMA DE BPN Y QUÉ NO
+   ---------------------------
+   SE TOMA — es el "estilo" que pidió Diego:
+     · el negro como color estructural (BPN lo usa en 9.204 elementos; el
+       blanco, en 515). El sitio hoy tiene ese rol puesto en el azul navy.
+     · titulares en MAYÚSCULA, peso 900, condensados y con tracking negativo
+     · geometría dura: radios de 3-4px donde hoy hay pastillas de 999px
+     · nada de sombras suaves ni tarjetas flotando
+     · una franja superior de alta visibilidad
+     · fotografía a sangre, oscura y contrastada
+
+   NO SE TOMA — acá me aparto a propósito:
+     · el rojo #EB1000 de los botones. Ese lugar en Vitalica lo ocupa el
+       naranja de marca. Si copiamos también el color, no queda "Vitalica en
+       el estilo de BPN": queda BPN mal hecho.
+     · el verde ácido de la franja. Mismo motivo: va el naranja, que da el
+       mismo golpe de vista y además es nuestro.
+     · la tipografía Blender Pro, que es de licencia paga. Va Archivo, que es
+       la que más se le parece de las libres: grotesca cuadrada, con eje de
+       ancho variable y hasta peso 900.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   01. TOKENS — las mismas perillas de styles.css, giradas
+   ========================================================================== */
+:root[data-tema="2026"] {
+  /* El negro deja de ser "el color del footer" y pasa a ser la estructura */
+  --color-tinta:        #0A0A0B;
+  --color-tinta-suave:  #6E6E73;
+  --color-linea:        #DCDCDE;
+  --color-fondo-suave:  #F2F2F3;
+  --color-fondo-oscuro: #0A0A0B;
+
+  /* El naranja se queda donde estaba, pero ahora contra negro rinde más */
+  --color-primario:        #EF7D2A;
+  --color-primario-oscuro: #D2651A;
+  --color-primario-texto:  #A85410;
+
+  /* El azul no se tira: baja de protagonista a color de apoyo */
+  --color-secundario:        #0B55A3;
+  --color-secundario-oscuro: #083F7A;
+
+  /* GEOMETRÍA — CAMBIÓ DE RUMBO, Y ESTO ES A PROPÓSITO
+     ------------------------------------------------------------------
+     Acá había 2-4px y pastillas apagadas, copiando a BPN, que separa con
+     línea recta y sin sombra. Después llegó el pedido concreto: "les gusta
+     el formato de las cosas tipo glass de iOS, así medio circulares".
+
+     Son dos ideas opuestas y gana la segunda, porque no sale de una página
+     de referencia sino de lo que Vitalica ya viene publicando: las placas
+     de Instagram de la marca (las de zonas de frecuencia cardíaca, por
+     ejemplo) son exactamente esto — paneles translucidos, esquinas muy
+     redondeadas, encima de una foto.
+
+     O sea que no es "iOS porque está de moda": es el lenguaje que la marca
+     ya usa en redes, traido a la web. De BPN se conserva lo que sigue
+     valiendo — el negro estructural, los titulares en mayuscula, la foto a
+     sangre, el producto primero — y se suelta la geometria dura. */
+  --radio-sm:   10px;
+  --radio:      16px;
+  --radio-lg:   24px;
+  --radio-pill: 999px;   /* vuelven las pastillas, ahora a propósito */
+
+  /* Sombras otra vez, pero de vidrio: muy abiertas y muy suaves, para que
+     el panel parezca apoyado y no pegado. Nada de sombras duras. */
+  --sombra-sm: 0 1px 2px rgba(10,10,11,.05);
+  --sombra:    0 10px 30px -14px rgba(10,10,11,.30);
+  --sombra-lg: 0 28px 70px -28px rgba(10,10,11,.45);
+
+  /* EL VIDRIO
+     ------------------------------------------------------------------
+     Un solo juego de perillas para todos los paneles translucidos, para
+     que no terminen doce rgba() distintos repartidos por el archivo.
+
+     OJO CON UNA COSA: backdrop-filter solo se ve si DETRÁS hay algo. Un
+     panel de vidrio sobre fondo blanco liso es un panel blanco y nada más.
+     Por eso el vidrio se usa donde hay foto o profundidad detrás — el
+     header sobre el hero, el texto sobre los mosaicos, el buscador, el
+     carrito, el menú — y NO en medio de una sección blanca. */
+  --vidrio-oscuro:       rgba(18, 18, 20, .55);
+  /* CORREGIDO: estaba en .72 y la barra se veía gris azulada, no negra.
+     El motivo: en las páginas internas, detrás del header no hay foto sino
+     el blanco de la página. Un negro al 72% sobre blanco da un gris medio,
+     que es exactamente el color que no queríamos. Con .93 la barra se lee
+     negra, y el desenfoque igual se nota cuando el contenido pasa por
+     debajo. El vidrio necesita algo oscuro detrás para verse como vidrio. */
+  --vidrio-oscuro-fuerte:rgba(10, 10, 11, .93);
+  --vidrio-claro:        rgba(255, 255, 255, .72);
+  --vidrio-borde:        rgba(255, 255, 255, .18);
+  --vidrio-borde-claro:  rgba(255, 255, 255, .60);
+  --vidrio-desenfoque:   saturate(170%) blur(20px);
+
+  /* El azul del manual de marca (Pantone 2145 C). Estaba puesto solo como
+     --color-secundario y no se veía en ninguna parte. Acá se le da un rol
+     propio: es el tinte del vidrio. Suficiente para que el azul esté sin
+     pelearse con el naranja, que sigue siendo el color de acción. */
+  --vidrio-tinte:        rgba(11, 85, 163, .22);
+  --vidrio-tinte-suave:  rgba(11, 85, 163, .08);
+
+  /* Degular queda para el texto corrido (es la del manual de marca).
+     Archivo entra solo en los titulares, que es donde vive el carácter. */
+  --fuente-titulo: "Archivo", "Degular", "Montserrat", system-ui, sans-serif;
+  --fuente-texto:  "Degular", "Public Sans", system-ui, sans-serif;
+
+  /* Titulares más grandes y más juntos */
+  --fs-2xl:  clamp(2rem, 3.6vw, 3rem);
+  --fs-3xl:  clamp(2.5rem, 5vw, 4rem);
+  --fs-hero: clamp(2.75rem, 6.6vw, 5.75rem);
+
+  --ancho-contenedor: 1320px;
+  --transicion: 120ms ease;
+}
+
+
+/* ==========================================================================
+   02. TIPOGRAFÍA — el 80% del parecido está acá
+   --------------------------------------------------------------------------
+   font-stretch:88% usa el eje de ancho variable de Archivo. Condensar deja
+   meter más caracteres por línea con el mismo cuerpo, que es justo lo que
+   hace que un titular de BPN se lea como un golpe y no como una frase.
+   ========================================================================== */
+[data-tema="2026"] h1,
+[data-tema="2026"] h2,
+[data-tema="2026"] h3,
+[data-tema="2026"] h4 {
+  font-family: var(--fuente-titulo);
+  font-stretch: 88%;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.98;
+}
+/* h3/h4 son nombres de producto y títulos de columna: en mayúscula pesada
+   quedan ilegibles a cuerpo chico, así que aflojan. */
+[data-tema="2026"] h3,
+[data-tema="2026"] h4 {
+  font-weight: 800;
+  letter-spacing: -0.005em;
+  line-height: 1.1;
+}
+
+[data-tema="2026"] .eyebrow {
+  font-family: var(--fuente-titulo);
+  font-stretch: 100%;
+  font-weight: 800;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  color: var(--color-primario-texto);
+}
+
+[data-tema="2026"] .encabezado-seccion { gap: var(--space-3); margin-bottom: var(--space-6); }
+[data-tema="2026"] .encabezado-seccion h2 { font-size: var(--fs-2xl); }
+
+
+/* ==========================================================================
+   03. BARRA DE ANUNCIOS — la franja de alta visibilidad
+   ========================================================================== */
+/* CAMBIO PEDIDO POR MARKETING: la franja pasa del naranja al AZUL DEL
+   MANUAL (Pantone 2145 C / #0b55a3).
+
+   Y conviene: la barra es lo primero que se ve y estaba en naranja, el mismo
+   color de "Hacé tu pedido" y de "Agregar al carrito". Dos franjas naranjas
+   compitiendo arriba le quitaban fuerza al botón, que es lo único que
+   debería gritar en naranja. En azul la franja sigue destacando y el naranja
+   vuelve a significar una sola cosa: comprar.
+
+   El texto pasa a blanco: sobre el azul, el negro no llega al contraste
+   mínimo para letra chica. */
+[data-tema="2026"] .barra-anuncios {
+  background: var(--color-secundario);
+  color: #fff;
+}
+[data-tema="2026"] .barra-anuncios__viewport { height: 34px; max-width: none; }
+[data-tema="2026"] .barra-anuncios__item {
+  font-family: var(--fuente-titulo);
+  font-stretch: 92%;
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+
+/* ==========================================================================
+   04. HEADER — negro, como el de BPN
+   --------------------------------------------------------------------------
+   El logo de Vitalica es oscuro sobre transparente: sobre negro desaparece.
+   Se invierte igual que en el footer, que ya hacía esto mismo.
+   ========================================================================== */
+[data-tema="2026"] .header-sitio {
+  background: #0A0A0B;
+  border-bottom: 0;
+}
+[data-tema="2026"] .header-sitio__inner { padding-block: var(--space-2); }
+[data-tema="2026"] .header-sitio__logo img {
+  height: 42px;
+  filter: brightness(0) invert(1);
+}
+[data-tema="2026"] .nav-principal__link {
+  color: #fff;
+  font-stretch: 92%;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+[data-tema="2026"] .nav-principal__link:hover,
+[data-tema="2026"] .nav-principal__link.activo { color: var(--color-primario); }
+[data-tema="2026"] .icono-accion,
+[data-tema="2026"] .boton-menu { color: #fff; }
+[data-tema="2026"] .icono-accion:hover { color: var(--color-primario); }
+[data-tema="2026"] .boton-carrito__badge {
+  background: var(--color-primario);
+  color: #0A0A0B;
+  font-weight: 900;
+}
+[data-tema="2026"] .megamenu { border-top: 2px solid var(--color-primario); }
+
+
+/* ==========================================================================
+   05. BOTONES — planos, cuadrados, en mayúscula
+   ========================================================================== */
+[data-tema="2026"] .btn {
+  font-stretch: 92%;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: var(--radio);
+  border-width: 2px;
+  padding: 1.05em 1.9em;
+}
+[data-tema="2026"] .btn:active { transform: none; }
+
+/* El primario sigue siendo naranja con texto negro: es el par de la marca
+   y además da 6.4:1 de contraste, muy por encima del mínimo. */
+[data-tema="2026"] .btn--primario { background: var(--color-primario); color: #0A0A0B; }
+[data-tema="2026"] .btn--primario:hover { background: #FF8F3D; }
+
+/* El secundario deja de ser azul y pasa a negro, que es el segundo botón
+   de BPN ("SHOP SUPPLEMENTS") */
+[data-tema="2026"] .btn--secundario { background: #0A0A0B; color: #fff; }
+[data-tema="2026"] .btn--secundario:hover { background: #2A2A2E; }
+
+[data-tema="2026"] .btn--contorno {
+  border-color: #0A0A0B;
+  color: #0A0A0B;
+}
+[data-tema="2026"] .btn--contorno:hover { background: #0A0A0B; color: #fff; }
+
+/* Sobre las bandas oscuras el contorno gris no se ve */
+[data-tema="2026"] .hero .btn--contorno,
+[data-tema="2026"] .banda-sinatajos .btn--contorno,
+[data-tema="2026"] .newsletter .btn--contorno {
+  border-color: #fff;
+  color: #fff;
+}
+[data-tema="2026"] .hero .btn--contorno:hover { background: #fff; color: #0A0A0B; }
+
+
+/* ==========================================================================
+   06. HERO — a sangre y oscuro
+   ========================================================================== */
+[data-tema="2026"] .hero__slide--1,
+[data-tema="2026"] .hero__slide--2,
+[data-tema="2026"] .hero__slide--3 {
+  background: linear-gradient(105deg, #050506 0%, #121316 55%, #1D2733 100%);
+}
+[data-tema="2026"] .hero__inner { padding-block: var(--space-9); }
+[data-tema="2026"] .hero__titulo {
+  font-size: var(--fs-hero);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+[data-tema="2026"] .hero__eyebrow {
+  font-stretch: 100%;
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+}
+[data-tema="2026"] .hero__texto { font-size: var(--fs-base); max-width: 40ch; }
+
+/* Un velo más duro del lado del texto: en BPN el titular nunca pelea con la
+   foto, porque la foto está apagada justo detrás de las letras. */
+[data-tema="2026"] .hero__slide--banner .hero__inner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(5,5,6,.92) 0%, rgba(5,5,6,.72) 38%, rgba(5,5,6,0) 72%);
+  z-index: 0;
+  pointer-events: none;
+}
+[data-tema="2026"] .hero__slide--banner .hero__inner > * { position: relative; z-index: 1; }
+
+[data-tema="2026"] .hero__flecha { border-radius: var(--radio-pill); background: rgba(255,255,255,.12); }
+[data-tema="2026"] .hero__dot { border-radius: 999px; height: 4px; width: 26px; }
+[data-tema="2026"] .hero__dot.activo { background: var(--color-primario); width: 44px; }
+
+
+/* ==========================================================================
+   07. CARD DE PRODUCTO — plana, con botón negro abajo
+   --------------------------------------------------------------------------
+   En BPN cada tarjeta termina en un botón negro de ancho completo
+   ("SELECT OPTIONS"). Acá ya existía un texto naranja con flecha que hacía
+   ese papel; se convierte en el mismo botón en vez de agregar un elemento
+   nuevo, así el HTML no cambia y esto sigue siendo solo una piel.
+   ========================================================================== */
+[data-tema="2026"] .card-producto {
+  border-radius: var(--radio-lg);
+  border-color: var(--color-linea);
+}
+[data-tema="2026"] .card-producto:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #0A0A0B;
+}
+[data-tema="2026"] .card-producto__media { background: #FFFFFF; }
+[data-tema="2026"] .card-producto:hover .card-producto__media img { transform: scale(1.03); }
+[data-tema="2026"] .card-producto__nombre {
+  font-stretch: 90%;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+}
+[data-tema="2026"] .card-producto:hover .card-producto__nombre { color: inherit; }
+[data-tema="2026"] .card-producto__categoria { letter-spacing: 0.1em; font-weight: 700; }
+[data-tema="2026"] .card-producto__precio .precio {
+  font-stretch: 92%;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+[data-tema="2026"] .card-producto__hint {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-top: var(--space-4);
+  padding: 0.85em 1em;
+  background: #0A0A0B;
+  color: #fff;
+  border-radius: var(--radio);
+  font-stretch: 92%;
+  font-weight: 900;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background var(--transicion), color var(--transicion);
+}
+[data-tema="2026"] .card-producto:hover .card-producto__hint {
+  background: var(--color-primario);
+  color: #0A0A0B;
+}
+[data-tema="2026"] .card-producto__flecha { display: none; }
+
+
+/* ==========================================================================
+   08. ETIQUETAS
+   ========================================================================== */
+[data-tema="2026"] .tag {
+  border-radius: var(--radio-pill);
+  font-stretch: 95%;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  padding: 0.45em 0.8em;
+}
+[data-tema="2026"] .chip { border-radius: var(--radio); font-weight: 700; }
+
+
+/* ==========================================================================
+   09. CATEGORÍAS / METAS — mosaicos duros
+   --------------------------------------------------------------------------
+   Se van los degradados de colores distintos por tarjeta: en BPN los
+   mosaicos de categoría son foto oscura o negro plano, y el color lo pone
+   solo el acento. Con cinco degradados compitiendo no hay jerarquía.
+   ========================================================================== */
+[data-tema="2026"] .categoria-card {
+  border-radius: var(--radio-lg);
+  min-height: 230px;
+  background: #0A0A0B !important;
+  color: #fff !important;
+  border-bottom: 4px solid transparent;
+}
+[data-tema="2026"] .categoria-card:hover {
+  transform: none;
+  box-shadow: none;
+  border-bottom-color: var(--color-primario);
+}
+[data-tema="2026"] .categoria-card__nombre {
+  font-stretch: 88%;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: var(--fs-xl);
+  letter-spacing: -0.02em;
+}
+[data-tema="2026"] .categoria-card__cta {
+  font-stretch: 95%;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-primario);
+}
+
+
+/* ==========================================================================
+   10. BANDAS OSCURAS (ciencia · sin atajos · trust bar · newsletter)
+   ========================================================================== */
+[data-tema="2026"] .ciencia { background: #0A0A0B; color: #fff; }
+[data-tema="2026"] .ciencia h2,
+[data-tema="2026"] .ciencia h3,
+[data-tema="2026"] .ciencia .pilar__titulo { color: #fff; }
+[data-tema="2026"] .ciencia p,
+[data-tema="2026"] .ciencia .pilar__texto,
+[data-tema="2026"] .ciencia .ciencia__intro { color: rgba(255,255,255,.72); }
+[data-tema="2026"] .pilar {
+  background: #141416;
+  border: 1px solid #232326;
+  border-radius: var(--radio-lg);
+}
+[data-tema="2026"] .pilar__icono { color: var(--color-primario); }
+
+[data-tema="2026"] .banda-sinatajos { background: #0A0A0B; }
+[data-tema="2026"] .newsletter {
+  background: #0A0A0B;
+  border-top: 4px solid var(--color-primario);
+}
+[data-tema="2026"] .newsletter__form input { border-radius: var(--radio); }
+
+[data-tema="2026"] .trust-bar { background: #0A0A0B; border-bottom: 0; color: #fff; }
+[data-tema="2026"] .trust-bar__texto strong {
+  color: #fff;
+  font-stretch: 95%;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+[data-tema="2026"] .trust-bar__texto span { color: rgba(255,255,255,.6); }
+
+
+/* ==========================================================================
+   11. RESTO DE PIEZAS
+   ========================================================================== */
+[data-tema="2026"] .blog-card,
+[data-tema="2026"] .ig-tile,
+[data-tema="2026"] .embajador__foto,
+[data-tema="2026"] .banner-coleccion { border-radius: var(--radio-lg); }
+
+[data-tema="2026"] .embajador__nombre {
+  font-stretch: 90%;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* Los logos de los aliados son negros: sobre blanco van, pero apagados se
+   pierden. En un sitio con tanto negro conviene casi contraste pleno. */
+[data-tema="2026"] .aliados__logo { opacity: 0.85; }
+[data-tema="2026"] .aliados__logo:hover { opacity: 1; transform: none; }
+
+[data-tema="2026"] .footer-sitio { border-top: 4px solid var(--color-primario); }
+[data-tema="2026"] .footer-sitio__col h4 {
+  font-stretch: 95%;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.8rem;
+}
+
+[data-tema="2026"] input,
+[data-tema="2026"] select,
+[data-tema="2026"] textarea { border-radius: var(--radio) !important; }
+
+[data-tema="2026"] .pagina-cabecera h1 { font-size: var(--fs-3xl); }
+
+/* El foco del teclado tiene que verse sobre negro tanto como sobre blanco */
+[data-tema="2026"] :focus-visible {
+  outline: 3px solid var(--color-primario);
+  outline-offset: 2px;
+  border-radius: var(--radio);
+}
+
+
+/* ==========================================================================
+   12. CELULAR
+   ========================================================================== */
+@media (max-width: 880px) {
+  [data-tema="2026"] .hero__titulo { letter-spacing: -0.025em; }
+  [data-tema="2026"] .hero__inner { padding-block: var(--space-7); }
+  [data-tema="2026"] .categoria-card { min-height: 170px; }
+}
+
+
+/* ==========================================================================
+   13. LAS BANDAS AZULES DEL RESTO DEL SITIO
+   --------------------------------------------------------------------------
+   Fuera del home hay ocho degradados navy más (cabecera de las páginas
+   internas, banner de colección, banda de la ficha de producto, acentos de
+   las guías). Si se cambia solo el home, al segundo clic el sitio vuelve a
+   ser azul y el rediseño se cae. Todos pasan a negro plano.
+   ========================================================================== */
+[data-tema="2026"] .pagina-hero,
+[data-tema="2026"] .prod-banda,
+[data-tema="2026"] .banner-coleccion,
+[data-tema="2026"] .acento-navy,
+[data-tema="2026"] .acento-mixto {
+  background: #0A0A0B;
+}
+[data-tema="2026"] .pagina-hero .contenedor { padding-block: var(--space-9); }
+[data-tema="2026"] .pagina-hero h1 { font-size: var(--fs-hero); line-height: 0.92; letter-spacing: -0.035em; }
+[data-tema="2026"] .pagina-hero .eyebrow { color: var(--color-primario); }
+
+[data-tema="2026"] .pagina-cabecera { border-bottom: 2px solid #0A0A0B; }
+
+/* Los chips del catálogo dejan de ser pastillas */
+[data-tema="2026"] .cat-nav a,
+[data-tema="2026"] .cat-nav button {
+  border-radius: var(--radio);
+  font-stretch: 95%;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+[data-tema="2026"] .cat-nav a.activo,
+[data-tema="2026"] .cat-nav button.activo { color: #0A0A0B; }
+
+/* El banner de colección lleva foto: se le pone el mismo velo duro del hero */
+[data-tema="2026"] .banner-coleccion h2 { font-size: var(--fs-2xl); }
+
+
+/* ==========================================================================
+   14. AJUSTES SOBRE FONDO NEGRO
+   ========================================================================== */
+/* Los tres íconos de "Ciencia real" son PNG grises: se dibujaron para el
+   fondo claro que tenía esa sección y sobre negro se pierden.
+   En assets/img/pilares/ ya están los mismos en blanco, pero la ruta la
+   decide data.js y cambiarla ahí rompería el diseño actual, donde la sección
+   sigue siendo clara. Como el dibujo es de un solo tono, invertirlo da
+   exactamente el archivo blanco.
+   SI ESTO SE APRUEBA: apuntar data.js a los -blanco.png y borrar este filtro. */
+[data-tema="2026"] .pilar__icono { filter: brightness(0) invert(1); opacity: 0.92; }
+
+/* Las tres tarjetas de guía traen acentos distintos (naranja, navy, mixto).
+   Con el resto ya en negro quedaba una naranja y dos negras, que se lee como
+   un error y no como una decisión. Van las tres iguales y el color lo pone
+   la etiqueta, que es lo que hay que leer. */
+[data-tema="2026"] .acento-naranja { background: #0A0A0B; }
+[data-tema="2026"] .card-articulo__cover {
+  border-bottom: 3px solid var(--color-primario);
+}
+[data-tema="2026"] .card-articulo__cover span,
+[data-tema="2026"] .card-articulo__categoria {
+  color: var(--color-primario);
+  font-stretch: 95%;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+
+/* ==========================================================================
+   15. EL ORDEN DE LA PORTADA  ·  lo que más importa de todo este archivo
+   --------------------------------------------------------------------------
+   A Diego no le gustó el color de BPN: le gustó que ENTRÁS Y HAY PRODUCTOS.
+   Eso no es una decisión de estilo, es el orden de la página, y medido es
+   así de tajante (posiciones reales de bareperformancenutrition.com):
+
+       0 px      portada
+       887 px    MÁS VENDIDOS          <- productos, apenas termina la portada
+       1.546 px  RECIÉN LLEGADOS       <- más productos
+       2.205 px  categorías
+       2.825 px  "somos una marca para los comprometidos"   <- recién acá la marca
+       3.242 px  el video de la historia
+
+   Hay 1.300 px de productos antes de que la marca diga una sola palabra
+   sobre sí misma.
+
+   Nuestra portada hoy hace lo contrario: abajo del hero pone "Ciencia real",
+   que son tres bloques de texto explicando por qué hay que creernos. Es buen
+   contenido, pero llega antes de que el visitante haya visto un solo envase.
+
+   Acá se reordena para que quede: portada, LOS DIEZ PRODUCTOS, objetivos,
+   garantías, y recién después el respaldo científico y el resto.
+
+   POR QUÉ CON order Y NO MOVIENDO EL HTML
+   ---------------------------------------
+   Para que se pueda comparar A/B: el mismo index.html tiene que poder
+   mostrarse en los dos órdenes según el tema. La contra es que el orden
+   visual y el del HTML dejan de coincidir, y eso desordena el recorrido con
+   la tecla Tab.
+   SI ESTO SE APRUEBA: se mueven las secciones en index.html de verdad y este
+   bloque se borra.
+   ========================================================================== */
+[data-tema="2026"] main { display: flex; flex-direction: column; }
+
+/* Todo lo que no se reordena mantiene su orden del HTML detrás de lo que sí.
+   Sin este 6 de base, cualquier sección sin número se iría al principio. */
+[data-tema="2026"] main > * { order: 6; }
+
+[data-tema="2026"] main > .hero                        { order: 1; }
+[data-tema="2026"] main > #productos                   { order: 2; }
+[data-tema="2026"] main > section:has([data-metas])    { order: 3; }
+[data-tema="2026"] main > .trust-bar                   { order: 4; }
+[data-tema="2026"] main > .ciencia                     { order: 5; }
+
+/* Los productos son ahora lo primero después de la portada: el encabezado
+   deja de ser una nota al pie y pasa a anunciarlos. */
+[data-tema="2026"] #productos { padding-block: var(--space-8) var(--space-9); }
+[data-tema="2026"] #productos .encabezado-seccion h2 { font-size: var(--fs-3xl); }
+
+
+/* ==========================================================================
+   16. LA GRILLA DE PRODUCTOS  ·  cómo los muestra BPN
+   --------------------------------------------------------------------------
+   Medido sobre una tarjeta de BPN: 304 x 431 px, sin borde y sin fondo. El
+   envase flota sobre el blanco de la página y ocupa 304 de esos 431 px —
+   el 70% de la tarjeta es la foto. Debajo van nombre, precio, una línea con
+   las porciones y los sabores, y el botón negro.
+
+   Nuestra tarjeta tiene marco, esquinas redondas y la foto sobre un gris.
+   El marco es lo que hay que sacar: cuando cada producto está adentro de su
+   cajita, diez productos se leen como diez cajitas. Sin marco se leen como
+   diez productos.
+   ========================================================================== */
+[data-tema="2026"] .card-producto {
+  border: 0;
+  background: transparent;
+}
+[data-tema="2026"] .card-producto:hover { border: 0; }
+
+/* La foto ocupa más y respira menos: el envase tiene que llenar el cuadro */
+[data-tema="2026"] .card-producto__media {
+  background: transparent;
+  padding: var(--space-3);
+}
+/* Sin gris de fondo, el multiply ya no tiene con qué fundirse y le come el
+   contraste a los envases oscuros (la creatina, el Knockout). */
+[data-tema="2026"] .card-producto__media img { mix-blend-mode: normal; }
+
+[data-tema="2026"] .card-producto__body {
+  padding: var(--space-3) 0 0;
+  gap: var(--space-1);
+}
+
+/* La línea de sabores y presentaciones: existe siempre en el HTML, pero solo
+   se muestra acá (ver lineaVariantes() en components.js). */
+[data-tema="2026"] .card-producto__variantes {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--color-tinta-suave);
+  margin-top: 2px;
+}
+
+
+/* ==========================================================================
+   17. LA FICHA DE PRODUCTO  ·  cómo elige el sabor BPN
+   --------------------------------------------------------------------------
+   Medido sobre su ficha de Whey Protein: los sabores NO son pastillas de
+   texto. Son ocho fotos del envase de 64x64, en disco, con el nombre debajo.
+   El elegido se marca con un aro.
+
+   Es una diferencia de fondo, no de estilo: "Doble Chocolate" es una palabra
+   que hay que leer; el frasco marrón se reconoce antes de leer nada. Y en un
+   producto que se compra por sabor, esa es LA decisión de la página.
+
+   Los envases sin foto quedan como disco vacío con el emoji. No lo disimulo:
+   son los nueve packshots que faltan (4 de Whey, 3 de Redweiler, 2 de Iso
+   Plus) y así se ve exactamente dónde.
+   ========================================================================== */
+[data-tema="2026"] .variantes__lista { gap: var(--space-4); }
+
+[data-tema="2026"] .variante-chip[data-tipo="sabor"] {
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 84px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1.15;
+  text-align: center;
+}
+[data-tema="2026"] .variante-chip[data-tipo="sabor"] .variante-chip__foto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-fondo-suave);
+  border: 2px solid transparent;
+  box-shadow: 0 0 0 1px var(--color-linea) inset;
+  overflow: hidden;
+  transition: border-color var(--transicion), box-shadow var(--transicion);
+}
+[data-tema="2026"] .variante-chip[data-tipo="sabor"] .variante-chip__foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4px;
+}
+/* El disco del sabor sin foto: el emoji grande y un borde cortado, para que
+   se lea como "falta la foto" y no como una opción de otra categoría. */
+[data-tema="2026"] .variante-chip__foto--sin {
+  font-size: 1.5rem;
+  border-style: dashed !important;
+  border-color: var(--color-linea) !important;
+  background: #fff !important;
+}
+
+/* El aro del elegido. Va por fuera (box-shadow) para que el disco no se
+   mueva un píxel al cambiar de sabor. */
+[data-tema="2026"] .variante-chip[data-tipo="sabor"][aria-pressed="true"] {
+  background: transparent;
+  color: var(--color-tinta);
+  font-weight: 800;
+}
+[data-tema="2026"] .variante-chip[data-tipo="sabor"][aria-pressed="true"] .variante-chip__foto {
+  border-color: var(--color-tinta);
+  box-shadow: 0 0 0 2px #fff inset;
+}
+/* Con la foto delante, el emoji al lado del nombre sobra */
+[data-tema="2026"] .variante-chip[data-tipo="sabor"] .variante-chip__emoji { display: none; }
+
+/* La presentación sigue siendo texto —"700 g" no tiene foto— pero cuadrada */
+[data-tema="2026"] .variante-chip[data-tipo="tamano"] {
+  border-radius: var(--radio);
+  font-stretch: 95%;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+[data-tema="2026"] .variantes__titulo {
+  font-family: var(--fuente-titulo);
+  font-stretch: 100%;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--color-tinta);
+}
+
+/* El precio adentro del botón, como BPN ("ADD TO CART - $41.24").
+   Separado por una barra fina en vez de un guion: con números largos en
+   guaraníes, "Agregar al carrito - Gs. 330.000" se lee como un solo bloque. */
+[data-tema="2026"] .btn__precio {
+  display: inline-block;
+  margin-left: 0.7em;
+  padding-left: 0.7em;
+  border-left: 1px solid currentColor;
+  opacity: 0.85;
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ==========================================================================
+   18. MEDIDOR DE ENVÍO GRATIS
+   ========================================================================== */
+[data-tema="2026"] .envio-medidor { background: #0A0A0B; border-bottom: 0; }
+[data-tema="2026"] .envio-medidor__texto { color: rgba(255,255,255,.72); }
+[data-tema="2026"] .envio-medidor__texto strong {
+  color: #fff;
+  font-stretch: 95%;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+[data-tema="2026"] .envio-medidor__barra { border-radius: 999px; height: 5px; background: #2A2A2E; }
+[data-tema="2026"] .envio-medidor--logrado { background: #0A0A0B; }
+
+
+/* ==========================================================================
+   19. JERARQUÍA EN LA GRILLA  ·  el "BEST SELLER" de BPN
+   --------------------------------------------------------------------------
+   En BPN cada tarjeta empieza con una etiqueta negra que dice BEST SELLER, y
+   los que la tienen van primero. Nuestra grilla mostraba los diez productos
+   todos iguales: sin jerarquía, el ojo no sabe por dónde empezar y los mira
+   todos con la misma (poca) atención.
+
+   Los seis marcados con `destacado` en data.js van adelante. El orden se hace
+   con `order`, no reordenando los datos, para que el diseño actual siga
+   mostrándolos en el orden de siempre.
+
+   Dice "Destacado" y no "Más vendido": es una lista elegida a mano, no un
+   dato de ventas. El día que traigamos las ventas de Odoo se cambia el texto
+   en un solo lugar.
+   ========================================================================== */
+[data-tema="2026"] .tag--destacado {
+  display: inline-block;
+  background: #0A0A0B;
+  color: #fff;
+}
+
+[data-tema="2026"] [data-productos] .card-producto              { order: 2; }
+[data-tema="2026"] [data-productos] .card-producto[data-destacado] { order: 1; }
+
+
+/* ==========================================================================
+   20. ARREGLOS DE LA FICHA EN PANTALLAS INTERMEDIAS
+   ========================================================================== */
+
+/* --- El botón de compra se partía en tres líneas ---------------------------
+   .producto__compra es una fila flex con el selector de cantidad y el botón,
+   y el botón tiene min-width:220px. Con el precio adentro, "AGREGAR AL
+   CARRITO · Gs. 200.000" no entra en 282 px: el texto se partía en tres
+   renglones y el precio quedaba cortado en "GS.".
+
+   La fila ya tiene flex-wrap, así que alcanza con pedir un mínimo REAL: si no
+   entra al lado de la cantidad, la fila se parte sola y el botón se queda con
+   el ancho completo, que sí alcanza. No hay que elegir un punto de quiebre a
+   mano — se acomoda al ancho que haya.
+
+   min() en vez de un valor fijo para que en un celular angosto el botón no
+   sea más ancho que la pantalla. */
+[data-tema="2026"] .producto__compra .btn[data-agregar] {
+  min-width: min(330px, 100%);
+  white-space: nowrap;
+}
+
+/* Abajo de 420 px no entra ni a ancho completo. Ahí el precio del botón sobra:
+   la barra fija de abajo ya lo muestra al lado del botón de comprar. */
+@media (max-width: 420px) {
+  [data-tema="2026"] .btn__precio { display: none; }
+}
+
+/* --- La presentación elegida seguía en azul -------------------------------
+   El chip marcado usa --color-secundario, que en el diseño actual es el navy
+   de marca. En este el color estructural es el negro, así que un botón navy
+   en medio de la ficha se leía como de otro sitio. */
+[data-tema="2026"] .variante-chip[aria-pressed="true"] {
+  background: #0A0A0B;
+  border-color: #0A0A0B;
+  color: #fff;
+}
+
+[data-tema="2026"] .producto__nota-foto { text-align: left; }
+
+
+/* ==========================================================================
+   21. EMBAJADORES SIN FOTO
+   ========================================================================== */
+[data-tema="2026"] .embajador__foto--falta {
+  border-radius: var(--radio-lg);
+  background: #141416;
+  border-color: #33302E;
+  color: #6E6E73;
+  font-stretch: 88%;
+  font-weight: 900;
+}
+[data-tema="2026"] .embajador__disciplina {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+
+/* ==========================================================================
+   22. CATÁLOGO  ·  filtros al costado, como el de BPN
+   --------------------------------------------------------------------------
+   En su página de colección hay una columna de filtros a la izquierda con
+   casillas y el número de productos al lado de cada una, arriba dice cuántos
+   resultados hay, y a la derecha un selector de orden. La grilla es de tres
+   columnas, no de cinco: las tarjetas son grandes porque la foto del envase
+   es el argumento.
+
+   Con diez productos, cinco columnas hacían que todo entrara en dos filas y
+   no hubiera nada que recorrer. Con tres, la página se lee.
+   ========================================================================== */
+[data-tema="2026"] .cat-nav { display: none; }   /* mandan los filtros de al lado */
+
+[data-tema="2026"] .catalogo {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: var(--space-7);
+  align-items: start;
+}
+[data-tema="2026"] .catalogo__filtros {
+  display: block;
+  position: sticky;
+  top: 96px;   /* despeja el header pegajoso */
+}
+[data-tema="2026"] .filtros__cab {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--color-tinta);
+}
+[data-tema="2026"] .filtros__titulo {
+  font-size: 0.85rem;
+  font-stretch: 100%;
+  letter-spacing: 0.14em;
+}
+[data-tema="2026"] .filtros__limpiar {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--color-primario-texto);
+  text-decoration: underline;
+  padding: 0;
+}
+
+[data-tema="2026"] .filtro-grupo { padding-block: var(--space-4); border-bottom: 1px solid var(--color-linea); }
+[data-tema="2026"] .filtro-grupo__titulo {
+  font-size: 0.72rem;
+  font-stretch: 100%;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  margin-bottom: var(--space-3);
+}
+[data-tema="2026"] .filtro-grupo__lista { display: grid; gap: 2px; }
+
+[data-tema="2026"] .filtro-opcion {
+  display: grid;
+  grid-template-columns: 16px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+[data-tema="2026"] .filtro-opcion input { width: 16px; height: 16px; accent-color: #0A0A0B; margin: 0; }
+[data-tema="2026"] .filtro-opcion__n { color: var(--color-tinta-suave); font-variant-numeric: tabular-nums; }
+/* Una opción que no deja ningún producto se apaga en vez de desaparecer:
+   así se ve que existe y por qué no se puede marcar. */
+[data-tema="2026"] .filtro-opcion--vacia { opacity: 0.4; cursor: not-allowed; }
+
+[data-tema="2026"] .catalogo__barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-linea);
+}
+[data-tema="2026"] .catalogo__cuenta {
+  font-family: var(--fuente-titulo);
+  font-stretch: 95%;
+  font-weight: 800;
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+[data-tema="2026"] .catalogo__orden select {
+  border: 1px solid var(--color-linea);
+  background: #fff;
+  padding: 9px 12px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Tres columnas, como ellos */
+[data-tema="2026"] [data-grilla-productos].grilla--productos {
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6) var(--space-5);
+}
+
+[data-tema="2026"] .catalogo__vacio { padding-block: var(--space-8); text-align: center; color: var(--color-tinta-suave); }
+[data-tema="2026"] .catalogo__vacio button { font-weight: 800; text-decoration: underline; color: var(--color-primario-texto); }
+
+@media (max-width: 900px) {
+  [data-tema="2026"] .catalogo { grid-template-columns: 1fr; gap: var(--space-5); }
+  [data-tema="2026"] .catalogo__filtros { position: static; }
+  [data-tema="2026"] .filtro-grupo__lista { grid-template-columns: 1fr 1fr; }
+  [data-tema="2026"] [data-grilla-productos].grilla--productos { grid-template-columns: repeat(2, 1fr); }
+}
+
+
+/* ==========================================================================
+   23. DOS DESBORDES EN PANTALLAS INTERMEDIAS
+   --------------------------------------------------------------------------
+   Los dos aparecen entre ~900 y ~1200 px: la ventana a media pantalla, o una
+   tablet apaisada. En pantalla completa no se ven, por eso se me pasaron.
+   ========================================================================== */
+
+/* --- Los títulos de "¿Qué querés lograr?" se salían del mosaico -----------
+   Medido a 965 px: la caja útil del mosaico son 166 px y "RECUPERACIÓN" a
+   28 px ocupa 215. Se salía 49 px, y como el mosaico recorta lo que sobra,
+   la palabra aparecía cortada al ras del borde.
+
+   Tres capas, de la que mejor se ve a la que nunca falla:
+     · el cuerpo baja con el ancho de la ventana (2vw) hasta un piso legible;
+     · si aun así no entra, se corta con guión — el <html> declara lang="es",
+       así que el navegador corta donde corresponde en castellano;
+     · y break-word como último recurso, para que JAMÁS se salga. */
+[data-tema="2026"] .categoria-card__nombre {
+  font-size: clamp(1.15rem, 2vw, 1.75rem);
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+/* --- El botón del newsletter empujaba la página entera --------------------
+   El formulario es una fila de campo + botón y no podía partirse. En este
+   diseño el botón es más ancho (mayúscula, más espaciado entre letras y más
+   relleno), así que a 965 px la fila pedía 395 px donde había 295: 100 px de
+   más, y con eso toda la página tenía barra de desplazamiento horizontal.
+
+   Se deja que la fila se parta y que el campo pueda achicarse. El botón pasa
+   a ancho completo cuando baja, que además queda mejor que un botón corto
+   colgando a la izquierda. */
+[data-tema="2026"] .newsletter__form { flex-wrap: wrap; }
+[data-tema="2026"] .newsletter__form input { min-width: 12rem; }
+[data-tema="2026"] .newsletter__form .btn { flex: 1 0 auto; }
+
+
+/* --- Los cuatro mosaicos no arrancaban parejos ----------------------------
+   La tarjeta alinea su contenido ABAJO (justify-content:flex-end). Con
+   descripciones de dos y de tres renglones, el título de cada mosaico caía a
+   una altura distinta: los cuatro terminaban igual abajo, pero arriba
+   quedaban escalonados.
+
+   Se alinea desde arriba —que es donde el ojo compara— y el "Ver productos"
+   se empuja al fondo con margin-top:auto, así los cuatro enlaces siguen en
+   la misma línea. Queda parejo de los dos lados. */
+[data-tema="2026"] .categoria-card { justify-content: flex-start; }
+[data-tema="2026"] .categoria-card__cta { margin-top: auto; }
+
+
+/* ==========================================================================
+   24. LO QUE QUEDÓ HABLANDO EL IDIOMA VIEJO
+   --------------------------------------------------------------------------
+   El header ya era negro, los titulares ya eran de este sistema, pero tres
+   piezas seguían con el lenguaje del diseño anterior. Juntas hacían que la
+   portada se viera desprolija: negro, naranja, una foto AZUL, un botón VERDE
+   brillante y un cartel de cookies NAVY, todo en la misma pantalla.
+   ========================================================================== */
+
+/* --- 1) Las fotos de portada son azules -----------------------------------
+   No es un filtro del sitio: el tinte azul está QUEMADO adentro del .jpg.
+   Las generó herramientas/generar-portadas.ps1 para el diseño anterior, que
+   era navy, y ahí funcionaban bien.
+
+   Se desaturan por CSS en vez de volver a generarlas: así el diseño actual
+   las sigue viendo azules —que es lo que le corresponde— y no hay que
+   mantener dos juegos de imágenes. Además es justo el tratamiento de BPN:
+   foto oscura y sin color, y el color lo pone solo la marca.
+
+   SI ESTO SE APRUEBA: conviene regenerar los .jpg en gris y sacar el filtro,
+   que sale más barato que desaturar tres fotos grandes en cada carga. */
+[data-tema="2026"] .hero__cover {
+  filter: grayscale(1) contrast(1.06) brightness(0.95);
+}
+
+/* --- 2) El botón de WhatsApp -----------------------------------------------
+   El verde #25D366 es el más saturado de toda la pantalla y le pelea al
+   naranja, que es el color que tiene que ganar: el naranja es "comprar".
+
+   Pasa a negro con el ícono verde. La marca se reconoce por el ícono, no por
+   el fondo, y así el botón deja de gritar por encima del de compra. */
+[data-tema="2026"] .whatsapp-flotante {
+  background: #0A0A0B;
+  border: 1px solid #2E2C2A;
+  border-radius: var(--radio);
+  color: #fff;
+  font-family: var(--fuente-titulo);
+  font-stretch: 95%;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+}
+[data-tema="2026"] .whatsapp-flotante svg { color: #25D366; }
+[data-tema="2026"] .whatsapp-flotante:hover { background: #1C1B1A; transform: none; }
+
+/* --- 3) El cartel de cookies ----------------------------------------------
+   Era una caja navy con esquinas redondas y sombra difusa: el diseño de
+   antes, completo, apoyado sobre el nuevo. */
+[data-tema="2026"] .cookies {
+  background: #0A0A0B;
+  border: 0;
+  border-top: 3px solid var(--color-primario);
+  border-radius: var(--radio-lg);
+  box-shadow: 0 -10px 40px rgba(0,0,0,.5);
+  max-width: none;
+}
+[data-tema="2026"] .cookies__texto strong {
+  font-family: var(--fuente-titulo);
+  font-stretch: 95%;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+[data-tema="2026"] .cookies__texto a { color: var(--color-primario); }
+
+
+/* ==========================================================================
+   25. LOS MOSAICOS DE OBJETIVO, CON FOTO
+   --------------------------------------------------------------------------
+   Eran cuatro rectángulos negros con texto. Diego pidió menos letra y más
+   imagen, y en BPN cada mosaico de categoría lleva una foto de alguien
+   entrenando.
+
+   Las fotos ya estaban en el proyecto: assets/img tenía 88 fotos de Olimp
+   que ninguna página usaba. Se eligieron con
+   herramientas/hoja-de-contactos-fotos.ps1.
+
+   El velo va de transparente arriba a casi negro abajo, no parejo: así la
+   foto se ve donde no hay texto y el texto se lee donde sí lo hay. Un velo
+   uniforme oscurece la foto entera para nada.
+   ========================================================================== */
+[data-tema="2026"] .categoria-card { position: relative; overflow: hidden; }
+
+[data-tema="2026"] .categoria-card__foto {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* El filtro de estas fotos NO se decide acá: lo pisa la sección 28, que
+     les devolvió el color a pedido de marketing. Se deja escrito allá y no
+     acá para que el motivo quede junto a la regla. */
+  transition: transform 400ms ease;
+}
+[data-tema="2026"] .categoria-card:hover .categoria-card__foto { transform: scale(1.04); }
+
+[data-tema="2026"] .categoria-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+                rgba(10,10,11,.20) 0%,
+                rgba(10,10,11,.55) 45%,
+                rgba(10,10,11,.92) 100%);
+}
+/* El texto por encima del velo */
+[data-tema="2026"] .categoria-card > span { position: relative; z-index: 1; }
+
+/* Con foto detrás, el mosaico necesita más alto para respirar */
+[data-tema="2026"] .categoria-card { min-height: 320px; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-tema="2026"] .categoria-card__foto { transition: none; }
+  [data-tema="2026"] .categoria-card:hover .categoria-card__foto { transform: none; }
+}
+
+
+/* ==========================================================================
+   26. MENOS LETRA, MÁS IMAGEN  ·  guías y respaldo científico
+   --------------------------------------------------------------------------
+   Diego lo dijo así: "todo es muy letra acá letra allá". Tenía razón — abajo
+   del hero había tres secciones seguidas que eran texto sobre fondo plano.
+
+   Las fotos salen de las 88 que ya estaban en assets/img sin usar.
+   ========================================================================== */
+
+/* --- Las tarjetas de guía tenían un rectángulo de color por portada ------- */
+[data-tema="2026"] .card-articulo__cover { position: relative; overflow: hidden; }
+[data-tema="2026"] .card-articulo__foto {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.05) brightness(0.85);
+  transition: transform 400ms ease;
+}
+[data-tema="2026"] .card-articulo:hover .card-articulo__foto { transform: scale(1.04); }
+[data-tema="2026"] .card-articulo__tema { position: relative; z-index: 1; }
+
+/* --- "Ciencia real" era un muro de texto sobre negro ----------------------
+   Ahora la sección tiene atrás la foto de la planta de Olimp, que es
+   exactamente de lo que habla. El velo es fuerte porque encima va texto
+   largo; la foto no tiene que competir, tiene que dar contexto. */
+[data-tema="2026"] .ciencia {
+  position: relative;
+  background-image: linear-gradient(rgba(10,10,11,.88), rgba(10,10,11,.94)),
+                    url("../img/olimp-laboratorio-web.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-tema="2026"] .card-articulo__foto { transition: none; }
+  [data-tema="2026"] .card-articulo:hover .card-articulo__foto { transform: none; }
+}
+
+
+/* ==========================================================================
+   27. LA FICHA, MÁS CORTA Y MÁS VISUAL
+   ========================================================================== */
+
+/* --- Las secciones largas, plegadas -------------------------------------
+   Cada una pasa a ser un renglón que se abre. Las cuatro juntas ocupaban
+   más de tres pantallas; ahora son cuatro renglones. Ni una palabra menos:
+   están todas, guardadas. */
+[data-tema="2026"] .seccion--plegada { padding-block: 0; }
+[data-tema="2026"] .seccion--plegada + .seccion--plegada { margin-top: -1px; }
+
+[data-tema="2026"] .prod-plegable {
+  border-top: 1px solid var(--color-linea);
+  border-bottom: 1px solid var(--color-linea);
+}
+[data-tema="2026"] .prod-plegable__titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) 0;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--fuente-titulo);
+  font-stretch: 95%;
+  font-weight: 900;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+[data-tema="2026"] .prod-plegable__titulo::-webkit-details-marker { display: none; }
+/* El signo dice qué va a pasar: + para abrir, − para cerrar. */
+[data-tema="2026"] .prod-plegable__titulo::after {
+  content: "+";
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--color-primario-texto);
+}
+[data-tema="2026"] .prod-plegable[open] .prod-plegable__titulo::after { content: "−"; }
+[data-tema="2026"] .prod-plegable[open] .prod-plegable__titulo { padding-bottom: var(--space-3); }
+[data-tema="2026"] .prod-plegable > *:not(summary) { margin-bottom: var(--space-5); }
+
+/* --- La banda de beneficio, con foto detrás ------------------------------
+   Era una tira de texto sobre color plano entre la compra y el resto.
+   Ahora es una foto a sangre con la frase encima: corta el muro de texto
+   justo donde empezaba. */
+[data-tema="2026"] .prod-banda {
+  background-image: linear-gradient(rgba(10,10,11,.72), rgba(10,10,11,.78)),
+                    url("../img/banda-producto.jpg");
+  background-size: cover;
+  background-position: center 30%;
+  padding-block: var(--space-8);
+}
+[data-tema="2026"] .prod-banda__txt {
+  font-family: var(--fuente-titulo);
+  font-stretch: 90%;
+  font-weight: 900;
+  font-size: clamp(1.3rem, 2.6vw, 2.1rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+
+/* ==========================================================================
+   28. TODAS LAS FOTOS EDITORIALES, EN GRIS  ·  y una regla para no olvidarme
+   --------------------------------------------------------------------------
+   Venía desaturando foto por foto y siempre se me escapaba alguna: la del
+   laboratorio en "Quiénes somos" seguía azul cuando todo el resto ya estaba
+   en gris, y se veía como un parche.
+
+   La regla de este diseño es simple:
+
+     · FOTO EDITORIAL (gente, gimnasio, la planta, ambiente) → en gris.
+       El color lo pone la marca, no la foto. Además estas fotos vienen con
+       el tinte azul del diseño anterior quemado adentro del archivo.
+
+     · PACKSHOT DE PRODUCTO → a todo color, siempre. Ahí el color ES el
+       dato: distingue el sabor, y un envase gris no se reconoce en la
+       góndola.
+
+   Por eso la lista de abajo nombra las editoriales una por una en vez de
+   desaturar todas las imágenes: un `img { filter: grayscale(1) }` general
+   apagaría también los envases.
+   ========================================================================== */
+[data-tema="2026"] .hero__cover,
+[data-tema="2026"] .card-articulo__foto,
+[data-tema="2026"] .sobre-historia__media img,
+[data-tema="2026"] .tira-marca img,
+/* :not(--falta) porque el avatar de iniciales NO es una foto editorial: es
+   una placa de color de marca. Sin esta excepción el grayscale le apagaba el
+   naranja y el azul y volvían a verse como cinco cuadrados grises. */
+[data-tema="2026"] .embajador__foto:not(.embajador__foto--falta) {
+  filter: grayscale(1) contrast(1.05) brightness(0.92);
+}
+
+/* CORRECCIÓN DEL 17/9/2026  ·  LOS MOSAICOS VUELVEN A TENER COLOR
+   --------------------------------------------------------------------------
+   Estaban en la lista de arriba, en gris como el resto de la fotografía, y
+   marketing pidió lo contrario: "que tengan un poco de color las imágenes".
+
+   Tienen razón, y acá el gris costaba más caro que en otras partes: los
+   cuatro mosaicos son lo primero que se ve después del hero, así que la
+   portada entera arrancaba apagada.
+
+   No vuelven a color pleno de entrada: quedan a poco más de la mitad. Es
+   suficiente para que el color se note y poco para que las cuatro fotos
+   —que vienen de sesiones distintas, con virados muy diferentes— sigan
+   leyendose como una fila pareja y no como cuatro postales sueltas. Al pasar
+   el mouse, la que se mira sube a color pleno.
+   -------------------------------------------------------------------------- */
+[data-tema="2026"] .categoria-card__foto {
+  filter: grayscale(0.55) saturate(1.15) contrast(1.05) brightness(0.88);
+  transition: transform 400ms ease, filter 300ms ease;
+}
+[data-tema="2026"] .categoria-card:hover .categoria-card__foto {
+  filter: grayscale(0) saturate(1.12) contrast(1.05) brightness(0.92);
+}
+
+/* El recuadro de la foto del laboratorio tenía el navy de fondo asomando
+   mientras carga: sobre este diseño se veía como un bloque azul. */
+[data-tema="2026"] .sobre-historia__media {
+  background: #0A0A0B;
+  border-radius: var(--radio-lg);
+}
+
+
+/* ==========================================================================
+   29. LA TIRA DE MARCA  ·  tres fotos sin una palabra
+   --------------------------------------------------------------------------
+   "Quiénes somos" eran cinco párrafos, una fila de cifras, una banda de
+   texto y seis tarjetas de texto. Esta tira parte la página al medio con
+   imagen pura, que es lo que pidió Diego.
+   ========================================================================== */
+[data-tema="2026"] .tira-marca {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: #0A0A0B;
+}
+[data-tema="2026"] .tira-marca img {
+  display: block;
+  width: 100%;
+  height: clamp(220px, 26vw, 380px);
+  object-fit: cover;
+}
+@media (max-width: 700px) {
+  /* En celular, tres fotos en fila quedan en tiras finas: mejor dos y
+     que la tercera se vaya. */
+  [data-tema="2026"] .tira-marca { grid-template-columns: repeat(2, 1fr); }
+  [data-tema="2026"] .tira-marca img:last-child { display: none; }
+}
+
+
+/* ==========================================================================
+   30. LA BANDA "SIN ATAJOS", CON FOTO
+   --------------------------------------------------------------------------
+   Estaba en la portada, en la ficha de producto y en "Quiénes somos": tres
+   lugares donde era un bloque de texto centrado sobre negro plano. Con la
+   foto detrás deja de leerse como "más texto" y pasa a ser un respiro.
+   ========================================================================== */
+[data-tema="2026"] .banda-sinatajos {
+  background-image: linear-gradient(rgba(10,10,11,.80), rgba(10,10,11,.88)),
+                    url("../img/banda-producto.jpg");
+  background-size: cover;
+  background-position: center 35%;
+}
+
+/* Excepción a la regla de la sección 28: esta foto lleva el envase real en
+   la mano. Es un packshot en contexto, no una foto de ambiente, así que va
+   a color como el resto de los productos del sitio. */
+[data-tema="2026"] .sobre-historia__media--color img { filter: none; }
+
+
+/* ==========================================================================
+   31. "CIENCIA REAL" CON FOTOS DE VERDAD
+   --------------------------------------------------------------------------
+   Los tres pilares tenían un ícono gris cada uno: un frasquito, un sello
+   "made in Europe" y el logo SHIME. Dibujitos sobre negro.
+
+   Ahora llevan foto del laboratorio y de la planta de Olimp, sacadas de la
+   presentación oficial "Business Presentation 2025 EN OSN Quality" que mandó
+   la propia Olimp. Son sus instalaciones reales, no banco de imágenes.
+
+   El ícono no se borra: se corre arriba de la foto, chico y en blanco, así
+   sigue marcando de qué habla cada pilar.
+   ========================================================================== */
+[data-tema="2026"] .pilar {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+}
+[data-tema="2026"] .pilar__foto {
+  display: block;
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.05) brightness(0.8);
+}
+/* El ícono pasa a ser una marca chica sobre la foto */
+[data-tema="2026"] .pilar__icono {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 34px;
+  height: 34px;
+  opacity: 1;
+}
+[data-tema="2026"] .pilar__titulo { padding: var(--space-4) var(--space-4) 0; }
+[data-tema="2026"] .pilar__texto  { padding: 0 var(--space-4) var(--space-5); }
+
+
+/* ==========================================================================
+   32. VIDRIO  ·  los paneles translúcidos
+   --------------------------------------------------------------------------
+   Pedido textual: "les gusta el formato de las cosas tipo glass de iOS, así
+   medio circulares. eso es en general".
+
+   DÓNDE SÍ Y DÓNDE NO
+   -------------------
+   backdrop-filter desenfoca lo que hay DETRÁS. Si detrás hay blanco liso, el
+   panel de vidrio es un panel blanco: se paga el costo de pintado y no se ve
+   nada. Así que el vidrio va donde hay algo que desenfocar:
+
+     SÍ  · el header, que flota sobre el hero
+         · el texto de los mosaicos de objetivo, sobre la foto
+         · el buscador, el carrito, el menú de celular y el aviso de cookies,
+           que se abren encima de la página
+         · las etiquetas sobre los packshots
+
+     NO  · en medio de una sección blanca. Ahí lo que da la sensación de
+           vidrio es el radio grande y la sombra abierta, no el desenfoque.
+
+   Y una nota de rendimiento: backdrop-filter es de las propiedades más caras
+   que hay. Por eso está en un puñado de elementos fijos y no en las diez
+   tarjetas de la grilla, que además se desplazan.
+   ========================================================================== */
+
+/* Los paneles que se abren encima de la página. */
+[data-tema="2026"] .drawer__panel,
+[data-tema="2026"] .menu-movil__panel,
+[data-tema="2026"] .buscador__panel {
+  background: var(--vidrio-claro);
+  -webkit-backdrop-filter: var(--vidrio-desenfoque);
+  backdrop-filter: var(--vidrio-desenfoque);
+  border: 1px solid var(--vidrio-borde-claro);
+  box-shadow: var(--sombra-lg);
+}
+
+/* Las esquinas. Los paneles que entran desde un borde redondean SOLO el lado
+   que queda a la vista: redondear los cuatro deja dos esquinas flotando
+   fuera de la pantalla y se lee como un error de maquetado. */
+[data-tema="2026"] .drawer__panel      { border-radius: var(--radio-lg) 0 0 var(--radio-lg); }
+[data-tema="2026"] .menu-movil__panel  { border-radius: 0 var(--radio-lg) var(--radio-lg) 0; }
+[data-tema="2026"] .buscador__panel    { border-radius: 0 0 var(--radio-lg) var(--radio-lg); }
+
+/* El aviso de cookies lleva VIDRIO OSCURO y no claro, porque su texto es
+   blanco. Con el vidrio claro quedaba blanco sobre blanco: ilegible. */
+[data-tema="2026"] .cookies {
+  background: var(--vidrio-oscuro-fuerte);
+  -webkit-backdrop-filter: var(--vidrio-desenfoque);
+  backdrop-filter: var(--vidrio-desenfoque);
+  border: 1px solid var(--vidrio-borde);
+  border-top: 3px solid var(--color-primario);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-lg);
+}
+
+/* El velo de atrás también desenfoca: es lo que hace que el panel se lea
+   como vidrio y no como un recuadro claro apoyado sobre la página. */
+[data-tema="2026"] .drawer__overlay,
+[data-tema="2026"] .menu-movil__overlay,
+[data-tema="2026"] .buscador__overlay {
+  background: rgba(10, 10, 11, .45);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* El campo del buscador: pastilla, como en iOS. */
+[data-tema="2026"] .buscador__inner {
+  border-radius: var(--radio-pill);
+  background: rgba(255, 255, 255, .70);
+  border: 1px solid var(--vidrio-borde-claro);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8);
+}
+[data-tema="2026"] .buscador__item { border-radius: var(--radio); }
+[data-tema="2026"] .buscador__item:hover { background: var(--vidrio-tinte-suave); }
+
+/* El botón secundario deja de ser un rectángulo con borde y pasa a ser una
+   pastilla de vidrio. Es el que aparece sobre el hero, o sea sobre foto. */
+[data-tema="2026"] .btn--secundario,
+[data-tema="2026"] .btn--fantasma {
+  border-radius: var(--radio-pill);
+  background: rgba(255, 255, 255, .14);
+  -webkit-backdrop-filter: var(--vidrio-desenfoque);
+  backdrop-filter: var(--vidrio-desenfoque);
+  border: 1px solid var(--vidrio-borde);
+  color: #fff;
+}
+[data-tema="2026"] .btn--secundario:hover,
+[data-tema="2026"] .btn--fantasma:hover {
+  background: rgba(255, 255, 255, .24);
+  border-color: rgba(255, 255, 255, .34);
+}
+
+/* El botón principal también redondea, pero sigue sólido: es la acción de
+   comprar y tiene que verse firme, no translúcida. */
+[data-tema="2026"] .btn { border-radius: var(--radio-pill); }
+
+/* Las flechas del carrusel: círculos de vidrio. */
+[data-tema="2026"] .hero__flecha {
+  width: 46px;
+  height: 46px;
+  background: rgba(255, 255, 255, .16);
+  -webkit-backdrop-filter: var(--vidrio-desenfoque);
+  backdrop-filter: var(--vidrio-desenfoque);
+  border: 1px solid var(--vidrio-borde);
+}
+
+/* Las etiquetas ("Nuevo", "Lanzamiento") van encima del packshot: ahí sí hay
+   algo detrás y el vidrio se ve. */
+[data-tema="2026"] .tag,
+[data-tema="2026"] .etiqueta {
+  -webkit-backdrop-filter: var(--vidrio-desenfoque);
+  backdrop-filter: var(--vidrio-desenfoque);
+}
+
+
+/* ==========================================================================
+   33. EL TEXTO DE LOS MOSAICOS, SOBRE UNA PLACA DE VIDRIO
+   --------------------------------------------------------------------------
+   Esta es la pieza que copia directamente las placas de Instagram de
+   Vitalica: el texto no va suelto sobre la foto sino apoyado en un panel
+   translúcido de esquinas muy redondeadas.
+
+   Y además resuelve un problema viejo. El velo negro hacía legible el texto
+   oscureciendo la foto ENTERA en su mitad inferior. Con la placa solo se
+   oscurece lo que está detrás del texto: la foto se ve más, que es justo lo
+   que se buscaba al devolverles el color.
+   ========================================================================== */
+[data-tema="2026"] .categoria-card::after {
+  background: linear-gradient(180deg,
+                rgba(10, 10, 11, .10) 0%,
+                rgba(10, 10, 11, .22) 50%,
+                rgba(10, 10, 11, .58) 100%);
+}
+[data-tema="2026"] .categoria-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--space-4);
+}
+[data-tema="2026"] .categoria-card__texto {
+  /* Columna, no `block`.
+     La tarjeta era un flex en columna con gap y los tres <span> eran hijos
+     suyos, así que se apilaban solos. Al meterlos adentro de la placa
+     pasaron a ser hijos de un `display: block` y volvieron a ser inline:
+     el título, la descripción y el "Ver productos" quedaron pegados en un
+     solo renglón. La placa tiene que repetir el flex que se perdió. */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  position: relative;
+  z-index: 1;
+  padding: var(--space-4);
+  border-radius: var(--radio-lg);
+  background: var(--vidrio-oscuro);
+  -webkit-backdrop-filter: var(--vidrio-desenfoque);
+  backdrop-filter: var(--vidrio-desenfoque);
+  border: 1px solid var(--vidrio-borde);
+  box-shadow: var(--sombra);
+}
+
+
+/* ==========================================================================
+   34. EL HEADER, QUE PASA A COLOR AL DESLIZAR
+   --------------------------------------------------------------------------
+   Pedido: "que cuando deslizas el navbar pase a color, o algo así".
+
+   CÓMO QUEDA
+     · Arriba de todo: transparente. El hero se ve entero, de punta a punta,
+       y el menú parece apoyado encima de la foto.
+     · Apenas se baja: se convierte en una barra de vidrio teñida con el AZUL
+       DEL MANUAL DE MARCA (Pantone 2145 C / #0b55a3) y se le enciende abajo
+       una línea que va del naranja al azul.
+
+   POR QUÉ EL AZUL Y NO EL NARANJA
+   -------------------------------
+   Porque el naranja es el color de ACCIÓN: los botones de comprar y de pedir
+   por WhatsApp. Si la barra entera se pone naranja, el botón "Hacé tu
+   pedido" desaparece adentro de su propio color. El azul es color de marca
+   pero no de acción, así que puede ocupar superficie sin competirle a nada.
+   Y de paso resuelve el otro pedido, el de usar el azul del manual.
+
+   La clase la pone assets/js/main.js al pasar los 40px de desplazamiento.
+   ========================================================================== */
+/* ARRANCA NEGRO, NO TRANSPARENTE  ·  y esto es una corrección
+   --------------------------------------------------------------------------
+   El primer intento dejó la barra transparente arriba de todo, para que se
+   viera el hero completo. Se rompió al mirarlo: la barra NO está encima del
+   hero, está arriba de él, en el flujo normal de la página. O sea que detrás
+   no hay foto: hay fondo blanco. Y como el logo y el menú son blancos sobre
+   negro, desaparecieron los dos.
+
+   Para que la transparencia funcionara habría que sacar el header del flujo
+   y meter el hero por debajo. Es una reforma estructural que toca las ocho
+   páginas del sitio, y no es lo que se pidió.
+
+   Lo que se pidió —que la barra cambie de color al deslizar— se cumple igual
+   y se sigue notando: arranca en el negro de siempre y al bajar pasa a
+   vidrio con el azul del manual y la línea de marca abajo. */
+[data-tema="2026"] .header-sitio {
+  background: #0A0A0B;
+  border-bottom: 1px solid transparent;
+  transition: background 260ms ease, border-color 260ms ease;
+}
+
+[data-tema="2026"] .header-sitio--desplazado,
+[data-tema="2026"] .header-sitio--siempre-solido {
+  background:
+    linear-gradient(var(--vidrio-tinte), var(--vidrio-tinte)),
+    var(--vidrio-oscuro-fuerte);
+  -webkit-backdrop-filter: var(--vidrio-desenfoque);
+  backdrop-filter: var(--vidrio-desenfoque);
+  border-bottom-color: transparent;
+  box-shadow: var(--sombra);
+}
+
+/* La línea de marca. Va como pseudo-elemento y no como border para poder
+   ponerle el degradado y para que aparezca con su propia transición. */
+[data-tema="2026"] .header-sitio::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+                var(--color-primario) 0%,
+                var(--color-primario) 35%,
+                #0b55a3 100%);
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+[data-tema="2026"] .header-sitio--desplazado::after,
+[data-tema="2026"] .header-sitio--siempre-solido::after { opacity: 1; }
+
+/* Adentro de una página que NO empieza con hero (catálogo, ficha, contacto)
+   el header transparente se comería el texto de la cabecera. En esas la
+   barra arranca ya pintada: la clase la pone main.js cuando no hay hero. */
+
+
+/* ==========================================================================
+   35. LOS DOS LOGOS  ·  Vitalica y Olimp
+   --------------------------------------------------------------------------
+   Pedido de marketing: "me pidieron que la web siga teniendo estos 2 logos".
+
+   Van juntos en el header, separados por una línea fina, porque juntos dicen
+   algo que ninguno dice solo: que Vitalica ES el representante de Olimp en
+   Paraguay. Esa es la credencial del negocio y hasta ahora solo aparecía
+   escrita en el hero y en el pie.
+
+   El de Olimp va un poco más chico a propósito: la casa es Vitalica.
+   ========================================================================== */
+[data-tema="2026"] .header-sitio__marcas {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+[data-tema="2026"] .header-sitio__olimp {
+  display: flex;
+  align-items: center;
+  padding-left: var(--space-3);
+  border-left: 1px solid rgba(255, 255, 255, .22);
+}
+[data-tema="2026"] .header-sitio__olimp img {
+  height: 26px;
+  width: auto;
+  /* El archivo de Olimp es oscuro sobre transparente; sobre el header negro
+     hay que invertirlo, igual que el de Vitalica. */
+  filter: brightness(0) invert(1);
+  opacity: .88;
+}
+[data-tema="2026"] .header-sitio__olimp:hover img { opacity: 1; }
+
+/* En celular el de Olimp se achica, pero NO se esconde: marketing pidió los
+   dos logos y entran (la cuenta está en styles.css, junto a la misma regla).
+   Acá solo va el ajuste fino de este diseño. */
+@media (max-width: 980px) {
+  [data-tema="2026"] .header-sitio__olimp img { height: 20px; }
+  [data-tema="2026"] .header-sitio__logo img { height: 38px; }
+}
+
+
+/* ==========================================================================
+   36. CELULAR  ·  DOS PRODUCTOS POR FILA
+   --------------------------------------------------------------------------
+   Pedido: "formato celular ver los tamaños de las grillas del producto en la
+   presentación 2 productos por cada grilla".
+
+   Hoy la grilla es `auto-fill, minmax(240px, 1fr)`: en un teléfono de 390px
+   no entran dos columnas de 240 y cae a una sola. Un producto por pantalla
+   obliga a desplazarse diez veces para ver el catálogo entero y hace que la
+   tienda parezca más chica de lo que es.
+
+   Con dos columnas se ven cuatro productos de un vistazo. Es como muestra el
+   catálogo cualquier tienda en el teléfono, BPN incluido.
+   ========================================================================== */
+@media (max-width: 760px) {
+  [data-tema="2026"] .grilla--productos {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+
+  /* Con la tarjeta a la mitad de ancho, el texto de adentro tiene que bajar
+     o se parte en cuatro renglones. */
+  [data-tema="2026"] .card-producto__nombre {
+    font-size: 0.86rem;
+    line-height: 1.25;
+  }
+  [data-tema="2026"] .card-producto__precio    { font-size: 0.92rem; }
+  [data-tema="2026"] .card-producto__variantes { font-size: 0.68rem; }
+  [data-tema="2026"] .card-producto__media     { padding: var(--space-2); }
+
+  /* El botón de la tarjeta, más bajo y con la letra más chica. */
+  [data-tema="2026"] .card-producto .btn {
+    padding: 10px 12px;
+    font-size: 0.72rem;
+  }
+}
+
+/* En pantallas muy angostas (380px y menos) dos columnas siguen entrando,
+   pero el aire entre ellas y contra los bordes tiene que achicarse más. */
+@media (max-width: 380px) {
+  [data-tema="2026"] .grilla--productos { gap: var(--space-2); }
+  [data-tema="2026"] .contenedor { padding-inline: var(--space-3); }
+}
+
+
+/* ==========================================================================
+   37. WHATSAPP, EN SU VERDE
+   --------------------------------------------------------------------------
+   CAMBIO DE CRITERIO, PEDIDO POR MARKETING: "cambiar color por el color
+   verde del whatsapp".
+
+   Más arriba, en la sección 14, este botón se había pasado a negro con el
+   ícono verde, con este argumento: el #25D366 es el color más saturado de la
+   pantalla y le pelea al naranja, que es el color de "comprar".
+
+   El argumento sigue siendo cierto, pero la decisión es de marketing y hay
+   una razón de negocio que pesa más: en Paraguay una parte grande de las
+   ventas se cierra por WhatsApp, y el botón verde se reconoce sin leerlo.
+   Un botón negro con un ícono chiquito no.
+
+   LO QUE SE HACE PARA QUE LA JERARQUÍA NO SE PIERDA
+   ------------------------------------------------
+   El verde entra, pero el naranja no lo pierde: "Agregar al carrito" sigue
+   siendo el botón grande, primero y sólido. El de WhatsApp va debajo, del
+   mismo ancho pero más bajo. Compiten en color, no en tamaño ni en orden.
+   ========================================================================== */
+[data-tema="2026"] .whatsapp-flotante {
+  background: #25D366;
+  border: 1px solid #1FBA57;
+  border-radius: var(--radio-pill);
+  color: #062E16;
+  font-family: var(--fuente-titulo);
+  font-stretch: 95%;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 10px 28px -8px rgba(37, 211, 102, .55);
+}
+[data-tema="2026"] .whatsapp-flotante svg { color: #062E16; }
+[data-tema="2026"] .whatsapp-flotante:hover {
+  background: #1FBA57;
+  transform: translateY(-2px);
+}
+
+/* El CTA de la ficha: mismo verde, ancho completo, debajo del de compra. */
+[data-tema="2026"] .btn--whatsapp,
+[data-tema="2026"] .producto__whatsapp {
+  background: #25D366;
+  border: 1px solid #1FBA57;
+  color: #062E16;
+}
+[data-tema="2026"] .btn--whatsapp:hover,
+[data-tema="2026"] .producto__whatsapp:hover {
+  background: #1FBA57;
+  border-color: #1FBA57;
+  color: #062E16;
+}
+[data-tema="2026"] .producto__whatsapp {
+  display: flex;
+  width: 100%;
+}
+
+
+/* ==========================================================================
+   38. "MÁS INFORMACIÓN", CON LA FLECHA PARA ABAJO
+   --------------------------------------------------------------------------
+   Debajo del botón de compra la ficha sigue con cinco secciones plegadas,
+   pero desde arriba no se ve que haya nada más: la página parece terminar
+   en el botón. Este es el renglón que dice que sigue.
+
+   Y los plegables cambian el "+ / −" por una flecha que gira. Un signo más
+   puede querer decir cualquier cosa; una flecha para abajo que se da vuelta
+   al abrirse dice exactamente qué va a pasar y en qué estado está.
+   ========================================================================== */
+[data-tema="2026"] .producto__mas-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: var(--space-3);
+  padding: 12px;
+  border: 0;
+  border-radius: var(--radio-pill);
+  background: transparent;
+  color: var(--color-tinta-suave);
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color var(--transicion), background var(--transicion);
+}
+[data-tema="2026"] .producto__mas-info:hover {
+  color: var(--color-tinta);
+  background: var(--color-fondo-suave);
+}
+/* La flecha late despacio: es lo que hace que se lea como "seguí bajando"
+   y no como un ícono decorativo más. */
+[data-tema="2026"] .producto__mas-info svg {
+  animation: vitalica-flecha-abajo 2.4s ease-in-out infinite;
+}
+@keyframes vitalica-flecha-abajo {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-tema="2026"] .producto__mas-info svg { animation: none; }
+}
+
+/* El marcador de los plegables: flecha en vez de + / − */
+[data-tema="2026"] .prod-plegable__titulo::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform 200ms ease;
+}
+[data-tema="2026"] .prod-plegable[open] .prod-plegable__titulo::after {
+  content: "";
+  transform: rotate(225deg) translate(-2px, -2px);
+}
+
+
+/* ==========================================================================
+   39. LA GALERÍA DE LA FICHA
+   --------------------------------------------------------------------------
+   La tira de miniaturas debajo de la foto grande. Existía desde antes pero
+   nunca aparecía: buscaba archivos con nombres inventados (-2, -3) que no
+   estaban en el proyecto. Ahora las fotos existen de verdad y están
+   indexadas por código de barras (ver VITALICA_GALERIA en data.js).
+
+   Las miniaturas van redondeadas y sin el gris de fondo: los packshots
+   vienen sobre blanco, y un cuadrado gris detrás de un envase recortado
+   sobre blanco se ve como un parche.
+   ========================================================================== */
+[data-tema="2026"] .producto__galeria {
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: var(--space-2);
+}
+[data-tema="2026"] .producto__miniatura {
+  padding: 6px;
+  background: #fff;
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio);
+  transition: border-color var(--transicion), transform var(--transicion);
+}
+[data-tema="2026"] .producto__miniatura img { mix-blend-mode: normal; }
+[data-tema="2026"] .producto__miniatura:hover {
+  border-color: var(--color-tinta-suave);
+  transform: translateY(-2px);
+}
+[data-tema="2026"] .producto__miniatura.es-activa {
+  border-color: var(--color-primario);
+  border-width: 2px;
+  background: #fff;
+}
+
+/* En celular la tira se vuelve horizontal y se desliza con el dedo: cuatro
+   miniaturas apiladas en dos filas le roban la pantalla a la foto grande,
+   que es lo que la persona vino a ver. */
+@media (max-width: 760px) {
+  [data-tema="2026"] .producto__galeria {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+  [data-tema="2026"] .producto__miniatura {
+    flex: 0 0 68px;
+    scroll-snap-align: start;
+  }
+}
+
+
+/* ==========================================================================
+   40. EMBAJADORES Y NUTRICIONISTAS  ·  lo que cambia en este diseño
+   --------------------------------------------------------------------------
+   La maqueta de las dos columnas vive en styles.css, porque home.js emite
+   ese HTML en los dos diseños. Acá solo va lo propio del 2026: la línea
+   divisoria y los títulos en mayúscula.
+   ========================================================================== */
+
+@media (min-width: 761px) {
+  [data-tema="2026"] .embajadores__columna:first-child {
+    padding-right: var(--space-7);
+    border-right: 1px solid var(--color-linea);
+  }
+}
+[data-tema="2026"] .embajadores__columna-titulo {
+  text-transform: uppercase;
+  font-weight: 900;
+  font-stretch: 90%;
+  letter-spacing: -0.01em;
+}
+
+
+/* ==========================================================================
+   41. EMBAJADORES  ·  QUE NO PAREZCA ROTO MIENTRAS FALTAN LAS FOTOS
+   --------------------------------------------------------------------------
+   Lo que se veía hasta recién: cinco cuadrados negros con dos letras. Se leía
+   como un error de carga, no como "falta esta foto". Y como ninguno de los
+   cinco tiene foto, la sección entera parecía rota.
+
+   No hay fotos de los embajadores en ninguna parte: las busqué en el Drive
+   (17/9/2026) y no están. Así que la sección tiene que verse bien SIN ellas,
+   no "esperando" a que lleguen.
+
+   QUÉ CAMBIA
+     · El retrato pasa a ser un círculo, que es el lenguaje del resto del
+       diseño y además es como se muestra a una persona.
+     · Sin foto, el círculo lleva las iniciales sobre el naranja de marca, en
+       degradado. Se ve como un avatar hecho a propósito —el mismo recurso
+       que usan WhatsApp o Gmail cuando no hay foto— y no como un hueco.
+     · Cuando llegue la foto, entra en el mismo círculo y no hay que tocar
+       nada más: las dos reglas comparten medidas.
+   ========================================================================== */
+[data-tema="2026"] .embajador__foto {
+  border-radius: 50%;
+  aspect-ratio: 1;
+  max-width: 130px;
+  margin-inline: auto;
+}
+/* Dentro de una columna la grilla se aprieta: son la mitad del ancho. */
+[data-tema="2026"] .embajadores__columna .embajadores__grid {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-4);
+}
+
+/* El avatar con iniciales. Deja de ser un cuadrado negro con borde cortado. */
+[data-tema="2026"] .embajador__foto--falta {
+  background: linear-gradient(145deg, var(--color-primario), var(--color-primario-oscuro));
+  border: 0;
+  color: #0A0A0B;
+  font-weight: 900;
+  font-stretch: 88%;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  letter-spacing: 0.02em;
+  box-shadow: var(--sombra);
+}
+
+/* Una de cada dos en azul, para que la fila no sea una hilera de naranjas
+   iguales. El azul es el del manual de marca. */
+[data-tema="2026"] .embajador:nth-child(even) .embajador__foto--falta {
+  background: linear-gradient(145deg, #0B55A3, #083F7A);
+  color: #fff;
+}
+
+[data-tema="2026"] .embajador__nombre {
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  font-weight: 900;
+  font-stretch: 90%;
+}
+[data-tema="2026"] .embajador__ig {
+  color: var(--color-tinta-suave);
+  font-weight: 600;
+}
+[data-tema="2026"] .embajador__ig:hover { color: var(--color-primario-texto); }
+
+
+/* ==========================================================================
+   42. UN SOLO ACORDEÓN PARA TODA LA FICHA
+   --------------------------------------------------------------------------
+   En la ficha de producto convivían CUATRO acordeones distintos, uno debajo
+   del otro. Medidos en pantalla de 1425 px:
+
+     .prod-plegable   712 px de ancho · MAYÚSCULA · peso 900 · flecha derecha
+     .acordeon        820 px          · minúscula · peso 700 · flecha derecha
+     .guia__seccion   770 px          · minúscula · peso 700 · flecha IZQUIERDA
+                                        y además dentro de una caja con borde
+     .faq-item        712 px          · minúscula · peso 700 · sin separador
+
+   Tres anchos, tres bordes izquierdos distintos y una flecha que cambiaba de
+   lado a mitad de página. Bajando, cada bloque parecía de otra web.
+
+   Ninguno estaba "mal": cada uno se hizo en su momento para su sección. El
+   problema aparece al ponerlos juntos, y se ve recién cuando se mira la
+   página entera de corrido.
+
+   LO QUE SE UNIFICA
+     · Un solo ancho (--ancho-plegables) para los cuatro contenedores.
+     · Un solo encabezado: mayúscula, peso 900, mismo alto.
+     · Una sola flecha, siempre a la derecha, que gira al abrirse.
+     · Una sola línea divisoria arriba y abajo. Sin cajas ni bordes sueltos.
+
+   La excepción a propósito son las preguntas frecuentes: van ANIDADAS dentro
+   de un plegable, así que son un segundo nivel. Se dejan más chicas y con
+   sangría, que es lo que hace ver que dependen de la de arriba.
+   ========================================================================== */
+
+:root[data-tema="2026"] {
+  --ancho-plegables: 820px;
+}
+
+/* --- 1) El mismo ancho para todos -------------------------------------- */
+[data-tema="2026"] .prod-sobre,
+[data-tema="2026"] .prod-faq,
+[data-tema="2026"] .ficha-detalle,
+[data-tema="2026"] .guia,
+[data-tema="2026"] .seccion--plegada > .contenedor {
+  max-width: var(--ancho-plegables);
+  margin-inline: auto;
+}
+
+/* .ficha-detalle es el único de los cuatro que NO es también .contenedor, así
+   que no traía el margen interior de 24 px y quedaba 48 px más ancho que los
+   otros tres: los títulos empezaban desalineados por esa diferencia. */
+[data-tema="2026"] .ficha-detalle { padding-inline: var(--space-5); }
+
+/* --- 2) El mismo encabezado -------------------------------------------- */
+[data-tema="2026"] .prod-plegable__titulo,
+[data-tema="2026"] .acordeon__cabecera,
+[data-tema="2026"] .guia__resumen {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) 0;
+  min-height: 44px;              /* objetivo táctil */
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--fuente-titulo);
+  font-stretch: 95%;
+  font-weight: 900;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-tinta);
+  background: transparent;
+}
+[data-tema="2026"] .prod-plegable__titulo::-webkit-details-marker,
+[data-tema="2026"] .acordeon__cabecera::-webkit-details-marker,
+[data-tema="2026"] .guia__resumen::-webkit-details-marker { display: none; }
+
+[data-tema="2026"] .guia__resumen:hover { background: transparent; }
+
+/* --- 3) Las mismas líneas ---------------------------------------------- */
+[data-tema="2026"] .prod-plegable,
+[data-tema="2026"] .acordeon,
+[data-tema="2026"] .guia__seccion {
+  border: 0;
+  border-bottom: 1px solid var(--color-linea);
+  border-radius: 0;
+  background: transparent;
+  margin-bottom: 0;
+  overflow: visible;
+}
+[data-tema="2026"] .prod-plegable:first-of-type,
+[data-tema="2026"] .acordeon:first-of-type,
+[data-tema="2026"] .guia__seccion:first-of-type {
+  border-top: 1px solid var(--color-linea);
+}
+
+/* --- 4) Una sola flecha, siempre a la derecha -------------------------- */
+/* La de .guia__resumen vivía en ::before, o sea a la IZQUIERDA del texto.
+   Se apaga ahí y se vuelve a dibujar en ::after, como las demás. */
+[data-tema="2026"] .guia__resumen::before { content: none; }
+
+/* La de .acordeon es un <svg> en el HTML. Se esconde en vez de borrarlo:
+   el marcado lo emite components.js para los dos diseños. */
+[data-tema="2026"] .acordeon__flecha { display: none; }
+
+[data-tema="2026"] .prod-plegable__titulo::after,
+[data-tema="2026"] .acordeon__cabecera::after,
+[data-tema="2026"] .guia__resumen::after {
+  content: "";
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--color-primario);
+  border-bottom: 2px solid var(--color-primario);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform 200ms ease;
+}
+[data-tema="2026"] .prod-plegable[open] .prod-plegable__titulo::after,
+[data-tema="2026"] .acordeon[open] .acordeon__cabecera::after,
+[data-tema="2026"] .guia__seccion[open] .guia__resumen::after {
+  transform: rotate(225deg) translate(-2px, -2px);
+}
+
+/* --- 5) El cuerpo, con el mismo aire ----------------------------------- */
+[data-tema="2026"] .guia__cuerpo,
+[data-tema="2026"] .acordeon__cuerpo {
+  padding: 0 0 var(--space-5);
+}
+[data-tema="2026"] .prod-plegable[open] .prod-plegable__titulo { padding-bottom: var(--space-3); }
+
+/* --- 6) Las preguntas frecuentes son el segundo nivel ------------------ */
+/* Van adentro de un plegable, así que NO se ven como sus hermanas: más
+   chicas, con sangría y una línea más clara. Eso es lo que hace entender
+   que cuelgan de la de arriba en vez de competir con ella. */
+[data-tema="2026"] .prod-plegable .faq-item {
+  border-bottom: 1px solid var(--color-fondo-suave);
+  padding-left: var(--space-4);
+}
+[data-tema="2026"] .prod-plegable .faq-item:last-of-type { border-bottom: 0; }
+[data-tema="2026"] .prod-plegable .faq-item > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--fuente-texto);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  text-transform: none;
+  letter-spacing: 0;
+}
+[data-tema="2026"] .prod-plegable .faq-item > summary::-webkit-details-marker { display: none; }
+[data-tema="2026"] .prod-plegable .faq-item > summary::after {
+  content: "";
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid var(--color-tinta-suave);
+  border-bottom: 2px solid var(--color-tinta-suave);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform 200ms ease;
+}
+[data-tema="2026"] .prod-plegable .faq-item[open] > summary::after {
+  transform: rotate(225deg) translate(-2px, -2px);
+}
+
+/* --- Dos remates de la unificación ---------------------------------------
+   1) "Ficha técnica" salía en azul y las demás en negro. Venía de una regla
+      vieja de producto-ficha.css pensada para cuando el acordeón era la
+      única pieza de la página. Ahora que son una lista, todos van del mismo
+      color: el que cambia de color es el que está abierto, y eso ya lo dice
+      la flecha.
+
+   2) Las secciones plegadas alternaban fondo gris y blanco, porque cada una
+      venía de una sección distinta de la página y una de cada dos era
+      `.seccion--suave`. Puestas en fila se veía como un rayado sin motivo.
+      Van todas sobre el mismo fondo, que es lo que las hace leer como una
+      sola lista y no como cuatro bloques pegados.
+   ------------------------------------------------------------------------ */
+[data-tema="2026"] .acordeon__cabecera,
+[data-tema="2026"] .acordeon__cabecera:hover,
+[data-tema="2026"] .acordeon[open] .acordeon__cabecera {
+  color: var(--color-tinta);
+}
+[data-tema="2026"] .prod-plegable__titulo:hover,
+[data-tema="2026"] .guia__resumen:hover {
+  color: var(--color-primario-texto);
+}
+
+[data-tema="2026"] .seccion--plegada,
+[data-tema="2026"] .seccion--plegada.seccion--suave {
+  background: transparent;
+}

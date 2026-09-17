@@ -1,0 +1,206 @@
+/* ============================================================================
+   VITALICA — Galería de producto + ficha técnica en acordeones
+   ----------------------------------------------------------------------------
+   Hoja aparte para no tocar styles.css. Usa los mismos tokens de marca
+   (naranja + navy + grises) que ya están definidos en :root.
+
+   Se carga DESPUÉS de styles.css, en producto.html.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1) GALERÍA DE FOTOS
+   La columna izquierda de la página de producto pasa a ser
+   .producto__col-media, que contiene la foto grande + la tira de miniaturas.
+   ========================================================================== */
+
+.producto__col-media {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
+.producto__galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: var(--space-3);
+}
+
+.producto__miniatura {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  background: var(--color-fondo-suave);
+  border: 2px solid transparent;
+  border-radius: var(--radio);
+  cursor: pointer;
+  transition: border-color var(--transicion), background var(--transicion);
+}
+
+.producto__miniatura img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+.producto__miniatura:hover { border-color: var(--color-linea); }
+
+.producto__miniatura.es-activa {
+  border-color: var(--color-secundario);
+  background: var(--color-secundario-tinte);
+}
+
+.producto__miniatura:focus-visible {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .producto__miniatura { transition: none; }
+}
+
+
+/* ==========================================================================
+   2) FICHA TÉCNICA EN ACORDEONES
+   ========================================================================== */
+
+.ficha-detalle {
+  max-width: 820px;
+  margin-inline: auto;
+}
+
+/* --- Acordeón (usa <details>/<summary>: accesible y sin JS extra) -------- */
+
+.acordeon { border-bottom: 1px solid var(--color-linea); }
+.acordeon:first-of-type { border-top: 1px solid var(--color-linea); }
+
+.acordeon__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  min-height: 44px;                 /* objetivo táctil */
+  cursor: pointer;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: var(--fs-md);
+  color: var(--color-tinta);
+  list-style: none;                 /* saca el triangulito del navegador */
+}
+.acordeon__cabecera::-webkit-details-marker { display: none; }
+
+.acordeon__cabecera:hover { color: var(--color-secundario); }
+
+.acordeon__cabecera:focus-visible {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 3px;
+  border-radius: var(--radio-sm);
+}
+
+.acordeon__flecha {
+  flex: none;
+  color: var(--color-tinta-suave);
+  transition: transform var(--transicion);
+}
+
+.acordeon[open] .acordeon__cabecera { color: var(--color-secundario); }
+.acordeon[open] .acordeon__flecha   { transform: rotate(180deg); }
+
+.acordeon__cuerpo { padding-bottom: var(--space-5); }
+
+@media (prefers-reduced-motion: reduce) {
+  .acordeon__flecha { transition: none; }
+}
+
+/* --- Tabla dato / valor -------------------------------------------------- */
+
+.ficha-specs {
+  display: grid;
+  grid-template-columns: minmax(9rem, 15rem) 1fr;
+  margin: 0;
+  font-size: var(--fs-sm);
+  text-align: left;
+}
+
+.ficha-specs dt,
+.ficha-specs dd {
+  margin: 0;
+  padding: 0.6rem 0;
+  border-top: 1px solid var(--color-linea);
+}
+.ficha-specs dt:first-of-type,
+.ficha-specs dt:first-of-type + dd { border-top: 0; }
+
+.ficha-specs dt {
+  font-weight: 600;
+  color: var(--color-tinta-suave);
+  padding-right: var(--space-4);
+}
+.ficha-specs dd { color: var(--color-tinta); }
+
+/* En celular: el dato arriba y el valor abajo */
+@media (max-width: 560px) {
+  .ficha-specs { grid-template-columns: 1fr; }
+  .ficha-specs dt { padding-bottom: 0; }
+  .ficha-specs dd { padding-top: 0.15rem; border-top: 0; }
+  .ficha-specs dt:first-of-type + dd { border-top: 0; }
+}
+
+/* --- Tabla nutricional --------------------------------------------------- */
+
+.ficha-porcion {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-sm);
+  color: var(--color-tinta-suave);
+  text-align: left;
+}
+.ficha-porcion strong { color: var(--color-tinta); }
+
+.ficha-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+  text-align: left;
+}
+
+.ficha-tabla th,
+.ficha-tabla td {
+  text-align: left;
+  padding: 0.6rem 0.5rem;
+  border-bottom: 1px solid var(--color-linea);
+}
+.ficha-tabla th:first-child,
+.ficha-tabla td:first-child { padding-left: 0; }
+
+.ficha-tabla th:not(:first-child),
+.ficha-tabla td:not(:first-child) { text-align: right; white-space: nowrap; }
+
+.ficha-tabla thead th {
+  font-family: var(--fuente-titulo);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-tinta-suave);
+  border-bottom-width: 2px;
+}
+
+/* Primera celda de cada fila: es un <th scope="row">, va con peso normal */
+.ficha-tabla tbody th {
+  font-weight: 500;
+  color: var(--color-tinta);
+}
+
+.ficha-tabla tbody tr:last-child th,
+.ficha-tabla tbody tr:last-child td { border-bottom: 0; }
+
+.ficha-nota {
+  margin: var(--space-3) 0 0;
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+  color: var(--color-tinta-suave);
+  text-align: left;
+}

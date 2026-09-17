@@ -1,0 +1,433 @@
+<title>Vitalica Web · Material de Marketing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Public+Sans:wght@400;500;600&display=swap">
+
+<style>
+  /* Paleta de Vitalica, tomada del Manual de marca.
+     Naranja Pantone 158 C y azul Pantone 2145 C son los oficiales.
+     Los neutros son cálidos a propósito: un gris puro al lado del naranja
+     se ve sucio. */
+  :root {
+    --ground:      #FBFAF9;
+    --surface:     #FFFFFF;
+    --surface-alt: #F3F1EF;
+    --ink:         #262528;
+    --ink-soft:    #63605F;
+    --line:        #E4E1DE;
+    --naranja:     #EF7D2A;
+    --naranja-txt: #A85410;   /* el naranja sobre blanco da 2,75:1 — para texto va este */
+    --azul:        #0B55A3;
+    --azul-suave:  #EEF3FA;
+    --ok:          #1F7A46;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #1A1918;
+      --surface:     #232120;
+      --surface-alt: #2C2928;
+      --ink:         #F2EFEC;
+      --ink-soft:    #A9A4A0;
+      --line:        #373432;
+      --naranja:     #F79148;
+      --naranja-txt: #F79148;
+      --azul:        #6BA5E6;
+      --azul-suave:  #1E2833;
+      --ok:          #5FC98C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:      #1A1918;
+    --surface:     #232120;
+    --surface-alt: #2C2928;
+    --ink:         #F2EFEC;
+    --ink-soft:    #A9A4A0;
+    --line:        #373432;
+    --naranja:     #F79148;
+    --naranja-txt: #F79148;
+    --azul:        #6BA5E6;
+    --azul-suave:  #1E2833;
+    --ok:          #5FC98C;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .env { max-width: 780px; margin: 0 auto; padding: 0 24px; }
+
+  h1, h2, h3, .cifra, .eyebrow {
+    font-family: Archivo, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--naranja-txt);
+    margin: 0 0 10px;
+  }
+
+  /* ---------- Cabecera ---------- */
+  .top {
+    border-bottom: 1px solid var(--line);
+    padding: 56px 0 40px;
+  }
+  h1 {
+    font-size: clamp(30px, 5vw, 44px);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -.02em;
+    margin: 0 0 14px;
+    text-wrap: balance;
+  }
+  .bajada {
+    font-size: 17px;
+    color: var(--ink-soft);
+    max-width: 62ch;
+    margin: 0;
+  }
+
+  /* ---------- Secciones ---------- */
+  section { padding: 44px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: 0; }
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -.015em;
+    margin: 0 0 8px;
+    text-wrap: balance;
+  }
+  .intro { color: var(--ink-soft); max-width: 64ch; margin: 0 0 26px; }
+  h3 { font-size: 16px; font-weight: 700; margin: 0 0 4px; }
+
+  /* ---------- Lista de aportes ---------- */
+  .aportes { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+  .aporte {
+    display: grid;
+    grid-template-columns: 74px 1fr;
+    gap: 20px;
+    align-items: baseline;
+    padding: 16px 0;
+    border-top: 1px solid var(--line);
+  }
+  .aporte:first-child { border-top: 0; }
+  .cifra {
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--naranja-txt);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.02em;
+  }
+  .aporte p { margin: 4px 0 0; color: var(--ink-soft); font-size: 15px; }
+  .fuente {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    background: var(--surface-alt);
+    border-radius: 4px;
+    padding: 3px 8px;
+  }
+
+  /* ---------- Lo que hace falta ---------- */
+  .pedido {
+    background: var(--azul-suave);
+    border: 1px solid color-mix(in srgb, var(--azul) 22%, transparent);
+    border-radius: 10px;
+    padding: 22px 24px;
+    margin-bottom: 14px;
+  }
+  .pedido h3 { color: var(--azul); }
+  .pedido p { margin: 6px 0 0; font-size: 15px; }
+  .pedido ul { margin: 10px 0 0; padding-left: 18px; font-size: 15px; color: var(--ink-soft); }
+  .pedido li { margin-bottom: 4px; }
+  .pedido code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+
+  /* ---------- Comparación de logos ---------- */
+  .comp {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin: 22px 0 10px;
+  }
+  @media (max-width: 620px) { .comp { grid-template-columns: 1fr; } }
+  .caja {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .caja__cab {
+    font-family: Archivo, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-soft);
+    background: var(--surface-alt);
+  }
+  .caja__cab--ok { color: var(--ok); }
+  /* Placa clara SIEMPRE, también en modo oscuro.
+     Los logos de los comercios son negros sobre fondo transparente: sobre un
+     ground oscuro, kb, Toku y The Vitamin Shoppe directamente desaparecen.
+     Están diseñados para fondo claro, así que se les da uno. */
+  .caja__cuerpo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 130px;
+    padding: 16px;
+    background: #FFFFFF;
+  }
+  .caja__pie {
+    font-size: 12px;
+    color: var(--ink-soft);
+    padding: 0 14px 14px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  /* El logo se muestra en la caja EXACTA en la que se dibujaba: es la
+     comparación honesta, no una ilustración del problema. */
+  .marco { border: 1px dashed #B9B4B0; }   /* sobre la placa blanca, no sobre el ground */
+  .marco img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
+  /* ---------- Fila final de logos ---------- */
+  /* Igual que .caja__cuerpo: placa clara fija, no var(--surface). */
+  .fila {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 30px 38px;
+    background: #FFFFFF;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 30px 24px;
+    margin-top: 22px;
+  }
+  .fila img { display: block; width: auto; }
+
+  /* ---------- Cierre ---------- */
+  .cierre { padding: 40px 0 64px; }
+  .cierre p { color: var(--ink-soft); max-width: 64ch; }
+  .nota {
+    font-size: 13px;
+    color: var(--ink-soft);
+    border-left: 2px solid var(--naranja);
+    padding-left: 14px;
+    margin-top: 26px;
+    max-width: 62ch;
+  }
+  strong { font-weight: 600; color: var(--ink); }
+</style>
+
+<div class="env">
+
+  <header class="top">
+    <p class="eyebrow">Vitalica · Sitio web</p>
+    <h1>El material de marketing ya está en la web</h1>
+    <p class="bajada">
+      Resumen de qué se incorporó del Drive, qué se corrigió y qué falta que nos
+      manden. Todo el texto de producto que aparece acá es el de ustedes: no se
+      reescribió nada.
+    </p>
+  </header>
+
+  <section>
+    <p class="eyebrow">Lo que ya está publicado</p>
+    <h2>Salió del Drive y hoy se ve en el sitio</h2>
+    <p class="intro">
+      Nada de esto se redactó de cero. Se tomó de los documentos y del catálogo,
+      tal como estaban aprobados.
+    </p>
+
+    <ul class="aportes">
+      <li class="aporte">
+        <span class="cifra">9</span>
+        <div>
+          <h3>Fichas de uso, una por producto</h3>
+          <p>
+            Dosificación por perfil, errores que arruinan el resultado, qué esperar
+            semana a semana y el apartado de conservación para el clima de Paraguay.
+            Aparecen en cada página de producto.
+          </p>
+          <span class="fuente">Ficha técnica de uso › Fichas de uso</span>
+        </div>
+      </li>
+
+      <li class="aporte">
+        <span class="cifra">40</span>
+        <div>
+          <h3>Diferenciales de producto</h3>
+          <p>
+            Cuatro por producto, con su explicación: tecnología CFM, concentración
+            Gold, protección blíster, Chela-Min y el resto. Van en una sección
+            propia llamada “Lo que lo hace distinto”.
+          </p>
+          <span class="fuente">Catálogo Vitalica, páginas 5 a 20</span>
+        </div>
+      </li>
+
+      <li class="aporte">
+        <span class="cifra">104</span>
+        <div>
+          <h3>Filas de información nutricional</h3>
+          <p>
+            Las tablas completas de los 10 productos. Antes el sitio mostraba tres
+            líneas por producto; ahora está la tabla entera, como texto real para
+            que Google la lea y un lector de pantalla la pueda dictar.
+          </p>
+          <span class="fuente">Presentaciones › PPT › “… VALOR.png”</span>
+        </div>
+      </li>
+
+      <li class="aporte">
+        <span class="cifra">10</span>
+        <div>
+          <h3>Presentaciones y porciones por envase</h3>
+          <p>
+            “Pote de 305 g · 50 medidas”, “Caja de 120 cápsulas · 120 tomas”. Eran
+            campos que estaban vacíos desde que se armó el sitio.
+          </p>
+          <span class="fuente">Catálogo Vitalica, tabla de códigos</span>
+        </div>
+      </li>
+
+      <li class="aporte">
+        <span class="cifra">2</span>
+        <div>
+          <h3>Textos institucionales</h3>
+          <p>
+            Laboratorios Olimp y la tecnología SHIME®. De ahí salió también la frase
+            que ahora abre Quiénes somos: <strong>“Vitalica es la primera y única
+            empresa paraguaya en importar esta tecnología europea de grado
+            farmacéutico”</strong>. No estaba en ninguna parte de la web.
+          </p>
+          <span class="fuente">Catálogo Vitalica, páginas 2 y 3</span>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="eyebrow">Lo que necesitamos de ustedes</p>
+    <h2>Tres cosas que no se pueden resolver de este lado</h2>
+    <p class="intro">
+      Las dos primeras son material que falta. La tercera es un dato que no
+      coincide y hay que confirmar cuál es el correcto.
+    </p>
+
+    <div class="pedido">
+      <h3>1 · Faltan las fotos de 9 sabores</h3>
+      <p>
+        Olimp manda un packshot por presentación, pero no por sabor. Cuando alguien
+        elige uno de estos, ve el envase del tamaño correcto pero sin el sabor impreso:
+      </p>
+      <ul>
+        <li><strong>Whey:</strong> Vainilla 2270 g · Frutilla 2270 g · Vainilla Ice Cream 700 g y 2270 g</li>
+        <li><strong>Redweiler:</strong> Blueberry · Naranja · Red Punch (los tres, 480 g)</li>
+        <li><strong>Iso Plus:</strong> Naranja 700 g · Tropic Blue 700 g</li>
+      </ul>
+    </div>
+
+    <div class="pedido">
+      <h3>2 · Un código de barras no coincide</h3>
+      <p>
+        Whey Cookies 700 g figura como <code>5901330044939</code> en el catálogo y como
+        <code>5901330088261</code> en el sistema. Si el del sitio es el equivocado, ese
+        sabor no toma precio ni stock desde Odoo. Hay que confirmar cuál es.
+      </p>
+    </div>
+
+    <div class="pedido">
+      <h3>3 · Una errata en el catálogo</h3>
+      <p>
+        En Whey Vainilla Ice Cream las porciones están invertidas: figura 67 medidas
+        para la bolsa de 700 g y 20 para la de 2.270 g. Debería ser al revés. En la web
+        quedó cargado el valor correcto.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Corrección</p>
+    <h2>Los logos de aliados estaban mal dimensionados</h2>
+    <p class="intro">
+      Tres archivos venían con mucho margen transparente alrededor del logo. Como el
+      tamaño en la web se calculaba sobre el tamaño del archivo, esos tres se dibujaban
+      mucho más chicos de lo que correspondía.
+    </p>
+
+    <div class="comp">
+      <div class="caja">
+        <div class="caja__cab">Antes</div>
+        <div class="caja__cuerpo">
+          <div class="marco" style="width:83px;height:78px">
+            <img src="__SHOPPING_ORIGINAL__" alt="Shopping China antes de recortar">
+          </div>
+        </div>
+        <p class="caja__pie">Caja de 83 × 78 px · el logo ocupaba ~60 × 14</p>
+      </div>
+
+      <div class="caja">
+        <div class="caja__cab caja__cab--ok">Ahora</div>
+        <div class="caja__cuerpo">
+          <div class="marco" style="width:168px;height:41px">
+            <img src="__SHOPPING__" alt="Shopping China después de recortar">
+          </div>
+        </div>
+        <p class="caja__pie">Caja de 168 × 41 px · el logo la ocupa entera</p>
+      </div>
+    </div>
+
+    <p class="nota">
+      El archivo de Shopping China medía 1168 × 1100 px, pero el logo adentro era de
+      846 × 195: un <strong>87 % del archivo era aire</strong>. Por eso se trataba como
+      si fuera casi cuadrado cuando en realidad es apaisado. Lo mismo pasaba con kb
+      (75 % de aire) y Toku (38 %).
+    </p>
+
+    <p class="intro" style="margin-top:30px">
+      Ahora los once se muestran igualando el <strong>área</strong> de cada uno, que es
+      lo que el ojo compara. La diferencia entre el logo más chico y el más grande pasó
+      de casi 9× a 1,45×.
+    </p>
+
+    <div class="fila">__FILA__</div>
+  </section>
+
+  <div class="cierre">
+    <p class="eyebrow">Cómo verlo en vivo</p>
+    <p>
+      Esta página es un resumen. Para navegar el sitio de verdad —entrar a un producto,
+      abrir una ficha de uso, ver la tabla nutricional— hay un entorno de pruebas listo
+      para publicar en <strong>pruebas.vitalica.com.py</strong>, separado del sitio real.
+    </p>
+    <p class="nota">
+      Cualquier texto de producto que quieran cambiar se corrige en el documento original
+      del Drive: el sitio se vuelve a generar desde ahí. No hace falta pedir cambios uno
+      por uno.
+    </p>
+  </div>
+
+</div>

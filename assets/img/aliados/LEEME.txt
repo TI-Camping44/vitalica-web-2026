@@ -1,0 +1,67 @@
+LOGOS DE ALIADOS COMERCIALES
+============================
+Todos en minúscula y sin espacios. Los nombres con espacios obligaban a
+escribirlos con %20 en data.js, que es frágil.
+
+La lista, el orden y las medidas se editan en
+assets/js/data.js -> VITALICA_TIENDAS
+
+LOS ARCHIVOS VIENEN RECORTADOS
+------------------------------
+Varios PNG originales traían muchísimo margen transparente:
+
+    shopping-china   1168x1100 de archivo, 846x195 de logo   -> 87% aire
+    kb               3375x3375 de archivo, 2119x1348 de logo -> 75% aire
+    toku             1080x221  de archivo, 1058x139 de logo  -> 38% aire
+
+Eso no es un detalle estético. El tamaño con el que se muestra cada logo se
+calcula sobre la proporción del archivo, así que Shopping China se trataba
+como si fuera casi cuadrado (1.06) cuando en realidad es apaisado (4.14).
+Se dibujaba a unos 60x14 px y su bajada no se leía.
+
+Los originales sin recortar están en  _drive/aliados-originales/
+
+SI AGREGÁS O CAMBIÁS UN LOGO
+----------------------------
+    powershell -ExecutionPolicy Bypass -File herramientas/recortar-logos.ps1
+
+Recorta el aire sobrante e imprime el ancho y alto que hay que poner en
+data.js. Copiá esos números tal cual.
+
+Para solo mirar cuánto aire tiene cada archivo, sin tocar nada:
+
+    powershell -ExecutionPolicy Bypass -File herramientas/medir-logos.ps1
+
+POR QUÉ LAS MEDIDAS NO SON TODAS IGUALES
+----------------------------------------
+Se iguala el ÁREA de cada logo, no su ancho ni su alto.
+
+Con la misma ALTURA, un logo muy apaisado (Vitamin Shoppe es 7,6 veces más
+ancho que alto) queda larguísimo al lado de uno compacto como kb (1,57).
+Con el mismo ANCHO pasa al revés: los apaisados quedan finitos e ilegibles.
+
+Igualando el área, cada logo ocupa una mancha de tamaño parecido, que es lo
+que el ojo compara. Hoy la diferencia entre el más chico y el más grande es
+de 1,45x; antes de este arreglo era de casi 9x.
+
+    alto = raíz(6800 / proporción)      ancho = alto * proporción
+
+Con topes: alto entre 26 y 64 px, ancho máximo 190 px. Sin los topes, Toku
+saldría de 244 px de ancho y rompería la fila.
+
+VAN A COLOR, NO EN GRIS
+-----------------------
+Es a propósito. El gris es la convención cuando la pared de logos es de
+sponsors y no querés que le roben protagonismo a tu marca. Acá la sección
+contesta "¿dónde lo compro?": alguien que busca su local lo reconoce por el
+color antes que por el nombre.
+
+Además estaban en gris con hover a color, y en celular no existe el hover:
+para la mayoría de los visitantes nunca se iban a ver a color.
+
+DE DÓNDE SALEN
+--------------
+Drive: DIGITAL > PÁGINA WEB > FOTOS PARA WEB VITALICA > LOGOS ALIADOS
+
+De El Negro hay dos versiones: cuadrada y horizontal. Acá va la HORIZONTAL,
+porque en una fila la cuadrada obliga a achicar todo lo demás.

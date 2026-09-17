@@ -1,0 +1,1002 @@
+<title>Rediseño Vitalica 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..900&family=Public+Sans:wght@400;500;600&display=swap">
+
+<style>
+  /* ==========================================================================
+     Esta página está hecha CON el sistema que propone.
+     Negro estructural, naranja de marca como único acento, Archivo condensada
+     en mayúscula para los titulares, cantos duros. Se lee la propuesta y al
+     mismo tiempo se la ve funcionando.
+
+     Tema único a propósito: es una muestra de una dirección visual concreta,
+     no un documento que deba adaptarse al modo oscuro de quien lo abra. Por
+     eso cada color está puesto explícitamente.
+     ========================================================================== */
+  :root {
+    --ground:     #F4F3F1;   /* off-white cálido: un gris puro al lado del naranja se ve sucio */
+    --surface:    #FFFFFF;
+    --ink:        #0A0A0B;
+    --ink-soft:   #5C5A58;
+    --ink-faint:  #8B8885;
+    --line:       #DDDAD6;
+    --naranja:    #EF7D2A;
+    --naranja-txt:#A85410;   /* el naranja sobre blanco da 2,75:1 — para texto va este */
+    --azul:       #0B55A3;
+    --azul-suave: #EDF2F9;
+  }
+
+  * { box-sizing: border-box }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .env { max-width: 1060px; margin-inline: auto; padding-inline: 24px }
+
+  h1, h2, h3, .eyebrow, .btn-falso, .pestania, .dato__n {
+    font-family: Archivo, "Arial Narrow", system-ui, sans-serif;
+  }
+
+  h1 {
+    font-stretch: 85%;
+    font-weight: 900;
+    font-size: clamp(2.6rem, 7.2vw, 5rem);
+    line-height: 0.9;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+    margin: 0;
+    text-wrap: balance;
+  }
+  h2 {
+    font-stretch: 88%;
+    font-weight: 900;
+    font-size: clamp(1.7rem, 3.6vw, 2.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+    margin: 0;
+    text-wrap: balance;
+  }
+  h3 {
+    font-stretch: 95%;
+    font-weight: 800;
+    font-size: 1.02rem;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  .eyebrow {
+    font-stretch: 100%;
+    font-weight: 800;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--naranja-txt);
+    margin: 0 0 12px;
+  }
+
+  p { margin: 0; max-width: 68ch }
+  strong { font-weight: 600 }
+  a { color: var(--azul-txt, #0B55A3) }
+
+  /* ---------- Cabecera: el mismo golpe que tendría el hero del sitio ---------- */
+  .masthead {
+    background: var(--ink);
+    color: #fff;
+    padding-block: clamp(56px, 9vw, 104px);
+    border-bottom: 6px solid var(--naranja);
+  }
+  .masthead .eyebrow { color: var(--naranja) }
+  .masthead h1 { color: #fff }
+  .masthead__bajada {
+    margin-top: 24px;
+    font-size: clamp(1rem, 1.6vw, 1.15rem);
+    color: rgba(255,255,255,.74);
+    max-width: 56ch;
+  }
+
+  /* ---------- Secciones ---------- */
+  section { padding-block: clamp(44px, 6vw, 72px) }
+  section + section { border-top: 1px solid var(--line) }
+  .intro { color: var(--ink-soft); margin-top: 14px }
+
+  /* ---------- La respuesta ---------- */
+  .respuesta {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--naranja);
+    padding: 26px 28px;
+    margin-top: 28px;
+    display: grid;
+    gap: 14px;
+  }
+  .respuesta p { font-size: 1.05rem }
+  .prueba {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-top: 4px;
+  }
+  .btn-falso {
+    display: inline-block;
+    background: var(--ink);
+    color: #fff;
+    font-stretch: 92%;
+    font-weight: 900;
+    font-size: 0.78rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+    border-radius: 3px;
+  }
+  .btn-falso--naranja { background: var(--naranja); color: var(--ink) }
+  .ruta {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.82rem;
+    background: var(--ground);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 9px 12px;
+    word-break: break-all;
+  }
+
+  /* ---------- Tabla de cambios ---------- */
+  .cambios { margin-top: 30px; display: grid; gap: 0 }
+  .cambio {
+    display: grid;
+    grid-template-columns: 180px 1fr 1fr;
+    gap: 22px;
+    padding: 18px 0;
+    border-top: 1px solid var(--line);
+    align-items: start;
+  }
+  .cambio:last-child { border-bottom: 1px solid var(--line) }
+  .cambio__que { font-stretch: 95%; }
+  .cambio__antes, .cambio__despues { font-size: 0.93rem; color: var(--ink-soft) }
+  .cambio__antes::before,
+  .cambio__despues::before {
+    display: block;
+    font-family: Archivo, sans-serif;
+    font-stretch: 100%;
+    font-weight: 800;
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .cambio__antes::before   { content: "Hoy"; color: var(--ink-faint) }
+  .cambio__despues::before { content: "Propuesto"; color: var(--naranja-txt) }
+  .cambio__despues { color: var(--ink) }
+  @media (max-width: 720px) {
+    .cambio { grid-template-columns: 1fr; gap: 12px }
+  }
+
+  /* ---------- Las tres tiras de orden ----------
+     Tres columnas comparables. Las filas de producto van en negro relleno y
+     las de texto en gris: se ve DONDE caen los productos sin tener que leer
+     una sola palabra, que es justo el argumento. */
+  .orden {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 28px;
+  }
+  @media (max-width: 800px) { .orden { grid-template-columns: 1fr } }
+  .col {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--line);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  .col--ok { border-top-color: var(--naranja) }
+  .col__tit { margin-bottom: 14px }
+  .col--ok .col__tit { color: var(--naranja-txt) }
+  .tira { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 4px }
+  .tira li {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 10px;
+    background: var(--ground);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    border-radius: 2px;
+  }
+  .tira__y {
+    font-family: Archivo, sans-serif;
+    font-stretch: 95%;
+    font-weight: 800;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+  .tira .es-prod, .tira li.es-prod { background: var(--ink); color: #fff }
+  .tira li.es-prod .tira__y { color: var(--naranja) }
+  .tira li.es-texto { background: #E7E4E0; color: var(--ink-soft) }
+  .col__pie { font-size: 0.85rem; color: var(--ink-soft); margin-top: auto }
+  .col__pie strong { color: var(--ink) }
+
+  /* ---------- Comparador ---------- */
+  .comparador { margin-top: 30px; display: grid; gap: 34px }
+  .comp__cab {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .comp__nota { font-size: 0.88rem; color: var(--ink-soft); max-width: 46ch }
+  .pestanias { display: inline-flex; border: 2px solid var(--ink); border-radius: 3px; overflow: hidden }
+  .pestania {
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font-stretch: 95%;
+    font-weight: 900;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 9px 15px;
+    cursor: pointer;
+  }
+  .pestania[aria-pressed="true"] { background: var(--ink); color: #fff }
+  .pestania:focus-visible { outline: 3px solid var(--naranja); outline-offset: -3px }
+
+  /* El marco tiene alto fijo y scroll propio: así las dos versiones comparten
+     la posición y al cambiar de pestaña se ve la MISMA franja de la página.
+     Sin esto habría que volver a buscar a mano dónde se estaba mirando. */
+  .marco {
+    height: clamp(420px, 64vh, 720px);
+    overflow: auto;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    box-shadow: 0 1px 0 rgba(0,0,0,.05);
+  }
+  .marco img { display: block; width: 100%; height: auto }
+  .marco img[hidden] { display: none }
+  .pie-marco {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin-top: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- Avisos ---------- */
+  .aviso {
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 20px 24px;
+    margin-top: 22px;
+    background: var(--surface);
+  }
+  .aviso--azul { background: var(--azul-suave); border-color: rgba(11,85,163,.22) }
+  .aviso--ojo { background: #FDF3EA; border-color: rgba(179,84,30,.30) }
+  .aviso--ojo h3 { color: #B3541E }
+  .aviso h3 { margin-bottom: 8px }
+  .aviso--azul h3 { color: var(--azul) }
+  .aviso p { font-size: 0.95rem; color: var(--ink-soft) }
+  .aviso p + p { margin-top: 10px }
+
+  /* ---------- Listas ---------- */
+  .lista { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 14px }
+  .lista li {
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    gap: 14px;
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+  }
+  .lista .marca {
+    width: 20px; height: 20px; margin-top: 3px;
+    background: var(--ink); color: #fff;
+    font-family: Archivo, sans-serif; font-weight: 900; font-size: 0.68rem;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 2px;
+  }
+  .lista .marca--no { background: var(--naranja); color: var(--ink) }
+  .lista strong { color: var(--ink) }
+
+  .cierre { padding-block: 48px 80px }
+  .firma { font-size: 0.85rem; color: var(--ink-faint); margin-top: 20px }
+</style>
+
+
+<header class="masthead">
+  <div class="env">
+    <p class="eyebrow">Propuesta de dirección visual</p>
+    <h1>Entrás<br>y hay productos.</h1>
+    <p class="masthead__bajada">
+      Eso es lo que le gustó a Diego de Bare Performance Nutrition, y es lo
+      que menos tenía que ver con el color. Medí ese sitio, bajé a un sistema
+      cómo ordena y cómo muestra, y lo apliqué sobre la web que ya tenemos.
+      Se prende y se apaga en el mismo sitio, sin tocar nada de lo que
+      marketing está probando.
+    </p>
+  </div>
+</header>
+
+
+<section>
+  <div class="env">
+    <p class="eyebrow">La respuesta corta</p>
+    <h2>No es una maqueta: es el sitio</h2>
+    <p class="intro">
+      No hice una pantalla de ejemplo. El diseño nuevo está sobre las páginas
+      reales, con los productos reales y los precios que vienen de Odoo. Se
+      navega entero.
+    </p>
+
+    <div class="respuesta">
+      <p><strong>Para verlo</strong>, agregá <code>?tema=2026</code> al final de la dirección:</p>
+      <p class="ruta">pruebas.vitalica.com.py/?tema=2026</p>
+      <p style="font-size:.93rem;color:var(--ink-soft)">
+        Queda elegido para todo el sitio y aparece abajo a la izquierda un
+        botón para ir y volver entre las dos versiones. Es por navegador: si
+        Diego lo prende en su computadora, marketing sigue viendo el diseño de
+        siempre.
+      </p>
+      <div class="prueba">
+        <span class="btn-falso btn-falso--naranja">Diseño propuesto</span>
+        <span class="btn-falso">Ver el actual</span>
+        <span style="font-size:.85rem;color:var(--ink-faint)">— así se ve el botón</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section>
+  <div class="env">
+    <p class="eyebrow">Lo principal</p>
+    <h2>Primero los productos.<br>Después todo lo demás</h2>
+    <p class="intro">
+      Medí a qué altura empieza cada sección de la portada de BPN. No es una
+      impresión: está así de marcado.
+    </p>
+
+    <div class="orden">
+      <div class="col">
+        <h3 class="col__tit">BPN</h3>
+        <ol class="tira">
+          <li><span class="tira__y">0</span><span class="tira__q">Portada</span></li>
+          <li class="es-prod"><span class="tira__y">887</span><span class="tira__q">Más vendidos</span></li>
+          <li class="es-prod"><span class="tira__y">1.546</span><span class="tira__q">Recién llegados</span></li>
+          <li><span class="tira__y">2.205</span><span class="tira__q">Categorías</span></li>
+          <li><span class="tira__y">2.825</span><span class="tira__q">Quiénes somos</span></li>
+          <li><span class="tira__y">3.242</span><span class="tira__q">El video de la historia</span></li>
+        </ol>
+        <p class="col__pie">
+          Hay <strong>1.300 píxeles de productos</strong> antes de que la marca
+          diga una sola palabra sobre sí misma.
+        </p>
+      </div>
+
+      <div class="col">
+        <h3 class="col__tit">Vitalica, hoy</h3>
+        <ol class="tira">
+          <li><span class="tira__y">1º</span><span class="tira__q">Portada</span></li>
+          <li class="es-texto"><span class="tira__y">2º</span><span class="tira__q">Ciencia real — tres bloques de texto</span></li>
+          <li class="es-prod"><span class="tira__y">3º</span><span class="tira__q">Los diez productos</span></li>
+          <li><span class="tira__y">4º</span><span class="tira__q">Objetivos</span></li>
+        </ol>
+        <p class="col__pie">
+          El visitante tiene que pasar por un texto que explica por qué hay que
+          creernos <strong>antes de ver un solo envase</strong>.
+        </p>
+      </div>
+
+      <div class="col col--ok">
+        <h3 class="col__tit">Vitalica, propuesto</h3>
+        <ol class="tira">
+          <li><span class="tira__y">1º</span><span class="tira__q">Portada</span></li>
+          <li class="es-prod"><span class="tira__y">2º</span><span class="tira__q">Los diez productos</span></li>
+          <li><span class="tira__y">3º</span><span class="tira__q">Objetivos</span></li>
+          <li><span class="tira__y">4º</span><span class="tira__q">Garantías</span></li>
+          <li class="es-texto"><span class="tira__y">5º</span><span class="tira__q">Ciencia real</span></li>
+        </ol>
+        <p class="col__pie">
+          Ciencia real no se saca: se corre. Sigue estando, pero después de que
+          la persona ya vio qué vendemos.
+        </p>
+      </div>
+    </div>
+
+    <div class="aviso">
+      <h3>Y cómo los muestra</h3>
+      <p>
+        Medí también una tarjeta de producto de BPN: 304 por 431 píxeles,
+        <strong>sin marco y sin fondo</strong>. El envase flota sobre el blanco
+        de la página y la foto se lleva el 70% de la tarjeta. Abajo van el
+        nombre, el precio, una línea con las porciones y los sabores, y el
+        botón negro.
+      </p>
+      <p>
+        Las nuestras tenían marco, esquinas redondas y la foto sobre un gris.
+        El marco es justo lo que había que sacar: cuando cada producto está
+        adentro de su cajita, diez productos se leen como diez cajitas. Sin
+        marco se leen como diez productos.
+      </p>
+      <p>
+        Y agregué la línea que ellos tienen y nosotros no:
+        <strong>"5 sabores · 2 presentaciones"</strong>. Ese dato lo teníamos
+        escondido adentro de cada ficha, y es de los que deciden si alguien
+        entra o sigue de largo. Se calcula solo: si entra un sabor nuevo, la
+        línea se actualiza sola.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<section>
+  <div class="env">
+    <p class="eyebrow">La ficha de producto</p>
+    <h2>El sabor se elige<br>mirando el envase</h2>
+    <p class="intro">
+      Entré a la ficha de Whey Protein de BPN y medí cómo resuelven la
+      decisión más importante de la página. Los ocho sabores no son
+      pastillas de texto: son <strong>ocho fotos del envase de 64 por 64
+      píxeles</strong>, en disco, con el nombre debajo. El elegido lleva un aro.
+    </p>
+    <p class="intro">
+      Es una diferencia de fondo, no de estilo. "Doble Chocolate" es una
+      palabra que hay que leer; el envase marrón se reconoce antes de leer
+      nada. Y en un producto que se compra por sabor, esa es <em>la</em>
+      decisión.
+    </p>
+
+    <div class="aviso aviso--ojo">
+      <h3>Acá se ve exactamente qué nos falta</h3>
+      <p>
+        Las fotos de variante que teníamos cargadas ahora se usan: Whey
+        muestra cuatro envases de verdad. El quinto, Vainilla Ice Cream, queda
+        como un <strong>disco punteado vacío</strong>.
+      </p>
+      <p>
+        Eso es a propósito. Son los nueve packshots que vengo pidiendo —
+        cuatro de Whey, tres de Redweiler y dos de Iso Plus — y prefiero que
+        se vea el hueco a taparlo con un ícono lindo. Cuando lleguen las
+        fotos, aparecen solas: no hay que tocar nada.
+      </p>
+    </div>
+
+    <p class="intro">Además de eso, dos cosas más que hacen ellos:</p>
+    <ul class="lista">
+      <li>
+        <span class="marca">1</span>
+        <span><strong>El precio va adentro del botón.</strong> "AGREGAR AL CARRITO
+        · Gs. 330.000". El botón suele ser lo único que se mira antes de hacer
+        clic, y en celular el precio ya quedó fuera de la pantalla.</span>
+      </li>
+      <li>
+        <span class="marca">2</span>
+        <span><strong>Una tira de miniaturas al costado de la foto</strong> con la
+        tabla nutricional, el modo de uso y una foto de alguien usando el
+        producto. Encontré algo mientras miraba: <strong>esa galería ya estaba
+        programada en nuestra ficha</strong> y nunca se vio, porque busca
+        archivos que nadie cargó. El código está y funciona; faltan las
+        imágenes.</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+
+<section>
+  <div class="env">
+    <p class="eyebrow">De dónde salió</p>
+    <h2>Qué mide BPN y qué cambia acá</h2>
+    <p class="intro">
+      No copié a ojo. Abrí el sitio de BPN y le saqué los números: qué colores
+      usa y en cuántos elementos, cuánto pesan y cuánto miden los titulares,
+      qué radio tienen los botones. Estas son las seis decisiones que hacen
+      que un sitio se vea como ese.
+    </p>
+
+    <div class="cambios">
+      <div class="cambio">
+        <h3 class="cambio__que">El orden de la portada</h3>
+        <p class="cambio__antes">Portada, respaldo científico, productos.</p>
+        <p class="cambio__despues">Portada, productos, objetivos, garantías, y recién ahí el respaldo científico. Es el cambio que pidió Diego y el único que no es de estilo.</p>
+      </div>
+      <div class="cambio">
+        <h3 class="cambio__que">El color que estructura</h3>
+        <p class="cambio__antes">Azul navy. Cabecera, franja superior, ocho degradados repartidos por el sitio.</p>
+        <p class="cambio__despues">Negro. En BPN el negro aparece en 9.204 elementos y el blanco en 515: no es un acento, es el armazón. El azul no se tira, pasa a color de apoyo.</p>
+      </div>
+      <div class="cambio">
+        <h3 class="cambio__que">Los titulares</h3>
+        <p class="cambio__antes">Mayúscula y minúscula, peso 800, ancho normal.</p>
+        <p class="cambio__despues">MAYÚSCULA, peso 900, condensados y con las letras más juntas. Es lo que más se nota: el titular pasa a leerse como un golpe y no como una frase.</p>
+      </div>
+      <div class="cambio">
+        <h3 class="cambio__que">La forma de los botones</h3>
+        <p class="cambio__antes">Pastillas completamente redondeadas (999px).</p>
+        <p class="cambio__despues">Cantos casi rectos (3px). BPN mide 4 y 5px. Es un detalle chico que cambia por completo si el sitio se siente blando o firme.</p>
+      </div>
+      <div class="cambio">
+        <h3 class="cambio__que">Las tarjetas</h3>
+        <p class="cambio__antes">Esquinas redondas, se levantan y proyectan sombra al pasar el mouse.</p>
+        <p class="cambio__despues">Planas, y cada una termina en un botón negro de ancho completo. En BPN eso es "SELECT OPTIONS"; acá es "VER PRODUCTO".</p>
+      </div>
+      <div class="cambio">
+        <h3 class="cambio__que">El dato que falta</h3>
+        <p class="cambio__antes">Categoría, nombre y precio.</p>
+        <p class="cambio__despues">Se agrega "5 sabores · 2 presentaciones", como hace BPN. Sale solo de los datos que ya teníamos cargados.</p>
+      </div>
+      <div class="cambio">
+        <h3 class="cambio__que">La franja de arriba</h3>
+        <p class="cambio__antes">Azul, texto blanco, tamaño normal.</p>
+        <p class="cambio__despues">Naranja, texto negro, mayúscula chica y espaciada. Es lo primero que se ve y ahora avisa en vez de decorar.</p>
+      </div>
+      <div class="cambio">
+        <h3 class="cambio__que">Las fotos</h3>
+        <p class="cambio__antes">Fondo azul con el producto recortado encima.</p>
+        <p class="cambio__despues">Foto a sangre, oscura, con el titular encima. Acá está el límite de lo que puedo hacer solo — más abajo lo explico.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section>
+  <div class="env">
+    <p class="eyebrow">Antes y después</p>
+    <h2>Las mismas páginas, los dos diseños</h2>
+    <p class="intro">
+      Cambiá de pestaña y comparás la misma franja de la página: el marco
+      mantiene la posición del scroll, así que si estás mirando los productos
+      y cambiás, seguís mirando los productos.
+    </p>
+
+    <div class="comparador">
+
+      <figure style="margin:0">
+        <div class="comp__cab">
+          <div>
+            <h3>Portada</h3>
+            <p class="comp__nota">Portada, respaldo científico, los diez productos, objetivos, embajadores y aliados.</p>
+          </div>
+          <div class="pestanias" role="group" aria-label="Elegir diseño de la portada">
+            <button class="pestania" type="button" data-par="home" data-cual="actual" aria-pressed="false">Actual</button>
+            <button class="pestania" type="button" data-par="home" data-cual="2026" aria-pressed="true">Propuesto</button>
+          </div>
+        </div>
+        <div class="marco">
+          <img data-par="home" data-cual="actual" src="__IMG_HOME_ACTUAL__" alt="Portada de Vitalica con el diseño actual" hidden>
+          <img data-par="home" data-cual="2026" src="__IMG_HOME_2026__" alt="Portada de Vitalica con el diseño propuesto">
+        </div>
+        <p class="pie-marco">Portada completa · 1440 px de ancho</p>
+      </figure>
+
+      <figure style="margin:0">
+        <div class="comp__cab">
+          <div>
+            <h3>Ficha de producto</h3>
+            <p class="comp__nota">Whey Protein Complex 100%, con selector de sabor y presentación.</p>
+          </div>
+          <div class="pestanias" role="group" aria-label="Elegir diseño de la ficha de producto">
+            <button class="pestania" type="button" data-par="producto" data-cual="actual" aria-pressed="false">Actual</button>
+            <button class="pestania" type="button" data-par="producto" data-cual="2026" aria-pressed="true">Propuesto</button>
+          </div>
+        </div>
+        <div class="marco">
+          <img data-par="producto" data-cual="actual" src="__IMG_PRODUCTO_ACTUAL__" alt="Ficha de producto con el diseño actual" hidden>
+          <img data-par="producto" data-cual="2026" src="__IMG_PRODUCTO_2026__" alt="Ficha de producto con el diseño propuesto">
+        </div>
+      </figure>
+
+      <figure style="margin:0">
+        <div class="comp__cab">
+          <div>
+            <h3>Catálogo</h3>
+            <p class="comp__nota">Los diez productos con los filtros por objetivo.</p>
+          </div>
+          <div class="pestanias" role="group" aria-label="Elegir diseño del catálogo">
+            <button class="pestania" type="button" data-par="catalogo" data-cual="actual" aria-pressed="false">Actual</button>
+            <button class="pestania" type="button" data-par="catalogo" data-cual="2026" aria-pressed="true">Propuesto</button>
+          </div>
+        </div>
+        <div class="marco">
+          <img data-par="catalogo" data-cual="actual" src="__IMG_CATALOGO_ACTUAL__" alt="Catálogo con el diseño actual" hidden>
+          <img data-par="catalogo" data-cual="2026" src="__IMG_CATALOGO_2026__" alt="Catálogo con el diseño propuesto">
+        </div>
+      </figure>
+
+      <figure style="margin:0">
+        <div class="comp__cab">
+          <div>
+            <h3>Quiénes somos</h3>
+            <p class="comp__nota">La página institucional, con la historia y la planta de Olimp.</p>
+          </div>
+          <div class="pestanias" role="group" aria-label="Elegir diseño de Quiénes somos">
+            <button class="pestania" type="button" data-par="nosotros" data-cual="actual" aria-pressed="false">Actual</button>
+            <button class="pestania" type="button" data-par="nosotros" data-cual="2026" aria-pressed="true">Propuesto</button>
+          </div>
+        </div>
+        <div class="marco">
+          <img data-par="nosotros" data-cual="actual" src="__IMG_NOSOTROS_ACTUAL__" alt="Quiénes somos con el diseño actual" hidden>
+          <img data-par="nosotros" data-cual="2026" src="__IMG_NOSOTROS_2026__" alt="Quiénes somos con el diseño propuesto">
+        </div>
+      </figure>
+
+    </div>
+  </div>
+</section>
+
+
+<section>
+  <div class="env">
+    <p class="eyebrow">Una aclaración necesaria</p>
+    <h2>Tres cosas de BPN que no copié</h2>
+    <p class="intro">
+      Copiar el estilo no es copiar la marca. Si tomamos también estas tres,
+      no queda "Vitalica con el estilo de BPN": queda BPN mal hecho, y encima
+      pisando el manual de marca de Vitalica.
+    </p>
+
+    <ul class="lista">
+      <li>
+        <span class="marca marca--no">1</span>
+        <span><strong>El rojo de los botones.</strong> BPN usa un rojo fuerte para
+        el botón principal. Ese lugar en Vitalica ya lo ocupa el naranja, que
+        además es el color del manual de marca. El naranja sobre negro rinde
+        incluso mejor que sobre azul.</span>
+      </li>
+      <li>
+        <span class="marca marca--no">2</span>
+        <span><strong>El verde ácido de la franja de arriba.</strong> Mismo motivo.
+        La franja naranja da exactamente el mismo golpe de vista y es
+        nuestra.</span>
+      </li>
+      <li>
+        <span class="marca marca--no">3</span>
+        <span><strong>La tipografía.</strong> BPN usa Blender Pro, que es de licencia
+        paga. Puse Archivo, que es la que más se le parece de las libres:
+        misma familia de grotesca cuadrada, con ancho ajustable y peso hasta
+        900. Si Diego quiere la original, se compra la licencia y se cambia en
+        una línea.</span>
+      </li>
+    </ul>
+
+    <div class="aviso aviso--azul">
+      <h3>Lo que sí se mantiene de Vitalica</h3>
+      <p>
+        Naranja Pantone 158 C y azul Pantone 2145 C siguen siendo los colores
+        oficiales. El naranja pasa a ser el único acento y el azul baja a color
+        de apoyo, pero ninguno se abandona. Degular, la tipografía del manual,
+        se queda en el texto corrido; Archivo entra solo en los titulares, que
+        es donde vive el carácter.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<section>
+  <div class="env">
+    <p class="eyebrow">Lo que falta</p>
+    <h2>La mitad del estilo son las fotos</h2>
+    <p class="intro">
+      Esto es lo importante y conviene decirlo antes de que Diego lo note
+      solo. Lo que hace que BPN se vea como se ve no es únicamente el negro y
+      la tipografía: es que <strong>cada bloque tiene una foto propia</strong>,
+      producida para ese lugar.
+    </p>
+
+    <ul class="lista">
+      <li>
+        <span class="marca">A</span>
+        <span><strong>Los mosaicos de objetivo.</strong> Hoy son cuatro rectángulos
+        negros. En BPN cada uno lleva una foto de alguien entrenando. Con
+        cuatro fotos buenas, esa sección cambia por completo.</span>
+      </li>
+      <li>
+        <span class="marca">B</span>
+        <span><strong>Las portadas.</strong> Las tres actuales son de banco de
+        imágenes. BPN usa fotos propias: sus atletas, su gente, sus
+        productos en escena.</span>
+      </li>
+      <li>
+        <span class="marca">C</span>
+        <span><strong>Los nueve sabores sin foto</strong> que vengo pidiendo — cuatro
+        de Whey, tres de Redweiler y dos de Iso Plus. Con este diseño se nota
+        más, porque la foto del envase ahora va sobre fondo blanco limpio y
+        queda más expuesta.</span>
+      </li>
+    </ul>
+
+    <div class="aviso">
+      <h3>Mi recomendación</h3>
+      <p>
+        Que Diego mire primero el enlace y diga si la dirección es la correcta.
+        Si dice que sí, lo que sigue no es más programación: es una sesión de
+        fotos. Puedo dejar los espacios listos y esperando, pero las fotos no
+        las puedo inventar.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<section>
+  <div class="env">
+    <p class="eyebrow">Qué más se puede traer</p>
+    <h2>Lo que sigue en la lista</h2>
+    <p class="intro">
+      Recorrí el resto del sitio de BPN — el menú, el carrito, la página de
+      error, el pie. Esto es todo lo que encontré que vale la pena, separado
+      por lo único que importa: de qué depende que pase.
+    </p>
+
+    <h3 style="margin-top:34px">Ya quedó hecho</h3>
+    <ul class="lista">
+      <li>
+        <span class="marca">1</span>
+        <span><strong>Envío gratis con barra de progreso en el carrito.</strong>
+        Es el recurso más visible de BPN: la franja de arriba dice "FREE
+        SHIPPING ON ALL US ORDERS $99+" y el carrito muestra cuánto falta.
+        Acá el motor <em>ya estaba</em>: el checkout no cobra envío cuando el
+        subtotal pasa cierto monto. Lo que faltaba era decírselo al cliente
+        mientras arma el pedido, que es el único momento en que le sirve para
+        agregar algo más.</span>
+      </li>
+      <li>
+        <span class="marca">2</span>
+        <span><strong>Jerarquía en la grilla de productos.</strong> En BPN cada
+        tarjeta arranca con una etiqueta negra que dice BEST SELLER, y los que
+        la tienen van primero. Nuestra grilla mostraba los diez productos
+        todos iguales, y sin jerarquía el ojo no sabe por dónde empezar: los
+        mira todos con la misma poca atención. Ahora los seis marcados como
+        destacados van adelante y llevan etiqueta.</span>
+      </li>
+      <li>
+        <span class="marca">3</span>
+        <span><strong>La franja de arriba anuncia el envío gratis.</strong> Es
+        el primero de los dos mensajes que rotan en BPN, y se arma solo con el
+        mismo número que usan el carrito y el checkout. No puede pasar que el
+        cartel diga un monto y el checkout cobre según otro.</span>
+      </li>
+      <li>
+        <span class="marca">4</span>
+        <span><strong>La página de error ahora vende.</strong> Hasta la 404 de
+        ellos muestra productos, y tiene sentido: quien cae ahí venía
+        buscando algo para comprar. La nuestra tenía enlaces y WhatsApp;
+        ahora abajo van cuatro productos. Usé la marca
+        <code>destacado</code> que estaba en los datos <strong>desde el primer
+        día y que ninguna página leía</strong>: seis productos ya elegidos a
+        mano, esperando.</span>
+      </li>
+      <li>
+        <span class="marca">5</span>
+        <span><strong>El catálogo, con filtros al costado.</strong> Su página de
+        productos tiene una columna de filtros a la izquierda con casillas y
+        el número de productos al lado de cada una, arriba dice cuántos
+        resultados hay y a la derecha un selector de orden. Ahora el nuestro
+        también: formato (polvo o cápsulas) y objetivo, combinables, con los
+        contadores recalculándose solos. Y pasa de cinco columnas a tres:
+        con diez productos, cinco llenaban dos filas y no había nada que
+        recorrer.</span>
+      </li>
+      <li>
+        <span class="marca">6</span>
+        <span><strong>Los embajadores son los de acá.</strong> Esa sección
+        mostraba a los atletas polacos del equipo internacional de Olimp. No
+        era mentira, pero acá nadie los conoce y el título dice "los que
+        compiten". Ahora están los cinco paraguayos con contrato firmado.
+        <strong>Faltan sus fotos</strong>: mientras tanto va una placa con las
+        iniciales, marcada como pendiente.</span>
+      </li>
+    </ul>
+
+    <div class="comparador" style="margin-top:26px">
+      <figure style="margin:0">
+        <div class="comp__cab">
+          <div>
+            <h3>El carrito, en sus dos estados</h3>
+            <p class="comp__nota">La barra empuja a sumar; el verde confirma.</p>
+          </div>
+          <div class="pestanias" role="group" aria-label="Estados del carrito">
+            <button class="pestania" type="button" data-par="carrito" data-cual="falta" aria-pressed="true">Le falta</button>
+            <button class="pestania" type="button" data-par="carrito" data-cual="logrado" aria-pressed="false">Lo logró</button>
+          </div>
+        </div>
+        <div class="marco" style="height:auto">
+          <img data-par="carrito" data-cual="falta" src="__IMG_CARRITO_FALTA__" alt="Carrito mostrando cuánto falta para el envío gratis">
+          <img data-par="carrito" data-cual="logrado" src="__IMG_CARRITO_LOGRADO__" alt="Carrito con el envío gratis ya alcanzado" hidden>
+        </div>
+      </figure>
+    </div>
+
+    <div class="aviso aviso--ojo">
+      <h3>Esto está apagado hasta que ustedes digan el número</h3>
+      <p>
+        La barra no aparece porque todavía no hay umbral cargado. Hoy el envío
+        sale <strong>Gs. 25.000</strong> en Gran Asunción y
+        <strong>Gs. 40.000</strong> al interior.
+      </p>
+      <p>
+        No lo puse yo, a propósito: depende del margen y es una decisión
+        comercial, no de programación. Si prometemos un envío gratis que el
+        número no banca, lo pagamos en cada pedido. Díganme el monto y se
+        enciende — es un solo valor y se activa en el carrito y en el
+        checkout a la vez.
+      </p>
+    </div>
+
+    <div class="aviso aviso--azul">
+      <h3>Dice "Destacado", no "Más vendido"</h3>
+      <p>
+        BPN puede poner BEST SELLER porque tiene las ventas. La marca que
+        usamos nosotros es una lista elegida a mano en los datos del sitio, no
+        un dato de ventas, así que la etiqueta dice lo que realmente es.
+      </p>
+      <p>
+        Si quieren el "más vendido" de verdad, se puede: las ventas están en
+        Odoo y ya le hablamos todos los días para traer precios y stock. Es
+        agregar una consulta más y cambiar el texto en un solo lugar. Queda
+        esperando a que se rote la clave del ERP, que sigue pendiente.
+      </p>
+    </div>
+
+    <h3 style="margin-top:38px">Depende de una decisión de ustedes</h3>
+    <ul class="lista">
+      <li>
+        <span class="marca">7</span>
+        <span><strong>Un recomendador por objetivo</strong> ("TAKE THE QUIZ" en
+        el menú de ellos). Tres o cuatro preguntas y sale con dos productos y
+        el motivo. Las metas y las categorías ya están cargadas; es trabajo,
+        pero no hay que inventar datos.</span>
+      </li>
+    </ul>
+
+    <h3 style="margin-top:38px">Depende de material que no tengo</h3>
+    <ul class="lista">
+      <li>
+        <span class="marca">8</span>
+        <span><strong>Fotos en los mosaicos de objetivo.</strong> Hoy son cuatro
+        rectángulos negros; en BPN cada uno lleva a alguien entrenando. Son
+        cuatro fotos.</span>
+      </li>
+      <li>
+        <span class="marca">9</span>
+        <span><strong>La tira de miniaturas de la ficha.</strong> Insisto porque
+        el código ya existe y funciona: busca las imágenes, no las
+        encuentra y se esconde. Con la tabla nutricional, el modo de uso y una
+        foto de uso por producto, aparece sola.</span>
+      </li>
+      <li>
+        <span class="marca">10</span>
+        <span><strong>Los nueve packshots de sabores.</strong> Ya explicado más
+        arriba, pero ahora se ve el hueco.</span>
+      </li>
+    </ul>
+
+    <h3 style="margin-top:38px">Esto no lo copiaría</h3>
+    <ul class="lista">
+      <li>
+        <span class="marca marca--no">A</span>
+        <span><strong>Reseñas y "lo que preguntan los clientes".</strong> Su Whey
+        tiene 9.306 reseñas; nosotros tenemos cero. Las estrellas del sitio
+        están apagadas justamente por eso. Poner puntajes inventados en un
+        sitio de suplementos es lo peor que podríamos hacer: es el rubro donde
+        la confianza es todo el producto. Cuando haya reseñas reales, el lugar
+        ya está hecho.</span>
+      </li>
+      <li>
+        <span class="marca marca--no">B</span>
+        <span><strong>La suscripción con 25% de descuento.</strong> No es un
+        diseño, es un modelo de negocio: necesita cobro recurrente y un
+        compromiso de stock. Se puede, pero es otra conversación.</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+
+<section>
+  <div class="env">
+    <p class="eyebrow">Mientras tanto</p>
+    <h2>Lo que apareció<br>revisando los datos</h2>
+    <p class="intro">
+      Nada de esto es diseño, pero sale a la luz cuando el diseño expone los
+      datos. Las fotos de sabor, por ejemplo, dejaron a la vista qué envases
+      no teníamos fotografiados.
+    </p>
+
+    <h3 style="margin-top:34px">Tres packshots que estaban en el Drive</h3>
+    <p class="intro">
+      Iso Plus 700 g en Naranja y en Tropic Blue, y Whey 700 g Vainilla Ice
+      Cream. Estaban en el Drive y nunca se habían copiado al proyecto: por
+      eso al elegir Tropic Blue aparecía un envase naranja. Ya están puestas.
+    </p>
+    <p class="intro">
+      De las otras seis que faltaban, ninguna existe — y ahora sabemos por
+      qué. <strong>Redweiler</strong> no lleva el sabor impreso en el frente:
+      Blueberry, Naranja y Red Punch se ven idénticos de frente, así que la
+      misma foto es la correcta para los tres. Y del <strong>Whey de 2.270 g</strong>
+      Olimp solo fotografió el envase genérico: la etiqueta de atrás viene en
+      blanco, esperando el sticker del sabor.
+    </p>
+
+    <div class="aviso aviso--ojo">
+      <h3>Y un dato de la web que estaba mal</h3>
+      <p>
+        La ficha de Iso Plus decía <strong>18 g de carbohidratos</strong> en el
+        recuadro grande y <strong>15 g</strong> en la tabla nutricional de más
+        abajo, en la misma página. El catálogo oficial confirma 15 g.
+        Corregido.
+      </p>
+      <p>
+        Aproveché y comparé los diez productos contra el catálogo, hoja por
+        hoja: códigos de barras, presentaciones, porciones por envase y
+        valores nutricionales. Todo lo demás coincide. Pero aparecieron
+        <strong>cinco errores en el catálogo impreso</strong> — entre ellos un
+        código de barras que no existe en Odoo y unas porciones invertidas.
+        Se los pasé aparte a marketing.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<section class="cierre">
+  <div class="env">
+    <p class="eyebrow">Cómo seguimos</p>
+    <h2>Se aprueba o se borra, sin costo</h2>
+    <p class="intro">
+      Todo esto vive en dos archivos aparte que se cargan encima de los que ya
+      estaban. El sitio actual no se tocó.
+    </p>
+    <ul class="lista">
+      <li>
+        <span class="marca">SÍ</span>
+        <span><strong>Si se aprueba:</strong> se funde en la hoja de estilos
+        principal, se saca el botón de cambiar y el diseño nuevo pasa a ser el
+        único.</span>
+      </li>
+      <li>
+        <span class="marca">NO</span>
+        <span><strong>Si no:</strong> se borran los dos archivos y no queda
+        rastro. Nada del sitio depende de esto.</span>
+      </li>
+    </ul>
+    <p class="firma">Vitalica · propuesta de dirección visual · __FECHA__</p>
+  </div>
+</section>
+
+
+<script>
+  /* Cambiar de pestaña muestra la otra imagen DENTRO del mismo marco. Como el
+     marco es el que tiene el scroll, la posición se mantiene sola y las dos
+     versiones se comparan por la misma franja de la página. */
+  document.querySelectorAll('.pestania').forEach(function (boton) {
+    boton.addEventListener('click', function () {
+      var par = boton.dataset.par;
+      var cual = boton.dataset.cual;
+
+      document.querySelectorAll('.pestania[data-par="' + par + '"]').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.dataset.cual === cual));
+      });
+      document.querySelectorAll('img[data-par="' + par + '"]').forEach(function (img) {
+        img.hidden = img.dataset.cual !== cual;
+      });
+    });
+  });
+</script>

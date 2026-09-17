@@ -1,0 +1,19 @@
+og-portada.webp — IMAGEN PARA COMPARTIR EN REDES
+================================================
+Es la que se ve cuando alguien pega el link de vitalica.com.py en
+WhatsApp, Facebook o Instagram. La declara index.html:
+
+  <meta property="og:image" content="https://vitalica.com.py/assets/img/og-portada.webp">
+
+Hoy es una copia de portadablanconegro.webp (1920x1080, 351 KB), puesta
+para que el link deje de compartirse sin imagen.
+
+La definitiva debería ser:
+  Tamaño  1200 x 630 px  (es la proporción que recortan las redes)
+  Peso    menos de 300 KB
+  Contenido  foto de campaña + logo Vitalica legible en chico. Acordate
+             de que en WhatsApp se ve como una miniatura: si lleva texto,
+             que sea grande y corto.
+
+Nota: la etiqueta apunta a una URL absoluta (https://vitalica.com.py/...).
+Abriendo la maqueta en local no se ve; recién funciona publicada.

@@ -1,0 +1,22 @@
+# Vitalica — vitalica.com.py
+# Qué puede recorrer un buscador y qué no.
+
+User-agent: *
+
+# Páginas internas: no aportan nada en resultados de búsqueda
+# y el panel no debería aparecer nunca.
+Disallow: /admin.html
+Disallow: /muestra.html
+Disallow: /vista-previa-ficha.html
+Disallow: /api/
+Disallow: /_respaldo-20260820/
+Disallow: /_descartado/
+
+# El carrito y el checkout son distintos para cada visitante:
+# indexarlos no sirve y puede mostrar páginas vacías en Google.
+Disallow: /carrito.html
+Disallow: /checkout.html
+
+Allow: /
+
+Sitemap: https://vitalica.com.py/sitemap.xml

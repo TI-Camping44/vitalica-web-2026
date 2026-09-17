@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página no encontrada · Vitalica</title>
+  <meta name="robots" content="noindex">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..900&family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/styles.css?v=47">
+
+  <!-- PROPUESTA DE REDISEÑO (estilo BPN). Inerte hasta que tema.js pone
+       data-tema="2026" en el <html>. Ver assets/css/tema-2026.css -->
+  <link rel="stylesheet" href="assets/css/tema-2026.css?v=47">
+  <script src="assets/js/tema.js?v=47"></script>
+</head>
+<body>
+
+  <!-- Pantalla de carga: tapa el instante en que el JS todavia no armo
+       el header ni el contenido. La quita main.js; si el JS fallara, la
+       animacion de seguridad de styles.css la desvanece igual. -->
+  <div class="cargando" data-cargando aria-hidden="true">
+    <p class="cargando__marca">VITA<span>LICA</span></p>
+    <p class="cargando__sub">Olimp Sport Nutrition</p>
+    <div class="cargando__barra"><span class="cargando__relleno" data-relleno></span></div>
+    <p class="cargando__pct" data-pct>0%</p>
+  </div>
+
+
+  <div id="chrome-top"></div>
+
+  <main>
+    <section class="seccion error-404">
+      <div class="contenedor">
+
+        <p class="eyebrow">Error 404</p>
+        <h1>Esta página no existe</h1>
+        <p class="error-404__texto">
+          Puede que el enlace esté mal escrito, o que la página haya cambiado de lugar.
+          No te quedes acá: abajo tenés por dónde seguir.
+        </p>
+
+        <div class="error-404__acciones">
+          <a class="btn btn--primario btn--grande" href="productos.html">Ver productos</a>
+          <a class="btn btn--contorno btn--grande" href="index.html">Ir al inicio</a>
+        </div>
+
+        <div class="error-404__atajos">
+          <h2>¿Buscabas alguna de estas?</h2>
+          <ul>
+            <li><a href="productos.html">Todos los productos de Olimp</a></li>
+            <li><a href="guia.html">Guías de uso — cómo y cuándo tomar cada suplemento</a></li>
+            <li><a href="contacto.html">Dónde comprar · locales adheridos</a></li>
+            <li><a href="contacto.html#envios">Envíos y entregas</a></li>
+            <li><a href="sobre.html">Quiénes somos</a></li>
+          </ul>
+        </div>
+
+        <p class="error-404__ayuda">
+          ¿No encontrás lo que buscabas? Escribinos por WhatsApp y te ayudamos.
+        </p>
+        <p><a class="btn btn--whatsapp" data-wa-404 href="#">Consultar por WhatsApp</a></p>
+
+      </div>
+    </section>
+
+    <!-- Los destacados. Quien cae en un 404 venía buscando algo para comprar,
+         así que la página no termina acá. Arranca oculta y la muestra
+         assets/js/pages/error404.js: si el JS fallara, no queda un título
+         huérfano arriba de una grilla vacía. -->
+    <section class="seccion seccion--suave" data-404-seccion hidden>
+      <div class="contenedor">
+        <div class="encabezado-seccion centrado">
+          <p class="eyebrow">Mientras tanto</p>
+          <h2>Lo más elegido de Olimp</h2>
+        </div>
+        <div class="grilla grilla--productos" data-404-productos></div>
+        <div class="centrado mt-6">
+          <a class="btn btn--contorno btn--grande" href="productos.html">Ver toda la línea</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="chrome-bottom"></div>
+
+  <script src="assets/js/precios.js?v=47"></script>
+  <script src="assets/js/data.js?v=47"></script>
+  <script src="assets/js/analitica.js?v=47"></script>
+  <script src="assets/js/cart.js?v=47"></script>
+  <script src="assets/js/components.js?v=47"></script>
+  <script src="assets/js/main.js?v=47"></script>
+  <script src="assets/js/pages/error404.js?v=47"></script>
+  <script>
+    /* El enlace de WhatsApp se arma con el número de data.js, para que no
+       quede un número escrito a mano que después nadie actualiza.
+       Se le manda la dirección que falló: sirve para detectar enlaces rotos
+       que estemos publicando en redes o en el catálogo impreso. */
+    (function () {
+      var a = document.querySelector('[data-wa-404]');
+      if (!a || typeof Vitalica === 'undefined') return;
+      a.href = Vitalica.linkWhatsapp(
+        'Hola Vitalica! Entré a una página del sitio que no existe (' +
+        window.location.pathname + ') y no encontré lo que buscaba.'
+      );
+      a.target = '_blank';
+      a.rel = 'noopener';
+    })();
+  </script>
+
+</body>
+</html>

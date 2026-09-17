@@ -1,0 +1,18 @@
+FUENTES DE MARCA — Degular
+==========================
+Ya están las 3 que declara assets/css/styles.css (@font-face, línea 31):
+
+  Degular-Regular.otf   (400)
+  Degular-Medium.otf    (500)
+  Degular-Bold.otf      (700)
+
+Se copiaron desde la raíz del proyecto, donde habían quedado sueltas.
+Son las mismas que usa vitalica.com.py (ahí viven en /fonts/).
+
+Si algún día faltan, el sitio NO se rompe: cae automáticamente a
+Montserrat/Inter, que es el fallback declarado en styles.css
+(--fuente-titulo). Solo se ve distinto.
+
+Las copias de la raíz se pueden borrar (Degular-Regular.otf,
+Degular-Medium.otf, Degular-Bold.otf). Las dos DegularDisplay-*.otf que
+también están en la raíz no las usa ninguna hoja de estilo.

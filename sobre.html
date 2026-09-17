@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiénes somos · Vitalica</title>
+  <meta name="description" content="Vitalica acerca la suplementación deportiva de calidad europea a Paraguay como representante exclusivo de Olimp Sport Nutrition.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..900&family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/styles.css?v=47">
+
+  <!-- PROPUESTA DE REDISEÑO (estilo BPN). Inerte hasta que tema.js pone
+       data-tema="2026" en el <html>. Ver assets/css/tema-2026.css -->
+  <link rel="stylesheet" href="assets/css/tema-2026.css?v=47">
+  <script src="assets/js/tema.js?v=47"></script>
+</head>
+<body>
+
+  <!-- Pantalla de carga: tapa el instante en que el JS todavia no armo
+       el header ni el contenido. La quita main.js; si el JS fallara, la
+       animacion de seguridad de styles.css la desvanece igual. -->
+  <div class="cargando" data-cargando aria-hidden="true">
+    <p class="cargando__marca">VITA<span>LICA</span></p>
+    <p class="cargando__sub">Olimp Sport Nutrition</p>
+    <div class="cargando__barra"><span class="cargando__relleno" data-relleno></span></div>
+    <p class="cargando__pct" data-pct>0%</p>
+  </div>
+
+
+  <div id="chrome-top"></div>
+
+  <main>
+
+    <!-- Hero -->
+    <section class="pagina-hero">
+      <div class="contenedor">
+        <p class="eyebrow">Vitalica</p>
+        <h1>Quiénes somos</h1>
+        <p>Acercamos a Paraguay la suplementación deportiva de calidad europea, con productos
+           originales y respaldo real. Sin atajos.</p>
+      </div>
+    </section>
+
+    <!-- Nuestra historia -->
+    <section class="seccion">
+      <div class="contenedor sobre-historia">
+        <div>
+          <p class="eyebrow">Nuestra historia</p>
+          <h2>De Polonia a Paraguay, sin bajar los estándares</h2>
+          <p>Vitalica nació para que los deportistas y las personas activas del Paraguay tengan
+             acceso a suplementación de primer nivel, sin tener que importarla por su cuenta ni
+             arriesgarse con productos de origen dudoso.</p>
+          <p>Somos el <strong>representante exclusivo de Olimp Sport Nutrition</strong> en el país:
+             una marca polaca con más de <strong>35 años</strong> de trayectoria, que fabrica en
+             su propia planta bajo estándares europeos. No somos revendedores; traemos el producto
+             directo del fabricante.</p>
+          <p>Eso cambia lo que podés esperar. Cada producto que comprás es original, llega con
+             <strong>garantía oficial y factura</strong>, y detrás tiene la formulación y el control
+             de calidad de un laboratorio, no una mezcla genérica reenvasada.</p>
+          <!-- Este párrafo es del catálogo oficial (Drive > CATALOGO HOJA POR HOJA,
+               página 2). Es una afirmación fuerte y aprobada por marketing: no
+               reescribirla sin consultar. -->
+          <p>Vitalica es la <strong>primera y única empresa paraguaya</strong> en importar
+             esta tecnología europea de grado farmacéutico al país. Al traer los estándares
+             más exigentes de la Unión Europea, garantizamos una pureza y eficacia superiores
+             a lo convencional.</p>
+          <p>Creemos en el trabajo bien hecho y en los resultados que se ganan con disciplina.
+             Por eso no prometemos milagros: ponemos las herramientas y la información, la
+             constancia la ponés vos.</p>
+
+          <!-- "100+ mercados" es un dato que Olimp publica en su propio sitio
+               (us.olimpsport.com). El resto sale de data.js y del brief. -->
+          <ul class="sobre-datos">
+            <li><strong>35+</strong><span>años de Olimp</span></li>
+            <li><strong>100+</strong><span>mercados de exportación</span></li>
+            <li><strong>100%</strong><span>productos originales</span></li>
+            <li><strong>Polonia</strong><span>fabricación propia</span></li>
+            <li><strong>Todo el país</strong><span>envíos a domicilio</span></li>
+          </ul>
+        </div>
+
+        <!-- Acá iba una foto de la planta de Olimp Labs. Se saco porque la
+             única copia que existe en el Drive es un thumbnail de 736x460
+             bajado de la web de Olimp — el nombre del archivo original lo
+             dice: "OlimpLab-1920x1200-27042020.736x460.jpg". Todo lo demas
+             (el jpg de 1200x1000 y un png de 5796x5936 de apenas 400 KB) son
+             agrandamientos de ese thumbnail, y por eso se ve pixelada.
+             Cuando Olimp mande la original de 1920x1200 se puede volver.
+
+             Mientras tanto va una foto propia de 5792x8688 px: el envase
+             real en la mano, que es de lo que habla el texto de al lado.
+             Esta va A COLOR y no en gris: el envase es un packshot en
+             contexto, y ahi el color es el dato. -->
+        <figure class="sobre-historia__media sobre-historia__media--color">
+          <img src="assets/img/producto-original.jpg"
+               alt="Caja de Vita-min Multiple Sport de Olimp en las manos de un deportista"
+               width="1400" height="2100" loading="lazy">
+          <figcaption>
+            <strong>Producto original</strong>
+            Cada envase llega de la planta de Olimp en Polonia, con su empaque de fábrica, garantía oficial y factura.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Tira de marca. Tres fotos a sangre, sin una sola palabra: corta el
+         texto justo donde la página se hacía larga. Arranca oculta y el CSS
+         la enciende solo en el diseño propuesto (ver tema-2026.css). -->
+    <section class="tira-marca" aria-hidden="true">
+      <img src="assets/img/marca/tira-1.jpg" alt="" width="800" height="1200" loading="lazy">
+      <img src="assets/img/marca/tira-2.jpg" alt="" width="800" height="533" loading="lazy">
+      <img src="assets/img/marca/tira-3.jpg" alt="" width="800" height="1200" loading="lazy">
+    </section>
+
+    <!-- Misión "Sin Atajos" -->
+    <section class="banda-sinatajos">
+      <div class="contenedor banda-sinatajos__inner">
+        <p class="eyebrow" style="color:var(--color-primario)">Nuestra filosofía</p>
+        <h2>Sin Atajos</h2>
+        <p>No vendemos milagros. Vendemos productos originales de calidad europea, información
+           honesta y acompañamiento. Las herramientas las ponemos nosotros; la constancia, vos.</p>
+      </div>
+    </section>
+
+    <!-- Pilares -->
+    <section class="seccion">
+      <div class="contenedor">
+        <div class="encabezado-seccion centrado">
+          <p class="eyebrow">Lo que nos define</p>
+          <h2>Nuestros pilares</h2>
+        </div>
+        <div class="beneficios-grid">
+          <div class="beneficio-card">
+            <span class="beneficio-card__icono"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <h3>Productos originales</h3><p>100% originales de Olimp, con garantía oficial y factura.</p>
+          </div>
+          <div class="beneficio-card">
+            <span class="beneficio-card__icono"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></span>
+            <h3>Calidad europea</h3><p>Olimp fabrica en Polonia con +35 años de experiencia y estándares europeos.</p>
+          </div>
+          <div class="beneficio-card">
+            <span class="beneficio-card__icono"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 2.4 5 5.6.8-4 4 1 5.5L12 19l-5 2.5 1-5.5-4-4 5.6-.8Z"/></svg></span>
+            <h3>Representante exclusivo</h3><p>Somos el representante exclusivo de Olimp Sport Nutrition en Paraguay.</p>
+          </div>
+          <div class="beneficio-card">
+            <span class="beneficio-card__icono"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg></span>
+            <h3>Asesoramiento experto</h3><p>Te ayudamos a elegir y a usar cada producto según tu objetivo.</p>
+          </div>
+          <div class="beneficio-card">
+            <span class="beneficio-card__icono"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3 2.7-5 6-5s6 2 6 5M16 20c0-2 .8-3.4 2-4"/></svg></span>
+            <h3>Comunidad</h3><p>Acompañamos a deportistas y personas activas en todo el país.</p>
+          </div>
+          <div class="beneficio-card">
+            <span class="beneficio-card__icono"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5a2 2 0 0 1 2-2h6v16H5a2 2 0 0 0-2 2ZM21 5a2 2 0 0 0-2-2h-6v16h6a2 2 0 0 1 2 2Z"/></svg></span>
+            <h3>Educación</h3><p>Guías claras sobre cómo y por qué usar cada suplemento.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA final -->
+    <section class="seccion seccion--suave">
+      <div class="contenedor centrado">
+        <h2>¿Listo para empezar sin atajos?</h2>
+        <p class="texto-apagado mt-2">Explorá la línea de Olimp o escribinos y te asesoramos.</p>
+        <div class="fila-cta mt-6">
+          <a class="btn btn--primario btn--grande" href="productos.html">Ver productos</a>
+          <a class="btn btn--contorno btn--grande" href="contacto.html">Dónde comprar</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="chrome-bottom"></div>
+
+  <!-- Precios de Odoo: los genera sync-odoo-precios.py. Va ANTES de data.js. -->
+  <script src="assets/js/precios.js?v=47"></script>
+  <script src="assets/js/data.js?v=47"></script>
+  <script src="assets/js/analitica.js?v=47"></script>
+  <script src="assets/js/cart.js?v=47"></script>
+  <script src="assets/js/components.js?v=47"></script>
+  <script src="assets/js/main.js?v=47"></script>
+  <script src="assets/js/popups.js?v=47"></script>
+
+</body>
+</html>

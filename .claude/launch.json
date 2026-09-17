@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "vitalica",
+      "runtimeExecutable": "powershell",
+      "runtimeArgs": ["-ExecutionPolicy", "Bypass", "-File", "servidor-local.ps1"],
+      "port": 4321
+    },
+    {
+      "name": "con-php",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["-S", "localhost:4323", "-t", "."],
+      "port": 4323
+    }
+  ]
+}

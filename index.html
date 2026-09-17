@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalica · Suplementación deportiva con respaldo — Olimp Sport Nutrition</title>
+  <meta name="description" content="Vitalica, representante exclusivo de Olimp Sport Nutrition en Paraguay. Proteínas, creatina, pre-entrenos y más. Sin atajos.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..900&family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+
+  <!-- Hoja de estilos del sitio. Es la MISMA que usan todas las páginas:
+       antes acá había una copia embebida que se desincronizaba. -->
+  <link rel="stylesheet" href="assets/css/styles.css?v=47">
+
+  <!-- PROPUESTA DE REDISEÑO (estilo BPN). Inerte hasta que tema.js pone
+       data-tema="2026" en el <html>. Ver assets/css/tema-2026.css -->
+  <link rel="stylesheet" href="assets/css/tema-2026.css?v=47">
+  <script src="assets/js/tema.js?v=47"></script>
+
+  <!-- Open Graph: cómo se ve el link al compartirlo en WhatsApp / redes -->
+  <meta property="og:title" content="Vitalica | Suplementos Deportivos en Paraguay">
+  <meta property="og:description" content="Suplementos de grado farmacéutico europeo en Paraguay. Representante exclusivo de OLIMP Sport Nutrition: proteínas, creatina y pre-entrenos. Sin atajos.">
+  <meta property="og:image" content="https://vitalica.com.py/assets/img/og-portada.webp">
+  <meta property="og:url" content="https://vitalica.com.py">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/png" href="assets/img/logo-vitalica.png">
+
+  <!-- Datos estructurados: le dice a Google qué es este negocio -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SportsStore",
+    "name": "Vitalica",
+    "image": "https://vitalica.com.py/assets/img/logo-vitalica.png",
+    "url": "https://vitalica.com.py",
+    "telephone": "+595976383922",
+    "email": "atencionalcliente@vitalica.com.py",
+    "address": { "@type": "PostalAddress", "addressCountry": "PY" },
+    "sameAs": [
+      "https://www.instagram.com/vitalica.py/",
+      "https://www.facebook.com/vitalica.py",
+      "https://www.tiktok.com/@vitalica.py"
+    ],
+    "description": "Suplementos de grado farmacéutico europeo en Paraguay. Representante exclusivo de OLIMP Sport Nutrition: proteínas, creatina y pre-entrenos. Sin atajos."
+  }
+  </script>
+
+</head>
+<body>
+
+  <!-- Pantalla de carga: tapa el instante en que el JS todavia no armo
+       el header ni el contenido. La quita main.js; si el JS fallara, la
+       animacion de seguridad de styles.css la desvanece igual. -->
+  <div class="cargando" data-cargando aria-hidden="true">
+    <p class="cargando__marca">VITA<span>LICA</span></p>
+    <p class="cargando__sub">Olimp Sport Nutrition</p>
+    <div class="cargando__barra"><span class="cargando__relleno" data-relleno></span></div>
+    <p class="cargando__pct" data-pct>0%</p>
+  </div>
+
+
+  <div id="chrome-top"></div>
+
+  <main>
+
+    <!-- 1) HERO (carrusel de 3 slides) -->
+    <section class="hero" data-hero aria-label="Destacados"></section>
+
+    <!-- 1b) CIENCIA REAL — los tres pilares de Olimp.
+         Va inmediatamente después del hero porque es lo que sostiene todo lo
+         demás: antes de mostrar productos, decimos por qué hay que creernos.
+         El contenido lo arma home.js desde VITALICA_CONFIG.ciencia. -->
+    <section class="seccion ciencia" data-ciencia aria-label="Respaldo científico"></section>
+
+    <!-- 2) PRODUCTOS OLIMP (los 10, cada card abre su página) -->
+    <section class="seccion" id="productos">
+      <div class="contenedor">
+        <div class="encabezado-seccion">
+          <p class="eyebrow">Nuestra línea</p>
+          <h2>Productos Olimp</h2>
+        </div>
+        <div class="grilla grilla--productos" data-productos></div>
+      </div>
+    </section>
+
+    <!-- 3) ¿QUÉ QUERÉS LOGRAR? (4 metas) -->
+    <section class="seccion seccion--suave">
+      <div class="contenedor">
+        <div class="encabezado-seccion centrado">
+          <p class="eyebrow">Comprá por objetivo</p>
+          <h2>¿Qué querés lograr?</h2>
+          <p>Elegí tu meta y te mostramos los productos de Olimp pensados para eso.</p>
+        </div>
+        <div class="categorias-grid" data-metas></div>
+      </div>
+    </section>
+
+    <!-- 4a) VALUE PROPS -->
+    <section class="trust-bar">
+      <div class="contenedor trust-bar__inner">
+        <div class="trust-bar__item">
+          <span class="trust-bar__icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="m9 14-2 7 5-3 5 3-2-7"/><path d="m9.6 9 1.7 1.7L15 7.5"/></svg></span>
+          <span class="trust-bar__texto"><strong>Productos originales</strong><span>garantía Olimp oficial</span></span>
+        </div>
+        <div class="trust-bar__item">
+          <span class="trust-bar__icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4h13v12H1z"/><path d="M14 8h4l3 3v5h-7"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></span>
+          <span class="trust-bar__texto"><strong>Envíos a todo el país</strong><span>Asunción e interior</span></span>
+        </div>
+        <div class="trust-bar__item">
+          <span class="trust-bar__icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg></span>
+          <span class="trust-bar__texto"><strong>Asesoramiento experto</strong><span>te ayudamos a elegir</span></span>
+        </div>
+        <div class="trust-bar__item">
+          <span class="trust-bar__icono"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+          <span class="trust-bar__texto"><strong>Pedí por WhatsApp</strong><span>un asesor te acompaña</span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4b) BANDA DE MARCA "SIN ATAJOS" -->
+    <section class="banda-sinatajos">
+      <div class="contenedor banda-sinatajos__inner">
+        <p class="eyebrow" style="color:var(--color-primario)">Sin Atajos</p>
+        <h2>Resultados por disciplina, no por milagros.</h2>
+        <p>En Vitalica no creemos en los atajos: solo en productos originales de calidad europea,
+           información honesta y constancia. Te damos las herramientas; el trabajo lo ponés vos.</p>
+        <a class="btn btn--primario btn--grande" href="sobre.html">Conocé Vitalica</a>
+      </div>
+    </section>
+
+    <!-- 4b-bis) EMBAJADORES DE OLIMP.
+         Prueba social: los atletas del equipo internacional usan exactamente
+         la misma línea que traemos. home.js lo arma desde
+         VITALICA_CONFIG.embajadores. -->
+    <section class="seccion embajadores" data-embajadores aria-label="Embajadores de Olimp"></section>
+
+    <!-- 4c) ALIADOS COMERCIALES (locales donde se consigue Olimp) -->
+    <section class="seccion">
+      <div class="contenedor">
+        <div class="encabezado-seccion centrado">
+          <p class="eyebrow">Puntos de venta</p>
+          <h2 data-aliados-titulo>Nuestros aliados comerciales</h2>
+          <p data-aliados-texto>Encontrá toda la línea OLIMP de Vitalica en las principales cadenas, farmacias, gimnasios y tiendas de suplementos del país.</p>
+        </div>
+        <!-- home.js arma los logos desde VITALICA_CONFIG.aliados (editable) -->
+        <div class="aliados__grid" data-aliados></div>
+        <div class="centrado mt-6">
+          <a href="contacto.html" class="btn btn--contorno btn--grande">Ver dónde comprar</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4d) TEASER GUÍA DE USO -->
+    <section class="seccion seccion--suave">
+      <div class="contenedor">
+        <div class="encabezado-seccion">
+          <p class="eyebrow">Guía de uso</p>
+          <h2>Cómo y por qué usar cada suplemento</h2>
+          <p>Información clara y sin mitos: la ciencia de la suplementación explicada simple.</p>
+        </div>
+        <div class="blog-grid" data-articulos></div>
+        <div class="centrado mt-6">
+          <a href="guia.html" class="btn btn--contorno btn--grande">Ver todas las guías</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4e) COMUNIDAD / INSTAGRAM (estilo vitalica.com.py) -->
+    <section class="seccion">
+      <div class="contenedor">
+        <div class="encabezado-seccion centrado">
+          <p class="eyebrow">Instagram</p>
+          <h2>Sumate a la comunidad</h2>
+          <p>Seguinos en <strong data-ig-handle>@vitalica.py</strong> y recibí tips, noticias y lanzamientos exclusivos pensados para vos.</p>
+        </div>
+        <!-- Los posteos los arma home.js desde data.js (editable en el panel admin) -->
+        <div class="ig-grid" data-instagram></div>
+        <div class="centrado mt-6">
+          <a class="btn btn--contorno btn--grande" data-ig-link href="https://www.instagram.com/vitalica.py/" target="_blank" rel="noopener">Seguir a @vitalica.py</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4f) NEWSLETTER -->
+    <section class="newsletter">
+      <div class="contenedor newsletter__inner">
+        <div>
+          <h2>Recibí novedades en tu correo</h2>
+          <p>Tips de entrenamiento, lanzamientos y novedades. Sin spam.</p>
+        </div>
+        <form class="newsletter__form" data-form-demo="¡Gracias! Te suscribiste (demostración).">
+          <input type="email" required placeholder="Tu correo electrónico" aria-label="Correo electrónico">
+          <button type="submit" class="btn btn--primario">Suscribirme</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="chrome-bottom"></div>
+
+  <!-- ============================================================
+       Scripts del sitio. Mismo archivo y mismo orden que el resto
+       de las páginas: antes acá había una copia embebida de cada
+       uno, y editar assets/js/ no cambiaba el home.
+
+       precios.js va ANTES de data.js: define window.VITALICA_PRECIOS
+       y data.js lo lee para completar los precios de Odoo.
+       Ese archivo lo regenera sync-odoo-precios.py.
+       ============================================================ -->
+  <script src="assets/js/precios.js?v=47"></script>
+  <script src="assets/js/data.js?v=47"></script>
+  <script src="assets/js/analitica.js?v=47"></script>
+  <script src="assets/js/cart.js?v=47"></script>
+  <script src="assets/js/components.js?v=47"></script>
+  <script src="assets/js/main.js?v=47"></script>
+  <script src="assets/js/popups.js?v=47"></script>
+  <script src="assets/js/pages/home.js?v=47"></script>
+
+
+</body>
+</html>

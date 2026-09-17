@@ -1,0 +1,132 @@
+FOTOS DEL HERO (carrusel de la home)
+====================================
+Las rutas las define assets/js/data.js -> VITALICA_HERO. index.html ya no
+tiene los datos escritos adentro: se cambia en data.js y listo.
+
+  portada-1.jpg   slide 1 · "Sin Atajos"
+  portada-2.jpg   slide 2 · "Más potencia en cada serie"
+  portada-3.jpg   slide 3 · "35+ años de ciencia deportiva"
+
+NO SE EDITAN A MANO
+-------------------
+Las tres se generan con  herramientas/generar-portadas.ps1  a partir de
+fotos que ya están en el proyecto. Si querés cambiar una portada, tocá
+ese script y volvé a correrlo; no reemplaces el .jpg suelto, porque a la
+próxima corrida se pisa.
+
+    powershell -ExecutionPolicy Bypass -File herramientas/generar-portadas.ps1
+
+POR QUÉ SE GENERAN Y NO SE USAN LAS FOTOS TAL CUAL
+--------------------------------------------------
+Antes cada slide venía de una foto distinta sin tratar: el collage en
+blanco y negro, una foto de gimnasio virada a teal/naranja, y un gráfico
+navy. El carrusel cambiaba de registro cada 5 segundos y se veía armado a
+pedazos en vez de como una marca.
+
+El script pasa las tres por el mismo proceso:
+
+  1. fondo navy oscuro idéntico
+  2. la foto a escala de grises y después teñida de azul (duotono).
+     El paso por gris NO es decorativo: si se tiñe la foto a color, el
+     virado original de cada una se filtra por debajo y vuelve la
+     incoherencia.
+  3. el peso visual siempre a la derecha, y el aire a la izquierda, que
+     es donde cae el título.
+
+El slide 2 no es un recorte sino una composición: la foto original es
+vertical (4320x6480) y cualquier franja de 3:1 sacada de ahí queda como
+una tira sin contexto. Entra como panel a la derecha, con el borde
+izquierdo disuelto en el fondo.
+
+TAMAÑO: 2400 x 800 (3:1) — NO 1920x800
+--------------------------------------
+El hero recorta con object-fit: cover, así que la proporción importa más
+que el tamaño. Con el alto fijo que tenía antes (480 px), en una pantalla
+de 1920 el hero quedaba en 4:1 y "cover" se comía un tercio de la imagen
+a lo alto: eso era lo que se veía cortado.
+
+Se arregló por los dos lados, en assets/css/styles.css:
+
+  .hero__slide--banner .hero__inner  ->  min-height: clamp(440px, 32vw, 600px)
+      el alto crece con el ancho, así el hero se queda cerca de 3:1
+      (medido: 2.64:1 a 1280 de ancho, 3.18:1 a 1920)
+
+  .hero__cover  ->  object-position: 78% 42%
+      el 78% importa en celular, donde el hero es vertical y el recorte
+      pasa a ser horizontal: mantiene dentro al sujeto, que está a la
+      derecha. El 42% importa en pantalla ancha, donde el recorte es
+      vertical: deja las cabezas dentro.
+
+Si algún día se cambian esos valores, hay que revisar las portadas.
+
+EL VELO LO PONE EL CSS, NO LA IMAGEN
+------------------------------------
+.hero__slide--banner::after dibuja el degradado oscuro sobre el que se
+lee el título, y en celular lo cambia por uno vertical. Por eso las
+imágenes se generan SIN velo: si se hornea en el .jpg se suman los dos y
+el lado del título queda apagado, además de pelearse en celular.
+
+SI VES UNA PORTADA ROTA Y LAS OTRAS BIEN
+---------------------------------------
+Casi seguro NO es el archivo: es un cambio guardado desde admin.php.
+
+El panel guarda lo que editás en localStorage['vitalica_overrides'], y
+data.js aplica eso ENCIMA de los valores de fábrica. Si el override apunta
+a un archivo que ya no existe —pasó de verdad: quedó guardado un
+portada-1.webp de cuando las portadas eran .webp— ese slide se rompe solo
+en TU navegador, y en cualquier otro se ve bien. Eso es lo que despista.
+
+Cómo confirmarlo en 5 segundos: mirá la consola del servidor local. Si
+aparece una línea así, es esto y no otra cosa:
+
+    404 /assets/img/hero/portada-1.webp
+
+Desde que existe el respaldo (ver abajo) la portada ya no se rompe: vuelve
+sola a la de fábrica y deja un aviso en la consola del navegador. Pero el
+override sigue ahí y hace un pedido 404 al pedo en cada carga. Para
+limpiarlo de verdad: entrar a admin.php y usar "Restablecer".
+
+EL RESPALDO DE LA PORTADA
+-------------------------
+data.js guarda la imagen original en s.imagenPorDefecto ANTES de pisarla
+con el override, y home.js engancha un listener de 'error' en cada
+.hero__cover que vuelve a esa imagen si la del override no carga.
+
+Va como addEventListener y NO como atributo onerror="..." en el HTML:
+el HTML de los slides se arma concatenando cadenas, y meter comillas
+anidadas ahí adentro rompe el archivo entero (ya pasó una vez).
+
+CACHÉ
+-----
+El servidor local manda Cache-Control: no-store, porque los archivos
+cambian todo el tiempo mientras se trabaja. Si aun así ves algo viejo,
+Ctrl+Shift+R.
+
+PARA VER CÓMO QUEDAN SIN ABRIR EL NAVEGADOR
+-------------------------------------------
+    powershell -ExecutionPolicy Bypass -File herramientas/simular-portadas.ps1
+
+Reproduce el recorte de object-fit y el velo del CSS, y deja dos imágenes
+en _previsualizacion/ : una como se ve en pantalla ancha y otra en celular.
+
+SI SE CAMBIAN LAS FOTOS DE ORIGEN
+---------------------------------
+  Encuadre  el sujeto a la DERECHA. Sobre la izquierda cae el velo; si el
+            sujeto queda ahí, se lo come.
+  Peso      menos de 300 KB cada una.
+  Contenido gente entrenando o ambiente, NO envases sueltos sobre fondo
+            plano (para eso existe el modo 'producto' del hero).
+
+Salen en .jpg y no en .webp porque Windows sabe LEER webp pero no sabe
+escribirlo. El .jpg anda en todos los navegadores; si se instala cwebp se
+pueden regenerar y ahorrar ~30% de peso.
+
+DESCARTADA PARA EL HERO
+-----------------------
+La foto del corredor de trail que estaba en el slide 2 (venía de
+ISOTONICAS.webp): muestra a una persona identificable con dorsal de una
+carrera ajena ("FERTUB"), lo que es riesgo de derechos de imagen en una
+pieza de marca. El archivo sigue en la raíz por si hace falta.
+
+Los textos, botones y el modo ('banner' o 'producto') de cada slide se
+editan en assets/js/data.js -> VITALICA_HERO, o desde admin.html.

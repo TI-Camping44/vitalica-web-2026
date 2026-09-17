@@ -1,0 +1,428 @@
+<title>Guía del Equipo Vitalica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Public+Sans:wght@400;500;600&display=swap">
+
+<style>
+  /* Paleta del Manual de marca de Vitalica. Neutros cálidos: un gris puro al
+     lado del naranja se ve sucio. */
+  :root {
+    --ground:#FBFAF9; --surface:#FFFFFF; --surface-alt:#F3F1EF;
+    --ink:#262528; --ink-soft:#63605F; --line:#E4E1DE;
+    --naranja:#EF7D2A; --naranja-txt:#A85410;
+    --azul:#0B55A3; --azul-suave:#EEF3FA;
+    --ok:#1F7A46; --ok-suave:#EDF7F1;
+    --alerta:#B3541E; --alerta-suave:#FDF3EA;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:#1A1918; --surface:#232120; --surface-alt:#2C2928;
+      --ink:#F2EFEC; --ink-soft:#A9A4A0; --line:#373432;
+      --naranja:#F79148; --naranja-txt:#F79148;
+      --azul:#6BA5E6; --azul-suave:#1E2833;
+      --ok:#5FC98C; --ok-suave:#1B2A21;
+      --alerta:#E8A06A; --alerta-suave:#2E241C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#1A1918; --surface:#232120; --surface-alt:#2C2928;
+    --ink:#F2EFEC; --ink-soft:#A9A4A0; --line:#373432;
+    --naranja:#F79148; --naranja-txt:#F79148;
+    --azul:#6BA5E6; --azul-suave:#1E2833;
+    --ok:#5FC98C; --ok-suave:#1B2A21;
+    --alerta:#E8A06A; --alerta-suave:#2E241C;
+  }
+
+  * { box-sizing:border-box }
+  body {
+    margin:0; background:var(--ground); color:var(--ink);
+    font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  .env { max-width:820px; margin:0 auto; padding:0 24px }
+  h1,h2,h3,.eyebrow,.paso__n { font-family:Archivo,system-ui,sans-serif }
+
+  .eyebrow {
+    font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--naranja-txt); margin:0 0 10px;
+  }
+
+  header.top { padding:56px 0 36px; border-bottom:1px solid var(--line) }
+  h1 { font-size:clamp(30px,5vw,44px); font-weight:800; line-height:1.08;
+       letter-spacing:-.02em; margin:0 0 14px; text-wrap:balance }
+  .bajada { font-size:17px; color:var(--ink-soft); max-width:62ch; margin:0 }
+
+  section { padding:44px 0; border-bottom:1px solid var(--line) }
+  section:last-of-type { border-bottom:0 }
+  h2 { font-size:25px; font-weight:700; letter-spacing:-.015em; margin:0 0 8px; text-wrap:balance }
+  h3 { font-size:17px; font-weight:700; margin:26px 0 6px }
+  p { max-width:66ch }
+  .intro { color:var(--ink-soft); max-width:64ch; margin:0 0 24px }
+
+  /* --- Avisos --- */
+  .aviso { border-radius:10px; padding:18px 22px; margin:22px 0; font-size:15px }
+  .aviso p { margin:6px 0 0 }
+  .aviso strong:first-child { font-family:Archivo,sans-serif; font-size:16px }
+  .aviso--ok     { background:var(--ok-suave);     border:1px solid color-mix(in srgb,var(--ok) 30%,transparent) }
+  .aviso--ojo    { background:var(--alerta-suave); border:1px solid color-mix(in srgb,var(--alerta) 34%,transparent) }
+  .aviso--dato   { background:var(--azul-suave);   border:1px solid color-mix(in srgb,var(--azul) 22%,transparent) }
+  .aviso--ok strong:first-child   { color:var(--ok) }
+  .aviso--ojo strong:first-child  { color:var(--alerta) }
+  .aviso--dato strong:first-child { color:var(--azul) }
+
+  /* --- Accesos --- */
+  .llaves { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:20px }
+  @media (max-width:660px){ .llaves{grid-template-columns:1fr} }
+  .llave { background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:20px 22px }
+  .llave h3 { margin:0 0 4px; font-size:16px }
+  .llave__que { font-size:14px; color:var(--ink-soft); margin:0 0 14px }
+  .llave dl { margin:0; display:grid; grid-template-columns:auto 1fr; gap:6px 12px; font-size:14px }
+  .llave dt { color:var(--ink-soft) }
+  .llave dd { margin:0; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px;
+              word-break:break-all }
+
+  /* --- Pasos --- */
+  .paso { display:grid; grid-template-columns:38px 1fr; gap:18px; margin-top:30px }
+  .paso__n {
+    width:32px; height:32px; border-radius:50%; display:flex; align-items:center;
+    justify-content:center; font-weight:700; font-size:15px;
+    background:var(--naranja); color:#fff; margin-top:2px;
+  }
+  .paso h3 { margin:2px 0 6px }
+  .paso p { margin:0 0 10px }
+
+  figure { margin:16px 0 0 }
+  figure img {
+    display:block; width:100%; height:auto; border-radius:8px;
+    border:1px solid var(--line); background:var(--surface);
+  }
+  figcaption { font-size:13px; color:var(--ink-soft); margin-top:8px }
+
+  ul.lista { margin:10px 0 0; padding-left:20px; font-size:15px; color:var(--ink-soft) }
+  ul.lista li { margin-bottom:7px }
+  ul.lista strong { color:var(--ink) }
+
+  code { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px;
+         background:var(--surface-alt); border-radius:4px; padding:2px 6px }
+
+  /* --- Estados del pedido --- */
+  .flujo { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0 }
+  .flujo span {
+    font-size:13px; padding:5px 12px; border-radius:999px;
+    background:var(--surface-alt); border:1px solid var(--line);
+  }
+  .flujo span:first-child { background:var(--naranja); color:#fff; border-color:transparent }
+
+  table { border-collapse:collapse; width:100%; font-size:14px; margin-top:16px }
+  th,td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top }
+  th { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); font-weight:700 }
+
+  .cierre { padding:40px 0 70px }
+  strong { font-weight:600; color:var(--ink) }
+  a { color:var(--azul) }
+
+  /* ==========================================================================
+     IMPRESIÓN
+     --------------------------------------------------------------------------
+     Se fuerzan los colores claros: la página se ve en el tema de quien la abre,
+     y si esa persona tiene el modo oscuro puesto, al imprimir saldrían hojas
+     negras. Acá siempre sale sobre blanco.
+
+     print-color-adjust: exact es necesario para que los recuadros de aviso
+     conserven su fondo; sin eso el navegador los imprime en blanco y se pierde
+     la diferencia entre "probá tranquilo" y "ojo con esto".
+     ========================================================================== */
+  @media print {
+    :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+      --ground:#FFFFFF; --surface:#FFFFFF; --surface-alt:#F4F2F0;
+      --ink:#1B1A1C; --ink-soft:#55524F; --line:#D8D4D0;
+      --naranja:#EF7D2A; --naranja-txt:#A85410;
+      --azul:#0B55A3; --azul-suave:#EEF3FA;
+      --ok:#1F7A46; --ok-suave:#EDF7F1;
+      --alerta:#B3541E; --alerta-suave:#FDF3EA;
+    }
+
+    * { -webkit-print-color-adjust:exact; print-color-adjust:exact }
+
+    @page { margin:16mm 14mm }
+
+    body { font-size:10.5pt; line-height:1.5; background:#fff }
+    .env { max-width:none; padding:0 }
+
+    /* Nada de esto puede partirse a la mitad entre dos hojas */
+    .paso, .aviso, figure, .llave, table, .flujo { break-inside:avoid; page-break-inside:avoid }
+    h1, h2, h3 { break-after:avoid; page-break-after:avoid }
+
+    /* Cada parte grande arranca en hoja nueva, menos la primera */
+    section { border-bottom:0; padding:22px 0 }
+    section + section { break-before:page; page-break-before:always }
+
+    header.top { padding:0 0 20px }
+    h1 { font-size:26pt }
+    h2 { font-size:16pt }
+    h3 { font-size:12pt }
+
+    /* Una captura no puede ocuparse una hoja entera */
+    figure img { max-height:105mm; object-fit:contain; object-position:left top }
+
+    /* Los enlaces impresos no sirven si no se ve a dónde van */
+    a[href^="http"]::after { content:" (" attr(href) ")"; font-size:9pt; color:var(--ink-soft) }
+  }
+</style>
+
+<div class="env">
+
+<header class="top">
+  <p class="eyebrow">Vitalica · Entorno de pruebas</p>
+  <h1>Guía para probar la web</h1>
+  <p class="bajada">
+    Cómo entrar, qué mirar y qué esperar de cada parte. Está pensada para
+    recorrerla con el sitio abierto al lado.
+  </p>
+</header>
+
+<section>
+  <div class="aviso aviso--ok">
+    <strong>Nada de lo que hagas acá es real.</strong>
+    <p>
+      Este es un sitio aparte del que ven los clientes. Podés cargar pedidos,
+      escribir cualquier cosa y romper lo que quieras: no se manda ningún correo,
+      no entra nada al sistema y ningún cliente se entera. Probá sin miedo.
+    </p>
+  </div>
+
+  <h2>Cómo entrar</h2>
+  <p class="intro">
+    Hay dos puertas distintas. La primera es para ver la web; la segunda, para
+    entrar a los paneles internos.
+  </p>
+
+  <div class="llaves">
+    <div class="llave">
+      <h3>1 · La web</h3>
+      <p class="llave__que">El navegador pide esto apenas abrís la dirección.</p>
+      <dl>
+        <dt>Dirección</dt><dd>pruebas.vitalica.com.py</dd>
+        <dt>Usuario</dt><dd>vitalica</dd>
+        <dt>Clave</dt><dd>Pruebas-Vitalica-2026</dd>
+      </dl>
+    </div>
+    <div class="llave">
+      <h3>2 · Los paneles</h3>
+      <p class="llave__que">Pedidos, configuración y equipo.</p>
+      <dl>
+        <dt>Dirección</dt><dd>pruebas.vitalica.com.py/api/acceso.php</dd>
+        <dt>Usuario</dt><dd>Admin</dd>
+        <dt>Clave</dt><dd>Pruebas-Admin-2026</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="aviso aviso--ojo" style="margin-top:22px">
+    <strong>Estas claves son solo de pruebas.</strong>
+    <p>
+      En el sitio real son distintas, a propósito. Así, si alguna se filtra por
+      un grupo de WhatsApp, no abre nada que importe.
+    </p>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Parte 1</p>
+  <h2>La web, como la ve un cliente</h2>
+
+  <div class="paso">
+    <span class="paso__n">1</span>
+    <div>
+      <h3>La portada</h3>
+      <p>
+        Tres imágenes que van rotando. El texto es el que definió marketing:
+        <em>"El progreso no se promete. Se construye."</em>
+      </p>
+      <p>Justo debajo está <strong>Ciencia real</strong>, con los tres pilares de
+        Olimp: innovación, calidad certificada y la tecnología SHIME®.</p>
+      <ul class="lista">
+        <li><strong>Mirá que</strong> las tres portadas se sientan de la misma familia al rotar.</li>
+        <li><strong>Probá</strong> el botón naranja <em>Hacé tu pedido</em>: abre WhatsApp de atención al cliente.</li>
+        <li><strong>Abajo de todo</strong> aparece el cartel de cookies. Hasta que no lo aceptes, no se mide nada.</li>
+      </ul>
+      <figure>
+        <img src="__IMG_HOME__" alt="Portada del sitio con el carrusel y la barra de anuncios">
+        <figcaption>La portada, con el cartel de cookies abajo.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="paso">
+    <span class="paso__n">2</span>
+    <div>
+      <h3>Una ficha de producto</h3>
+      <p>
+        Es la pantalla que más cambió. Entrá a cualquier producto desde
+        <strong>Productos</strong> y bajá despacio.
+      </p>
+      <ul class="lista">
+        <li><strong>Sabor y tamaño:</strong> al cambiarlos se actualizan el precio, el stock y la foto.</li>
+        <li><strong>Lo que lo hace distinto:</strong> los cuatro diferenciales del catálogo.</li>
+        <li><strong>Cómo aprovecharlo:</strong> la ficha de uso completa — dosificación por perfil, errores comunes, qué esperar y conservación.</li>
+        <li><strong>Ficha del producto:</strong> la tabla nutricional entera. Redweiler tiene 22 filas.</li>
+      </ul>
+      <figure>
+        <img src="__IMG_PRODUCTO__" alt="Ficha de producto con el selector de sabor y tamaño">
+        <figcaption>El selector de sabor y presentación, arriba de todo.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="paso">
+    <span class="paso__n">3</span>
+    <div>
+      <h3>Quiénes somos y Puntos de venta</h3>
+      <p>
+        En <strong>Olimp</strong> está la planta de Olimp Labs y la frase que salió
+        del catálogo: Vitalica es la primera y única empresa paraguaya en importar
+        esta tecnología. En <strong>Puntos de venta</strong>, los once comercios aliados.
+      </p>
+      <figure>
+        <img src="__IMG_QUIENES_SOMOS__" alt="Sección Quiénes somos con la foto de la planta de Olimp">
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Parte 2</p>
+  <h2>Hacer un pedido de prueba</h2>
+  <p class="intro">
+    Es lo más útil que podés probar, porque recorre todo de una: producto,
+    carrito, checkout y panel.
+  </p>
+
+  <ul class="lista">
+    <li>Elegí un producto, sabor y tamaño, y <strong>Agregar al carrito</strong>.</li>
+    <li>En el checkout completá los datos. <strong>Poné "PRUEBA" en el nombre</strong> para reconocerlo después.</li>
+    <li>Elegí forma de entrega: las de envío suman el costo al total.</li>
+    <li><strong>Enviar pedido por WhatsApp</strong>. Se abre WhatsApp con el pedido escrito — no hace falta mandarlo.</li>
+  </ul>
+
+  <figure>
+    <img src="__IMG_CHECKOUT__" alt="Pantalla de confirmación con el número de pedido">
+    <figcaption>Al terminar aparece el número de pedido. Con ese número lo buscás en el panel.</figcaption>
+  </figure>
+
+  <div class="aviso aviso--ok">
+    <strong>El correo no sale.</strong>
+    <p>
+      En pruebas los correos se guardan como archivo en vez de enviarse. Aunque
+      pongas el correo de un cliente de verdad, no le llega nada.
+    </p>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Parte 3</p>
+  <h2>Los paneles internos</h2>
+  <p class="intro">
+    Se entra por una sola puerta y desde ahí se elige a dónde ir.
+  </p>
+
+  <figure>
+    <img src="__IMG_MENU_INTERNO__" alt="Menú interno con Pedidos, Configuración y Equipo">
+  </figure>
+
+  <h3>Pedidos</h3>
+  <p>
+    Es donde logística y ventas trabajan. Arriba, cuatro números: sin atender,
+    en curso, entraron hoy y vendido este mes.
+  </p>
+  <p>Cada pedido se despliega haciendo clic. Adentro está todo lo que hace falta
+    para atenderlo, y un botón verde que abre WhatsApp con el cliente.</p>
+
+  <figure>
+    <img src="__IMG_PEDIDO_DETALLE__" alt="Un pedido desplegado con su línea de estados">
+    <figcaption>Un pedido abierto: estados, productos, cliente, entrega y forma de pago.</figcaption>
+  </figure>
+
+  <p style="margin-top:22px">El pedido avanza por seis estados:</p>
+  <div class="flujo">
+    <span>Nuevo</span><span>Contactado</span><span>Confirmado</span>
+    <span>Preparando</span><span>Enviado</span><span>Entregado</span>
+  </div>
+  <ul class="lista" style="margin-top:14px">
+    <li><strong>Responsable:</strong> quién lo está atendiendo. Conviene asignarlo siempre.</li>
+    <li><strong>Nota interna:</strong> la ve el equipo, nunca el cliente.</li>
+    <li>El pedido original <strong>no se modifica nunca</strong>: los cambios se guardan aparte. Lo que pidió el cliente queda tal como entró.</li>
+  </ul>
+
+  <h3>Configuración</h3>
+  <p>
+    Permite cambiar textos, logos, el carrusel, promociones, costos de envío y
+    la lista de comercios aliados, sin tocar código.
+  </p>
+
+  <div class="aviso aviso--ojo">
+    <strong>Lo que cambies acá se ve solo en tu navegador.</strong>
+    <p>
+      Es la confusión más común. Cambiás algo, recargás, lo ves distinto… pero
+      <strong>nadie más lo ve</strong>: queda guardado en tu computadora. Para que
+      un cambio salga publicado de verdad hay que pasarlo al sitio.
+    </p>
+    <p>
+      Usá <strong>Exportar</strong> para bajar lo que configuraste y pasárselo a
+      quien lo publique. <strong>Restablecer</strong> borra tus cambios y vuelve a
+      mostrar el sitio como está.
+    </p>
+  </div>
+
+  <figure>
+    <img src="__IMG_CONFIGURACION__" alt="Panel de configuración del sitio">
+  </figure>
+
+  <h3>Equipo</h3>
+  <p>Alta y baja de las personas que pueden entrar. Hay dos permisos:</p>
+  <table>
+    <thead><tr><th>Permiso</th><th>Qué puede hacer</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Pedidos</strong></td><td>Solo el panel de pedidos. No ve configuración ni equipo. Es el que corresponde a logística y ventas.</td></tr>
+      <tr><td><strong>Administrador</strong></td><td>Todo, incluida el alta de usuarios.</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:14px">
+    Conviene que cada persona tenga su usuario: así en cada pedido queda
+    registrado quién lo atendió.
+  </p>
+  <figure>
+    <img src="__IMG_EQUIPO__" alt="Pantalla de gestión de usuarios">
+  </figure>
+</section>
+
+<section>
+  <h2>Qué mirar con ojo crítico</h2>
+  <p class="intro">Estas son las cosas donde más ayuda que nos digan si algo no cierra.</p>
+  <ul class="lista">
+    <li><strong>Los textos de producto.</strong> Son los del catálogo y los documentos de marketing, copiados tal cual. Si algo quedó mal o desactualizado, se corrige en el documento original y se vuelve a generar.</li>
+    <li><strong>Las fotos por sabor.</strong> Nueve sabores todavía no tienen foto propia: se ve el envase del tamaño correcto pero sin el sabor impreso.</li>
+    <li><strong>Los precios y el stock.</strong> Salen de Odoo, pero de una foto tomada al último sync. Pueden estar desfasados unas horas.</li>
+    <li><strong>En el celular.</strong> La mayoría va a entrar desde el teléfono. Si algo se ve apretado o cortado, avisá.</li>
+  </ul>
+
+  <div class="aviso aviso--dato">
+    <strong>Un detalle conocido</strong>
+    <p>
+      Cuando un producto está sin stock, el sitio lo dice pero <strong>igual deja
+      comprarlo</strong>. Falta decidir si conviene bloquear la compra o permitirla
+      con un aviso del tipo "te avisamos cuando llegue".
+    </p>
+  </div>
+</section>
+
+<div class="cierre">
+  <p class="eyebrow">Para tener presente</p>
+  <p style="color:var(--ink-soft)">
+    Todo lo que se prueba acá pasa después al sitio real solo cuando se aprueba.
+    Ese es el sentido de tener este entorno: que nada llegue a un cliente sin
+    haber pasado primero por acá.
+  </p>
+</div>
+
+</div>

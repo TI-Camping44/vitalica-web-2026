@@ -1,0 +1,130 @@
+<!doctype html>
+<!--
+  ============================================================================
+  VITALICA — Plantilla del correo de confirmación al cliente
+  ============================================================================
+  La usa api/pedido.php. Podés editarla sin saber PHP: es HTML común.
+
+  LO QUE HAY ENTRE LLAVES SE REEMPLAZA SOLO:
+    {{NUMERO}}        número de pedido (VIT-260820-1234)
+    {{NOMBRE}}        nombre del cliente
+    {{FILAS}}         las líneas de productos (las arma el PHP)
+    {{SUBTOTAL}}      Gs. 1.150.000
+    {{ENVIO}}         Gs. 25.000
+    {{TOTAL}}         Gs. 1.175.000
+    {{ENTREGA}}       dirección o local de retiro
+    {{PAGO}}          forma de pago elegida
+    {{WHATSAPP}}      link para escribirle a Vitalica
+
+  POR QUÉ ESTÁ HECHA CON TABLAS Y ESTILOS EN LÍNEA
+  No es código anticuado por descuido. Los programas de correo —Outlook sobre
+  todo— descartan las hojas de estilo y no entienden flexbox ni grid. Las
+  tablas con estilos escritos en cada etiqueta son lo único que se ve igual en
+  todos lados. Si lo "modernizás", se rompe en la mitad de las casillas.
+
+  TAMPOCO LLEVA IMÁGENES
+  La mayoría de los clientes de correo las bloquea por defecto: un logo en
+  imagen quedaría como un recuadro vacío. El nombre va en texto, sobre el
+  naranja de la marca.
+  ============================================================================
+-->
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#F5F6F8;font-family:Arial,Helvetica,sans-serif">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F6F8;padding:24px 12px">
+<tr><td align="center">
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden">
+
+    <!-- Encabezado -->
+    <tr><td style="background:#EF7D2A;padding:28px 32px;text-align:center">
+      <div style="color:#16191D;font-size:22px;font-weight:bold;letter-spacing:2px">VITALICA</div>
+      <div style="color:#16191D;font-size:12px;opacity:.75;margin-top:4px">OLIMP SPORT NUTRITION &middot; PARAGUAY</div>
+    </td></tr>
+
+    <!-- Saludo -->
+    <tr><td style="padding:32px 32px 0">
+      <h1 style="margin:0 0 8px;font-size:22px;color:#16191D">Recibimos tu pedido</h1>
+      <p style="margin:0;color:#565C66;font-size:15px;line-height:1.6">
+        Hola {{NOMBRE}}, gracias por elegirnos.<br>
+        Un asesor te va a escribir por WhatsApp para confirmar disponibilidad y coordinar la entrega.
+      </p>
+    </td></tr>
+
+    <!-- Número de pedido -->
+    <tr><td style="padding:24px 32px 0">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F6F8;border-radius:8px">
+        <tr><td style="padding:16px;text-align:center">
+          <div style="color:#565C66;font-size:12px;letter-spacing:1px">TU N&Uacute;MERO DE PEDIDO</div>
+          <div style="color:#16191D;font-size:20px;font-weight:bold;letter-spacing:1px;margin-top:4px">{{NUMERO}}</div>
+        </td></tr>
+      </table>
+    </td></tr>
+
+    <!-- Productos -->
+    <tr><td style="padding:28px 32px 0">
+      <div style="color:#565C66;font-size:12px;letter-spacing:1px;font-weight:bold;margin-bottom:4px">TU PEDIDO</div>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        {{FILAS}}
+        <tr>
+          <td style="padding:12px 0 4px;color:#565C66;font-size:14px">Subtotal</td>
+          <td style="padding:12px 0 4px;text-align:right;color:#565C66;font-size:14px">{{SUBTOTAL}}</td>
+        </tr>
+        <tr>
+          <td style="padding:0 0 12px;color:#565C66;font-size:14px">Env&iacute;o</td>
+          <td style="padding:0 0 12px;text-align:right;color:#565C66;font-size:14px">{{ENVIO}}</td>
+        </tr>
+        <tr>
+          <td style="padding:14px 0;border-top:2px solid #16191D;color:#16191D;font-size:17px;font-weight:bold">Total</td>
+          <td style="padding:14px 0;border-top:2px solid #16191D;text-align:right;color:#16191D;font-size:17px;font-weight:bold">{{TOTAL}}</td>
+        </tr>
+      </table>
+    </td></tr>
+
+    <!-- Entrega y pago -->
+    <tr><td style="padding:8px 32px 0">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td width="50%" valign="top" style="padding:16px 8px 0 0">
+            <div style="color:#565C66;font-size:12px;letter-spacing:1px;font-weight:bold;margin-bottom:6px">ENTREGA</div>
+            <div style="color:#16191D;font-size:14px;line-height:1.6">{{ENTREGA}}</div>
+          </td>
+          <td width="50%" valign="top" style="padding:16px 0 0 8px">
+            <div style="color:#565C66;font-size:12px;letter-spacing:1px;font-weight:bold;margin-bottom:6px">FORMA DE PAGO</div>
+            <div style="color:#16191D;font-size:14px;line-height:1.6">{{PAGO}}</div>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+
+    <!-- Aclaración importante -->
+    <tr><td style="padding:28px 32px 0">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDEEE1;border-radius:8px">
+        <tr><td style="padding:16px 18px;color:#16191D;font-size:14px;line-height:1.6">
+          <strong>Esto no es un comprobante de pago.</strong><br>
+          Tu pedido queda confirmado cuando hablemos y acordemos el pago. Todav&iacute;a no se cobr&oacute; nada.
+        </td></tr>
+      </table>
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px auto 0"><tr>
+        <td style="background:#25D366;border-radius:8px">
+          <a href="{{WHATSAPP}}" style="display:inline-block;padding:14px 28px;color:#ffffff;text-decoration:none;font-weight:bold;font-size:15px">Escribinos por WhatsApp</a>
+        </td>
+      </tr></table>
+    </td></tr>
+
+    <!-- Pie -->
+    <tr><td style="padding:32px;text-align:center">
+      <p style="margin:0 0 8px;color:#565C66;font-size:13px;line-height:1.6">
+        &iquest;Algo no coincide? Respond&eacute; este correo y lo corregimos.
+      </p>
+      <p style="margin:0;color:#9AA1AC;font-size:12px;line-height:1.6">
+        Los suplementos no sustituyen una alimentaci&oacute;n equilibrada.<br>
+        VITALICA EAS &middot; RUC 80142159-4 &middot; Representante exclusivo de Olimp Sport Nutrition en Paraguay
+      </p>
+    </td></tr>
+
+  </table>
+
+</td></tr>
+</table>
+</body></html>

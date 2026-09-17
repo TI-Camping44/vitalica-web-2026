@@ -1,0 +1,3872 @@
+/* ==========================================================================
+   VITALICA — Maqueta e-commerce · Hoja de estilos principal
+   --------------------------------------------------------------------------
+   Este archivo es el "sistema de diseño" del sitio. Está dividido en
+   secciones (ver índice). La idea clave: todo lo visual (colores, tipografía,
+   espaciados) vive en VARIABLES al inicio. Si querés cambiar el naranja de la
+   marca, lo cambiás en UN solo lugar (--color-primario) y se actualiza todo.
+
+   ÍNDICE
+   01. Tokens de marca (variables: colores, tipografía, espaciado, sombras)
+   02. Reset y base
+   03. Tipografía
+   04. Layout (contenedor, secciones, grillas)
+   05. Botones
+   06. Utilidades (badges, chips, etiquetas)
+   07. Estrellas de rating
+   08. Card de producto
+   09. Encabezado de sección
+   --------------------------------------------------------------------------
+   NOTA: las secciones de Header, Footer, Hero, Carrito, etc. se agregan más
+   abajo a medida que construimos cada parte de la maqueta.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   00. TIPOGRAFÍA DE MARCA — Degular (manual de Vitalica, pág. 9)
+   --------------------------------------------------------------------------
+   Colocá los archivos en assets/fonts/. Si faltan, el sitio cae automática-
+   mente a Montserrat / Inter (definidas como fallback en --fuente-titulo).
+   ========================================================================== */
+@font-face {
+  font-family: "Degular";
+  src: url("../fonts/Degular-Regular.otf") format("opentype");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Degular";
+  src: url("../fonts/Degular-Medium.otf") format("opentype");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Degular";
+  src: url("../fonts/Degular-Bold.otf") format("opentype");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+
+/* ==========================================================================
+   01. TOKENS DE MARCA  (las "perillas" del diseño)
+   ========================================================================== */
+:root {
+  /* --- Colores de marca (del manual de Vitalica) --- */
+  --color-primario:        #EF7D2A;  /* naranja Vitalica */
+  --color-primario-oscuro: #D2651A;  /* hover / estados activos */
+  --color-primario-tinte:  #FDEEE1;  /* fondos suaves naranja */
+  --color-primario-texto:  #A85410;  /* naranja oscuro SOLO para texto sobre fondo claro (contraste AA 5.3:1) */
+
+  --color-secundario:        #0B55A3; /* azul navy */
+  --color-secundario-oscuro: #083F7A;
+  --color-secundario-tinte:  #E7F0FA;
+
+  /* --- Grises de apoyo --- */
+  --color-tinta:       #16191D;  /* gris muy oscuro = texto principal */
+  --color-tinta-suave: #565C66;  /* texto secundario / apagado */
+  --color-linea:       #E6E8EC;  /* bordes y separadores (gris claro) */
+  --color-fondo:       #FFFFFF;
+  --color-fondo-suave: #F5F6F8;  /* fondos de sección (gris claro) */
+  --color-fondo-oscuro:#0F0F10;  /* footer y secciones oscuras (negro de marca del sitio actual) */
+
+  /* --- Colores de apoyo funcionales --- */
+  --color-exito:    #1F9D57;
+  --color-estrella: #F5A623;  /* dorado para ratings */
+  --color-alerta:   #D64545;
+
+  /* --- Tipografía --- */
+  /* Degular = tipografía oficial del manual de marca (pág. 9).
+     Los .otf van en assets/fonts/. Si no cargan, cae a Montserrat/Inter. */
+  --fuente-titulo: "Degular", "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fuente-texto:  "Degular", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Escala de tamaños (rem = relativo al tamaño base del navegador) */
+  --fs-xs:   0.75rem;
+  --fs-sm:   0.875rem;
+  --fs-base: 1rem;
+  --fs-md:   1.125rem;
+  --fs-lg:   1.375rem;
+  --fs-xl:   1.75rem;
+  --fs-2xl:  2.25rem;
+  --fs-3xl:  3rem;
+  /* El hero usa clamp(): crece con la pantalla pero con mínimo y máximo */
+  --fs-hero: clamp(2.25rem, 5.5vw, 4rem);
+
+  /* --- Espaciado (escala consistente) --- */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.5rem;
+  --space-6:  2rem;
+  --space-7:  3rem;
+  --space-8:  4rem;
+  --space-9:  6rem;
+
+  /* --- Bordes redondeados --- */
+  --radio-sm:   6px;
+  --radio:      10px;
+  --radio-lg:   16px;
+  --radio-pill: 999px;  /* pastilla (botones redondeados) */
+
+  /* --- Sombras --- */
+  --sombra-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --sombra:    0 4px 14px rgba(16, 24, 40, 0.08);
+  --sombra-lg: 0 14px 40px rgba(16, 24, 40, 0.12);
+
+  /* --- Layout --- */
+  --ancho-contenedor: 1240px;  /* ancho máximo del contenido */
+  --transicion: 160ms ease;
+}
+
+
+/* ==========================================================================
+   02. RESET Y BASE  (emparejar el punto de partida entre navegadores)
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+
+* { margin: 0; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--fuente-texto);
+  font-size: var(--fs-base);
+  line-height: 1.6;
+  color: var(--color-tinta);
+  background: var(--color-fondo);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img, picture, svg { display: block; max-width: 100%; }
+
+a { color: inherit; text-decoration: none; }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+button { cursor: pointer; background: none; border: none; }
+
+ul, ol { list-style: none; padding: 0; }
+
+/* El atributo [hidden] siempre oculta, aunque el elemento tenga display:flex */
+[hidden] { display: none !important; }
+
+/* Accesibilidad: foco visible al navegar con teclado */
+:focus-visible {
+  outline: 3px solid var(--color-secundario);
+  outline-offset: 2px;
+  border-radius: var(--radio-sm);
+}
+
+
+/* ==========================================================================
+   03. TIPOGRAFÍA
+   ========================================================================== */
+h1, h2, h3, h4 {
+  font-family: var(--fuente-titulo);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--color-tinta);
+}
+
+h1 { font-size: var(--fs-3xl); }
+h2 { font-size: var(--fs-2xl); }
+h3 { font-size: var(--fs-lg); }
+h4 { font-size: var(--fs-md); }
+
+p { color: var(--color-tinta); }
+
+.texto-apagado { color: var(--color-tinta-suave); }
+
+/* Texto pequeño en mayúsculas con espaciado (etiquetas/categorías) */
+.eyebrow {
+  font-family: var(--fuente-titulo);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-tinta-suave); /* gris legible sobre claro; los eyebrow naranjas van inline sobre bandas oscuras */
+}
+
+
+/* ==========================================================================
+   04. LAYOUT
+   ========================================================================== */
+/* Contenedor centrado con respiración lateral */
+.contenedor {
+  width: 100%;
+  max-width: var(--ancho-contenedor);
+  margin-inline: auto;
+  padding-inline: var(--space-5);
+}
+
+/* Espaciado vertical estándar entre secciones */
+.seccion { padding-block: var(--space-8); }
+.seccion--suave { background: var(--color-fondo-suave); }
+
+/* Grillas reutilizables y responsivas (se acomodan solas al ancho) */
+.grilla {
+  display: grid;
+  gap: var(--space-5);
+}
+/* Grilla de productos: tantas columnas como entren, mínimo 240px */
+.grilla--productos {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+/* En desktop, el listado completo (home y productos) usa 5 columnas:
+   los 10 productos llenan 2 filas exactas, sin "fila huérfana". */
+@media (min-width: 1140px) {
+  [data-productos].grilla--productos,
+  [data-grilla-productos].grilla--productos {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* Helpers de espaciado puntuales */
+.mt-2 { margin-top: var(--space-2); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+.centrado { text-align: center; }
+
+
+/* ==========================================================================
+   05. BOTONES
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  padding: 0.9em 1.6em;
+  border-radius: var(--radio-pill);
+  border: 2px solid transparent;
+  transition: transform var(--transicion), background var(--transicion),
+              color var(--transicion), border-color var(--transicion),
+              box-shadow var(--transicion);
+  text-align: center;
+}
+.btn:active { transform: translateY(1px); }
+
+/* Primario: naranja de marca */
+.btn--primario {
+  background: var(--color-primario);
+  color: var(--color-tinta); /* texto oscuro sobre naranja: contraste 6.4:1 (WCAG AA) */
+}
+.btn--primario:hover { background: var(--color-primario-oscuro); }
+
+/* Secundario: navy */
+.btn--secundario {
+  background: var(--color-secundario);
+  color: #fff;
+}
+.btn--secundario:hover { background: var(--color-secundario-oscuro); }
+
+/* Contorno: borde, fondo transparente */
+.btn--contorno {
+  background: transparent;
+  color: var(--color-tinta);
+  border-color: var(--color-linea);
+}
+.btn--contorno:hover {
+  border-color: var(--color-tinta);
+  background: var(--color-tinta);
+  color: #fff;
+}
+
+/* Fantasma sobre fondos oscuros */
+.btn--claro {
+  background: #fff;
+  color: var(--color-tinta);
+}
+.btn--claro:hover { background: var(--color-fondo-suave); }
+
+/* Modificadores de tamaño y ancho */
+.btn--grande { font-size: var(--fs-base); padding: 1.05em 2em; }
+.btn--bloque { display: flex; width: 100%; }
+
+
+/* ==========================================================================
+   06. UTILIDADES (badges, chips, etiquetas)
+   ========================================================================== */
+/* Etiqueta/tag sobre la foto del producto ("Lanzamiento", "Nuevo") */
+.tag {
+  display: inline-block;
+  font-family: var(--fuente-titulo);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.4em 0.7em;
+  border-radius: var(--radio-sm);
+  background: var(--color-tinta);
+  color: #fff;
+}
+.tag--lanzamiento { background: var(--color-primario); color: var(--color-tinta); }
+.tag--nuevo       { background: var(--color-secundario); }
+.tag--oferta      { background: var(--color-alerta); }
+
+/* Chip (pastilla suave para categorías/filtros visuales) */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  padding: 0.5em 1em;
+  border-radius: var(--radio-pill);
+  background: var(--color-fondo-suave);
+  color: var(--color-tinta-suave);
+}
+
+
+/* ==========================================================================
+   07. ESTRELLAS DE RATING
+   --------------------------------------------------------------------------
+   Técnica: dos capas de ★★★★★ superpuestas. La de abajo es gris (vacía) y
+   la de arriba es dorada, recortada al porcentaje del puntaje (--pct).
+   ========================================================================== */
+.estrellas {
+  --pct: 100%;
+  display: inline-block;
+  position: relative;
+  font-size: 0.95rem;
+  line-height: 1;
+  font-family: "Times New Roman", serif; /* ★ se ve sólida y pareja */
+}
+.estrellas::before {
+  content: "★★★★★";
+  letter-spacing: 2px;
+  color: var(--color-linea);
+}
+.estrellas::after {
+  content: "★★★★★";
+  letter-spacing: 2px;
+  color: var(--color-estrella);
+  position: absolute;
+  inset: 0;
+  width: var(--pct);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+
+/* ==========================================================================
+   08. CARD DE PRODUCTO  (la pieza que más se repite en el sitio)
+   ========================================================================== */
+.card-producto {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-fondo);
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio-lg);
+  overflow: hidden;
+  transition: transform var(--transicion), box-shadow var(--transicion),
+              border-color var(--transicion);
+}
+.card-producto:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--sombra-lg);
+  border-color: transparent;
+}
+
+/* Zona de la imagen (cuadrada, foto centrada sobre gris muy suave) */
+.card-producto__media {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  background: var(--color-fondo-suave);
+  padding: var(--space-5);
+}
+.card-producto__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;     /* el envase se ve completo, sin recortarse */
+  mix-blend-mode: multiply; /* funde el fondo blanco de la foto con el gris */
+  transition: transform var(--transicion);
+}
+.card-producto:hover .card-producto__media img { transform: scale(1.04); }
+
+/* Etiqueta posicionada arriba a la izquierda de la foto */
+.card-producto__tag {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 1;
+}
+
+/* Cuerpo de texto de la card */
+.card-producto__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-4) var(--space-5);
+  flex: 1; /* empuja el botón hacia abajo para alinear todas las cards */
+}
+.card-producto__categoria {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-tinta-suave);
+}
+.card-producto__nombre {
+  font-family: var(--fuente-titulo);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  line-height: 1.25;
+}
+/* "5 sabores · 2 presentaciones". components.js la escribe en todas las
+   tarjetas, pero en este diseño no se muestra: la agregó la propuesta de
+   rediseño (assets/css/tema-2026.css) y ahí se enciende. Si la propuesta se
+   descarta, se borran esta regla y lineaVariantes() en components.js. */
+.card-producto__variantes { display: none; }
+.card-producto__rating {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--color-tinta-suave);
+}
+/* margin-top:auto empuja el precio al fondo: queda alineado en toda la fila,
+   tenga el nombre 1 o 2 líneas. */
+.card-producto__precio { margin-top: auto; padding-top: var(--space-2); }
+.card-producto__precio .precio {
+  display: block;
+  font-family: var(--fuente-titulo);
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  color: var(--color-tinta);
+}
+.card-producto__precio .cuotas {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--color-tinta-suave);
+}
+
+/* ------------------------------------------------------------------
+   AVISO DE STOCK (lo decide Vitalica.avisoStock con el dato de Odoo)
+   Deliberadamente discreto: es un dato útil, no una oferta. Por eso
+   va en texto chico con un punto de color y NO como etiqueta rellena,
+   que competiría con los tags LANZAMIENTO / NUEVO de la misma tarjeta.
+   ------------------------------------------------------------------ */
+.stock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--space-1);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+.stock::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+/* Naranja de marca: quedan pocas, pero todavía se puede comprar. */
+.stock--bajo    { color: var(--color-primario-texto); }
+/* Rojo de alerta: no hay. */
+.stock--agotado { color: var(--color-alerta); }
+/* En la ficha de producto respira un poco más. */
+.producto__precio + .stock,
+.producto__precio-nota + .stock { margin-top: var(--space-2); }
+/* Pista de acción sutil (reemplaza al botón naranja repetido en cada card) */
+.card-producto__hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--space-1);
+  font-family: var(--fuente-titulo);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--color-primario-texto);
+}
+.card-producto__flecha { transition: transform var(--transicion); }
+.card-producto:hover .card-producto__flecha { transform: translateX(4px); }
+.card-producto:hover .card-producto__nombre { color: var(--color-primario-texto); }
+
+
+/* ==========================================================================
+   09. ENCABEZADO DE SECCIÓN  (título + bajada, centrado o alineado)
+   ========================================================================== */
+.encabezado-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+.encabezado-seccion.centrado { align-items: center; }
+.encabezado-seccion h2 { font-size: var(--fs-2xl); }
+.encabezado-seccion p { color: var(--color-tinta-suave); max-width: 60ch; }
+.encabezado-seccion.centrado p { text-align: center; }
+
+
+/* ==========================================================================
+   10. BARRA DE ANUNCIOS (superior, rotativa)
+   ========================================================================== */
+.barra-anuncios {
+  background: var(--color-secundario);
+  color: #fff;
+}
+.barra-anuncios__viewport {
+  position: relative;
+  height: 40px;
+  max-width: var(--ancho-contenedor);
+  margin-inline: auto;
+}
+.barra-anuncios__item {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  padding-inline: var(--space-4);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+.barra-anuncios__item.activo { opacity: 1; }
+
+
+/* ==========================================================================
+   11. HEADER (sticky, con mega-menú)
+   ========================================================================== */
+/* EL ENVOLTORIO DEL CHROME NO TIENE QUE SER UNA CAJA
+   --------------------------------------------------------------------------
+   El header y la barra de anuncios los inyecta main.js adentro de
+   #chrome-top. Ese div medía 97 px de alto — justo lo que ocupan los dos.
+
+   Y ahí estaba el problema: `position: sticky` se pega DENTRO de la caja del
+   padre, no de la página. Con un padre de 97 px, el header se despegaba a los
+   97 px de desplazamiento y se iba hacia arriba con el resto. O sea que el
+   menú no acompañaba al bajar, que es justamente para lo que está el sticky.
+
+   `display: contents` borra la caja del div sin borrar lo que tiene adentro:
+   el header pasa a ser hijo directo de <body> y se pega contra la página
+   entera. No cambia nada más del maquetado.
+
+   (En @media print el div se oculta igual, porque esa regla nombra también a
+   .header-sitio y a .barra-anuncios, no solo al envoltorio.) */
+#chrome-top { display: contents; }
+
+.header-sitio {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-fondo);
+  border-bottom: 1px solid var(--color-linea);
+}
+.header-sitio__inner {
+  max-width: var(--ancho-contenedor);
+  margin-inline: auto;
+  padding: var(--space-3) var(--space-5);
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+.header-sitio__logo { flex-shrink: 0; }
+.header-sitio__logo img { height: 50px; width: auto; }
+
+/* Los dos logos del header: Vitalica y Olimp, separados por una línea.
+   Marketing pidió que la web siga mostrando los dos, porque juntos dicen lo
+   que ninguno dice solo: que Vitalica representa a Olimp en Paraguay. */
+.header-sitio__marcas {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+.header-sitio__olimp {
+  display: flex;
+  align-items: center;
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--color-linea);
+}
+.header-sitio__olimp img { height: 26px; width: auto; opacity: .78; }
+.header-sitio__olimp:hover img { opacity: 1; }
+
+/* LOS DOS LOGOS TAMBIÉN EN CELULAR  ·  corregido el 17/9/2026
+   --------------------------------------------------------------------------
+   Acá el de Olimp se escondía por debajo de 980 px, con el argumento de que
+   no entraban los dos al lado del menú y del carrito. Estaba mal medido: lo
+   que no entraba era por otro error —el logo no tenía `flex` y todo se
+   amontonaba contra la izquierda— y yo le eché la culpa al espacio.
+
+   La cuenta real en un teléfono de 375 px: 24 de margen + 32 de hamburguesa
+   + 72 de acciones + 24 de separaciones = 152 ocupados. Quedan 223 px para
+   los logos, y los dos juntos miden alrededor de 130.
+
+   Marketing pidió los dos logos. Van los dos, en todos los tamaños. Lo que
+   se achica en celular es el de Olimp, que es el secundario. */
+@media (max-width: 980px) {
+  .header-sitio__marcas { gap: var(--space-2); }
+  .header-sitio__olimp {
+    padding-left: var(--space-2);
+  }
+  .header-sitio__olimp img { height: 20px; }
+}
+
+/* Botón hamburguesa (solo en mobile) */
+.boton-menu {
+  display: none;
+  color: var(--color-tinta);
+  padding: var(--space-1);
+}
+
+/* Navegación principal (desktop) */
+.nav-principal { flex: 1; }
+.nav-principal__lista {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.nav-principal__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  color: var(--color-tinta);
+  border-radius: var(--radio-sm);
+  transition: color var(--transicion);
+}
+.nav-principal__link:hover,
+.nav-principal__link.activo { color: var(--color-primario-texto); }
+.nav-principal__link svg { transition: transform var(--transicion); }
+.tiene-megamenu:hover .nav-principal__link svg { transform: rotate(180deg); }
+
+/* Acciones a la derecha (buscar, carrito) */
+.header-sitio__acciones {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+.icono-accion {
+  position: relative;
+  display: inline-flex;
+  color: var(--color-tinta);
+  padding: var(--space-1);
+  transition: color var(--transicion);
+}
+.icono-accion:hover { color: var(--color-primario-texto); }
+.boton-carrito__badge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--radio-pill);
+  background: var(--color-primario);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+
+/* ==========================================================================
+   12. MEGA-MENÚ (desktop, una columna por categoría)
+   ========================================================================== */
+.megamenu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  background: var(--color-fondo);
+  border-top: 1px solid var(--color-linea);
+  box-shadow: var(--sombra-lg);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity var(--transicion), transform var(--transicion), visibility var(--transicion);
+}
+.tiene-megamenu:hover .megamenu,
+.tiene-megamenu:focus-within .megamenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.megamenu__inner {
+  display: flex;
+  gap: var(--space-6);
+  padding-block: var(--space-6);
+}
+.megamenu__cols {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+}
+.megamenu__titulo {
+  display: block;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  color: var(--color-tinta);
+  padding-bottom: var(--space-2);
+  margin-bottom: var(--space-2);
+  border-bottom: 2px solid var(--color-primario);
+}
+.megamenu__titulo:hover { color: var(--color-primario-texto); }
+.megamenu__link {
+  display: block;
+  font-size: var(--fs-sm);
+  color: var(--color-tinta-suave);
+  padding: 5px 0;
+  transition: color var(--transicion);
+}
+.megamenu__link:hover { color: var(--color-primario-texto); }
+
+/* Celda promocional del mega-menú */
+.megamenu__promo {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-1);
+  padding: var(--space-5);
+  border-radius: var(--radio-lg);
+  background: linear-gradient(150deg, var(--color-secundario), var(--color-primario));
+  color: #fff;
+}
+.megamenu__promo-eyebrow {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.megamenu__promo-titulo {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: var(--fs-xl);
+}
+.megamenu__promo-cta { font-weight: 600; font-size: var(--fs-sm); margin-top: var(--space-2); }
+
+
+/* ==========================================================================
+   13. MENÚ MÓVIL (drawer lateral)
+   ========================================================================== */
+.menu-movil { position: fixed; inset: 0; z-index: 100; }
+.menu-movil__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 12, 18, 0.55);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.menu-movil.abierto .menu-movil__overlay { opacity: 1; }
+.menu-movil__panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 320px;
+  max-width: 85vw;
+  background: var(--color-fondo);
+  box-shadow: var(--sombra-lg);
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.menu-movil.abierto .menu-movil__panel { transform: translateX(0); }
+.menu-movil__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-linea);
+}
+.menu-movil__head img { height: 44px; width: auto; }
+.menu-movil__cerrar { color: var(--color-tinta); }
+.menu-movil__nav { display: flex; flex-direction: column; padding: var(--space-4) var(--space-5); }
+.menu-movil__nav > a,
+.menu-movil__acordeon {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: var(--fs-md);
+  color: var(--color-tinta);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-linea);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.menu-movil__acordeon svg { transition: transform var(--transicion); }
+.menu-movil__acordeon.abierto svg { transform: rotate(180deg); }
+.menu-movil__sub {
+  display: grid;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.menu-movil__sub.abierto { max-height: 420px; }
+.menu-movil__sub a {
+  padding: var(--space-2) 0 var(--space-2) var(--space-4);
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-sm);
+}
+.menu-movil__sub a:hover { color: var(--color-primario-texto); }
+.menu-movil__link-fuerte { color: var(--color-primario-texto) !important; }
+
+
+/* ==========================================================================
+   14. FOOTER
+   ========================================================================== */
+.footer-sitio {
+  background: var(--color-fondo-oscuro);
+  color: #c4ccd6;
+}
+.footer-sitio__top {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: var(--space-6);
+  padding-block: var(--space-8);
+}
+.footer-sitio__marca { max-width: 320px; }
+/* El logo es gris oscuro: lo volvemos blanco para que se vea sobre el footer */
+.footer-sitio__logo { height: 64px; width: auto; filter: brightness(0) invert(1); }
+.footer-sitio__marca p { color: #9aa3af; font-size: var(--fs-sm); margin-top: var(--space-3); }
+.footer-sitio__olimp {
+  margin-top: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.footer-sitio__olimp span { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280; }
+.footer-sitio__olimp img { height: 34px; width: auto; align-self: flex-start; opacity: 0.95; }
+
+.footer-sitio__col h4 {
+  color: #fff;
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-4);
+}
+.footer-sitio__col ul { display: flex; flex-direction: column; gap: var(--space-2); }
+.footer-sitio__col a { color: #9aa3af; font-size: var(--fs-sm); transition: color var(--transicion); }
+.footer-sitio__col a:hover { color: #fff; }
+
+.footer-sitio__bottom { border-top: 1px solid rgba(255,255,255,0.08); }
+.footer-sitio__bottom-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  padding-block: var(--space-5);
+}
+.redes { display: flex; gap: var(--space-3); }
+.redes a {
+  display: inline-flex;
+  width: 38px; height: 38px;
+  align-items: center; justify-content: center;
+  border-radius: var(--radio-pill);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  transition: background var(--transicion);
+}
+.redes a:hover { background: var(--color-primario); }
+.pagos { display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center; }
+.pago-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: var(--radio-sm);
+  background: rgba(255,255,255,0.1);
+  color: #e5e9ef;
+}
+.pago-badge--seguro { background: rgba(31,157,87,0.18); color: #6ee7a8; }
+.footer-sitio__legal { padding-bottom: var(--space-6); }
+.footer-sitio__legal p { font-size: var(--fs-xs); color: #6b7280; }
+.footer-sitio__legal strong { color: #9aa3af; }
+
+
+/* ==========================================================================
+   15. BOTÓN FLOTANTE DE WHATSAPP
+   ========================================================================== */
+.whatsapp-flotante {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 12px 18px 12px 14px;
+  border-radius: var(--radio-pill);
+  background: #25D366;
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  box-shadow: var(--sombra-lg);
+  transition: transform var(--transicion);
+}
+.whatsapp-flotante:hover { transform: translateY(-2px); }
+
+
+/* ==========================================================================
+   16. TOAST (aviso flotante)
+   ========================================================================== */
+.toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translate(-50%, 12px);
+  z-index: 110;
+  background: var(--color-tinta);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: var(--radio-pill);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  box-shadow: var(--sombra-lg);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+.toast.visible { opacity: 1; transform: translate(-50%, 0); }
+
+
+/* ==========================================================================
+   17. RESPONSIVE — ajustes para mobile / tablet
+   ========================================================================== */
+@media (max-width: 980px) {
+  /* En mobile se oculta el menú desktop y aparece la hamburguesa */
+  .nav-principal { display: none; }
+  .boton-menu { display: inline-flex; }
+  .header-sitio__inner { gap: var(--space-3); }
+
+  /* EL LOGO SE CENTRA ENTRE LA HAMBURGUESA Y LAS ACCIONES
+     ----------------------------------------------------------------------
+     El `flex: 1` iba en .header-sitio__logo, que era hijo directo del
+     contenedor. Al envolver los dos logos en .header-sitio__marcas dejó de
+     serlo, la regla apuntó a un nieto y el flex no hizo nada: en celular
+     quedó todo amontonado contra el borde izquierdo — hamburguesa, logo,
+     lupa y carrito juntos— y media pantalla vacía a la derecha.
+
+     El `flex: 1` tiene que ir en el hijo directo. Y el logo se centra
+     adentro de él, que es lo que hace que quede en el medio de la barra. */
+  .header-sitio__marcas {
+    flex: 1;
+    justify-content: center;
+  }
+  .header-sitio__logo img { height: 44px; }
+}
+
+@media (max-width: 760px) {
+  .footer-sitio__top { grid-template-columns: 1fr 1fr; }
+  .footer-sitio__marca { grid-column: 1 / -1; max-width: none; }
+  .whatsapp-flotante__texto { display: none; } /* en celular, solo el ícono */
+  .whatsapp-flotante { padding: 14px; }
+  h1 { font-size: var(--fs-2xl); }
+}
+
+@media (max-width: 480px) {
+  .footer-sitio__top { grid-template-columns: 1fr; }
+  .contenedor { padding-inline: var(--space-4); }
+}
+
+
+/* ==========================================================================
+   18. HOME — HERO
+   ========================================================================== */
+.hero {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+}
+/* Pista del carrusel: las slides se ponen en fila y se desplazan con transform */
+.hero__track { display: flex; transition: transform 0.5s ease; }
+.hero__slide { flex: 0 0 100%; min-width: 0; }
+.hero__slide--1 { background: linear-gradient(120deg, #082247 0%, var(--color-secundario) 60%, #0d4f97 100%); }
+.hero__slide--2 { background: linear-gradient(120deg, #16191D 0%, #0B55A3 100%); }
+.hero__slide--3 { background: linear-gradient(120deg, #0B3D7A 0%, #0d4f97 60%, #1366c0 100%); }
+
+/* Flechas del carrusel */
+.hero__flecha {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radio-pill);
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transicion);
+}
+.hero__flecha:hover { background: rgba(255, 255, 255, 0.32); }
+.hero__flecha--prev { left: 16px; }
+.hero__flecha--next { right: 16px; }
+
+/* Puntos indicadores */
+.hero__dots {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+}
+.hero__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radio-pill);
+  background: rgba(255, 255, 255, 0.4);
+  transition: background var(--transicion), width var(--transicion);
+}
+.hero__dot.activo { background: #fff; width: 26px; }
+.hero__inner {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  gap: var(--space-6);
+  padding-block: var(--space-8);
+}
+.hero__eyebrow {
+  font-family: var(--fuente-titulo);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  color: var(--color-primario);
+  margin-bottom: var(--space-3);
+}
+.hero__titulo { color: #fff; font-size: var(--fs-hero); line-height: 1.05; }
+.hero__texto {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: var(--fs-md);
+  margin-top: var(--space-4);
+  max-width: 46ch;
+}
+.hero__texto strong { color: #fff; }
+.hero__acciones { display: flex; gap: var(--space-3); margin-top: var(--space-6); flex-wrap: wrap; }
+.hero__media { position: relative; display: flex; justify-content: center; }
+/* HALO DE LUZ detrás del producto (modo 'producto' del hero).
+   El naranja no servía: sobre azul ensuciaba y no separaba nada.
+   Blanco a muy baja opacidad sí funciona, porque aclara el fondo justo
+   detrás del envase y le da un borde de contraste a los productos
+   oscuros (la creatina, el Knockout), que antes se fundían con el azul.
+   El degradado termina en rgba(255,255,255,0) y NO en "transparent":
+   "transparent" es negro invisible y al degradar hacia él ensucia. */
+.hero__media::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  display: block;
+  width: 95%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle,
+                rgba(255, 255, 255, 0.22) 0%,
+                rgba(255, 255, 255, 0.08) 45%,
+                rgba(255, 255, 255, 0) 70%);
+  filter: blur(45px);
+  z-index: 0;
+}
+/* Sin sombra proyectada: los envases vienen recortados sobre fondo negro,
+   así que el fleco oscuro del borde se sumaba a la sombra y ensuciaba el
+   contorno. */
+.hero__media img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  filter: none;
+}
+
+
+/* ==========================================================================
+   19. HOME — TRUST BAR (fila de garantías)
+   ========================================================================== */
+.trust-bar { background: var(--color-fondo); border-bottom: 1px solid var(--color-linea); }
+.trust-bar__inner {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-5);
+  padding-block: var(--space-5);
+}
+.trust-bar__item { display: flex; align-items: center; justify-content: center; gap: var(--space-3); }
+.trust-bar__icono { color: var(--color-primario); display: inline-flex; flex-shrink: 0; }
+.trust-bar__texto { display: flex; flex-direction: column; line-height: 1.25; }
+.trust-bar__texto strong { font-family: var(--fuente-titulo); font-size: var(--fs-sm); }
+.trust-bar__texto span { font-size: var(--fs-xs); color: var(--color-tinta-suave); }
+
+
+/* ==========================================================================
+   20. HOME — CATEGORÍAS ("Comprá por objetivo")
+   ========================================================================== */
+.categorias-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+}
+.categoria-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-1);
+  min-height: 180px;
+  padding: var(--space-5);
+  border-radius: var(--radio-lg);
+  color: #fff;
+  overflow: hidden;
+  transition: transform var(--transicion), box-shadow var(--transicion);
+}
+.categoria-card:hover { transform: translateY(-4px); box-shadow: var(--sombra-lg); }
+/* Envoltorio del texto del mosaico. Acá no hace nada — `display: contents`
+   lo borra de la caja y los tres <span> quedan igual que antes, hijos
+   directos de la tarjeta. Existe para el tema 2026, donde se convierte en la
+   placa de vidrio que va sobre la foto (ver sección 33 de tema-2026.css). */
+.categoria-card__texto { display: contents; }
+
+.categoria-card__nombre { font-family: var(--fuente-titulo); font-weight: 800; font-size: var(--fs-lg); }
+.categoria-card__desc { font-size: var(--fs-sm); opacity: 0.92; }
+.categoria-card__cta { font-weight: 700; font-size: var(--fs-sm); margin-top: var(--space-2); }
+/* Un gradiente distinto por categoría (orden del data.js) */
+.categorias-grid .categoria-card:nth-child(1) { background: linear-gradient(135deg, #EF7D2A, #D2651A); }
+.categorias-grid .categoria-card:nth-child(2) { background: linear-gradient(135deg, #0B55A3, #083F7A); }
+.categorias-grid .categoria-card:nth-child(3) { background: linear-gradient(135deg, #16191D, #3A4250); }
+.categorias-grid .categoria-card:nth-child(4) { background: linear-gradient(135deg, #0B55A3, #083F7A); }
+.categorias-grid .categoria-card:nth-child(5) { background: linear-gradient(135deg, #16191D, #3A4250); }
+/* Gradientes de las 4 metas (Deporte de resistencia / Fuerza / Recuperación / Salud) */
+[data-metas] .categoria-card:nth-child(1) { background: linear-gradient(135deg, #0B55A3, #083F7A); } /* resistencia (navy) */
+[data-metas] .categoria-card:nth-child(2) { background: linear-gradient(135deg, #EF7D2A, #D2651A); color: var(--color-tinta); } /* fuerza (naranja, texto oscuro) */
+[data-metas] .categoria-card:nth-child(3) { background: linear-gradient(135deg, #0B55A3, #083F7A); } /* recuperación (navy) */
+[data-metas] .categoria-card:nth-child(4) { background: linear-gradient(135deg, #EF7D2A, #D2651A); color: var(--color-tinta); } /* salud (naranja, texto oscuro) */
+
+
+/* ==========================================================================
+   21. HOME — BANNER DE COLECCIÓN
+   ========================================================================== */
+.banner-coleccion {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 300px;
+  padding: var(--space-8);
+  border-radius: var(--radio-lg);
+  overflow: hidden;
+  color: #fff;
+  background: linear-gradient(115deg, #16191D 0%, #0B55A3 100%);
+}
+/* Foto de producto asomando a la derecha (decorativa) */
+.banner-coleccion::after {
+  content: "";
+  position: absolute;
+  right: -10px;
+  top: 0;
+  bottom: 0;
+  width: 46%;
+  background: url('../img/products/redweiler.webp') no-repeat center right / contain;
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.4));
+}
+.banner-coleccion__contenido {
+  position: relative;
+  z-index: 1;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+.banner-coleccion h2 { color: #fff; font-size: var(--fs-2xl); }
+.banner-coleccion p { color: rgba(255, 255, 255, 0.85); }
+
+
+/* ==========================================================================
+   22. HOME — BLOG / APRENDÉ (tarjetas de artículo)
+   ========================================================================== */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-5);
+}
+.card-articulo {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio-lg);
+  overflow: hidden;
+  transition: transform var(--transicion), box-shadow var(--transicion);
+}
+.card-articulo:hover { transform: translateY(-4px); box-shadow: var(--sombra-lg); }
+.card-articulo__cover {
+  position: relative;
+  height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+}
+.card-articulo__cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.18), transparent 60%);
+}
+.acento-naranja { background: linear-gradient(135deg, #EF7D2A, #D2651A); }
+.acento-navy    { background: linear-gradient(135deg, #0B55A3, #083F7A); }
+.acento-mixto   { background: linear-gradient(135deg, #16191D, #0B55A3); }
+.acento-naranja .card-articulo__tema { color: var(--color-tinta); } /* texto oscuro sobre naranja */
+.card-articulo__tema {
+  position: relative;
+  z-index: 1;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: var(--fs-lg);
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
+}
+.card-articulo__body { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-5); flex: 1; }
+.card-articulo__titulo { font-size: var(--fs-md); }
+.card-articulo__resumen { font-size: var(--fs-sm); color: var(--color-tinta-suave); flex: 1; }
+.card-articulo__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-3);
+  font-size: var(--fs-sm);
+  color: var(--color-tinta-suave);
+}
+.card-articulo__link { color: var(--color-primario-texto); font-weight: 700; }
+
+
+/* ==========================================================================
+   23. HOME — PRUEBA SOCIAL (reviews + testimonios)
+   ========================================================================== */
+.reviews { display: grid; grid-template-columns: 280px 1fr; gap: var(--space-7); align-items: center; }
+.reviews__resumen {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-6);
+  background: var(--color-fondo-suave);
+  border-radius: var(--radio-lg);
+}
+.reviews__puntaje { font-family: var(--fuente-titulo); font-weight: 800; font-size: 3.5rem; line-height: 1; }
+.reviews__resumen p { font-size: var(--fs-sm); color: var(--color-tinta-suave); }
+.reviews__nota { font-size: var(--fs-xs); color: var(--color-tinta-suave); opacity: 0.7; }
+.reviews__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); }
+.testimonio {
+  background: #fff;
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.testimonio__texto { font-size: var(--fs-sm); }
+.testimonio__autor { font-weight: 700; font-size: var(--fs-sm); color: var(--color-tinta-suave); }
+
+
+/* ==========================================================================
+   24. HOME — NEWSLETTER
+   ========================================================================== */
+.newsletter {
+  background: linear-gradient(120deg, var(--color-secundario), var(--color-secundario-oscuro));
+  color: #fff;
+}
+.newsletter__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding-block: var(--space-8);
+  flex-wrap: wrap;
+}
+.newsletter h2 { color: #fff; }
+.newsletter p { color: rgba(255, 255, 255, 0.85); margin-top: var(--space-2); }
+.newsletter__form { display: flex; gap: var(--space-3); flex: 1; min-width: 280px; max-width: 520px; }
+.newsletter__form input {
+  flex: 1;
+  padding: 0.9em 1.2em;
+  border-radius: var(--radio-pill);
+  border: none;
+  font-size: var(--fs-base);
+}
+
+
+/* ==========================================================================
+   25. HOME — responsive
+   ========================================================================== */
+@media (max-width: 880px) {
+  .hero__flecha { display: none; } /* en celular se navega con los puntos / swipe */
+  .hero__inner { grid-template-columns: 1fr; text-align: center; }
+  .hero__texto { margin-inline: auto; }
+  .hero__acciones { justify-content: center; }
+  .hero__media img { max-width: 320px; margin-top: var(--space-6); }
+  .reviews { grid-template-columns: 1fr; }
+  .trust-bar__inner { grid-template-columns: 1fr 1fr; }
+  .banner-coleccion::after { opacity: 0.22; }
+}
+@media (max-width: 520px) {
+  .trust-bar__item { flex-direction: column; text-align: center; gap: var(--space-2); }
+  .newsletter__form { flex-direction: column; }
+}
+
+
+/* ==========================================================================
+   26. CABECERA DE PÁGINA (catálogo, blog, sobre, contacto)
+   ========================================================================== */
+.pagina-cabecera {
+  background: var(--color-fondo-suave);
+  border-bottom: 1px solid var(--color-linea);
+  padding-block: var(--space-7);
+}
+.pagina-cabecera h1 { font-size: var(--fs-2xl); }
+.pagina-cabecera p { color: var(--color-tinta-suave); max-width: 60ch; margin-top: var(--space-2); }
+
+/* Navegación por anclas (chips) del catálogo */
+.cat-nav { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-top: var(--space-5); }
+.cat-nav a,
+.cat-nav button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5em 1.1em;
+  border-radius: var(--radio-pill);
+  background: #fff;
+  border: 1px solid var(--color-linea);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  color: var(--color-tinta);
+  transition: background var(--transicion), color var(--transicion), border-color var(--transicion);
+}
+.cat-nav a:hover, .cat-nav button:hover { background: var(--color-tinta); color: #fff; border-color: var(--color-tinta); }
+.cat-nav a.activo, .cat-nav button.activo { background: var(--color-primario); color: var(--color-tinta); border-color: var(--color-primario); }
+
+/* Secciones del catálogo: el scroll-margin evita que el header sticky
+   tape el título cuando se llega por un enlace con #ancla */
+.cat-seccion { scroll-margin-top: 100px; }
+
+
+/* ==========================================================================
+   27. DETALLE DE PRODUCTO
+   ========================================================================== */
+.breadcrumb {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: var(--fs-sm);
+  color: var(--color-tinta-suave);
+  margin-bottom: var(--space-5);
+  flex-wrap: wrap;
+}
+.breadcrumb a { color: var(--color-tinta-suave); }
+.breadcrumb a:hover { color: var(--color-primario-texto); }
+.breadcrumb span { opacity: 0.5; }
+.breadcrumb__actual { color: var(--color-tinta); font-weight: 600; opacity: 1; }
+
+.producto { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-7); align-items: start; }
+.producto__media {
+  position: relative;
+  background: var(--color-fondo-suave);
+  border-radius: var(--radio-lg);
+  padding: var(--space-7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+}
+.producto__media img { max-width: 100%; max-height: 460px; width: auto; object-fit: contain; mix-blend-mode: multiply; }
+
+.producto__cat { font-size: var(--fs-xs); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-tinta-suave); }
+.producto__info h1 { font-size: var(--fs-2xl); margin-top: var(--space-1); }
+.producto__rating { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-3); font-size: var(--fs-sm); color: var(--color-tinta-suave); }
+.producto__precio { font-family: var(--fuente-titulo); font-weight: 800; font-size: var(--fs-2xl); margin-top: var(--space-4); }
+.producto__precio-nota { font-size: var(--fs-sm); color: var(--color-tinta-suave); margin-top: 2px; }
+.producto__resumen { margin-top: var(--space-4); color: var(--color-tinta); }
+
+.producto__compra { display: flex; gap: var(--space-3); align-items: center; margin-top: var(--space-5); flex-wrap: wrap; }
+.selector-cantidad { display: inline-flex; align-items: center; border: 1px solid var(--color-linea); border-radius: var(--radio-pill); overflow: hidden; }
+.selector-cantidad button { width: 44px; height: 48px; font-size: 1.3rem; color: var(--color-tinta); transition: background var(--transicion); }
+.selector-cantidad button:hover { background: var(--color-fondo-suave); }
+.selector-cantidad input { width: 48px; height: 48px; text-align: center; border: none; border-inline: 1px solid var(--color-linea); font-weight: 700; font-family: var(--fuente-titulo); }
+.producto__compra .btn { flex: 1; min-width: 220px; }
+.producto__whatsapp { display: inline-flex; margin-top: var(--space-3); }
+
+.producto__detalle { margin-top: var(--space-6); border-top: 1px solid var(--color-linea); padding-top: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
+.producto__detalle h3 { font-size: var(--fs-md); margin-bottom: var(--space-1); }
+.producto__detalle p { color: var(--color-tinta-suave); }
+
+.producto-no-encontrado { text-align: center; padding-block: var(--space-8); display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
+
+@media (max-width: 880px) {
+  .producto { grid-template-columns: 1fr; gap: var(--space-5); }
+  .producto__compra .btn { min-width: 0; }
+}
+
+
+/* ==========================================================================
+   28. CARRITO
+   ========================================================================== */
+.carrito { display: grid; grid-template-columns: 1fr 340px; gap: var(--space-6); align-items: start; }
+.carrito__items { display: flex; flex-direction: column; gap: var(--space-3); }
+
+.carrito-item {
+  display: grid;
+  grid-template-columns: 90px 1fr auto auto;
+  grid-template-areas: "media info cant sub";
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-4);
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio-lg);
+}
+.carrito-item__media { grid-area: media; width: 90px; height: 90px; background: var(--color-fondo-suave); border-radius: var(--radio); display: flex; align-items: center; justify-content: center; padding: 8px; }
+.carrito-item__media img { max-width: 100%; max-height: 100%; object-fit: contain; mix-blend-mode: multiply; }
+.carrito-item__info { grid-area: info; display: flex; flex-direction: column; gap: 3px; }
+.carrito-item__nombre { font-family: var(--fuente-titulo); font-weight: 700; }
+.carrito-item__nombre:hover { color: var(--color-primario-texto); }
+.carrito-item__cat { font-size: var(--fs-xs); text-transform: uppercase; color: var(--color-tinta-suave); letter-spacing: 0.05em; }
+.carrito-item__unit { font-size: var(--fs-sm); color: var(--color-tinta-suave); }
+.carrito-item__quitar { align-self: flex-start; font-size: var(--fs-sm); color: var(--color-alerta); margin-top: 4px; }
+.carrito-item__quitar:hover { text-decoration: underline; }
+.selector-cantidad--sm { grid-area: cant; }
+.selector-cantidad--sm button { width: 44px; height: 44px; font-size: 1.1rem; }
+.selector-cantidad--sm input { width: 40px; height: 44px; }
+.carrito-item__subtotal { grid-area: sub; font-family: var(--fuente-titulo); font-weight: 800; min-width: 90px; text-align: right; }
+
+.carrito__resumen {
+  position: sticky;
+  top: 96px;
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: #fff;
+}
+.carrito__resumen h2 { font-size: var(--fs-lg); }
+.resumen-linea { display: flex; justify-content: space-between; font-size: var(--fs-sm); }
+.resumen-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--color-linea); padding-top: var(--space-3); font-family: var(--fuente-titulo); font-weight: 800; font-size: var(--fs-lg); }
+.carrito__resumen .btn { margin-top: var(--space-1); }
+.carrito__nota { font-size: var(--fs-xs); color: var(--color-tinta-suave); }
+
+.carrito-vacio { text-align: center; padding-block: var(--space-8); display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
+
+@media (max-width: 820px) {
+  .carrito { grid-template-columns: 1fr; }
+  .carrito__resumen { position: static; }
+}
+@media (max-width: 560px) {
+  .carrito-item {
+    grid-template-columns: 72px 1fr;
+    grid-template-areas: "media info" "cant sub";
+    row-gap: var(--space-3);
+  }
+  .carrito-item__media { width: 72px; height: 72px; }
+  .carrito-item__subtotal { text-align: right; align-self: center; }
+}
+
+
+/* ==========================================================================
+   29. CHECKOUT
+   ========================================================================== */
+.checkout { display: grid; grid-template-columns: 1fr 360px; gap: var(--space-6); align-items: start; }
+.checkout__form { display: flex; flex-direction: column; gap: var(--space-5); }
+
+.form-bloque { border: 1px solid var(--color-linea); border-radius: var(--radio-lg); padding: var(--space-5); }
+.form-bloque h2 { font-size: var(--fs-md); margin-bottom: var(--space-2); }
+.form-bloque__nota { font-size: var(--fs-sm); color: var(--color-tinta-suave); margin-bottom: var(--space-4); }
+.form-bloque__nota:last-child { margin-bottom: 0; margin-top: var(--space-3); }
+
+.campos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+.campo { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--space-3); }
+.campo:last-child { margin-bottom: 0; }
+.campo label { font-size: var(--fs-sm); font-weight: 600; }
+.campo input, .campo select, .campo textarea {
+  padding: 0.7em 0.9em;
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio);
+  font-size: var(--fs-base);
+  font-family: inherit;
+  width: 100%;
+  background: #fff;
+}
+
+.opciones { display: flex; flex-direction: column; gap: var(--space-3); }
+.opcion {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  transition: border-color var(--transicion), background var(--transicion);
+}
+.opcion:hover { border-color: var(--color-tinta-suave); }
+.opcion:has(input:checked) { border-color: var(--color-primario); background: var(--color-primario-tinte); }
+.opcion input { width: 18px; height: 18px; accent-color: var(--color-primario); flex-shrink: 0; }
+.opcion__texto { flex: 1; display: flex; flex-direction: column; }
+.opcion__texto strong { font-weight: 700; }
+.opcion__desc { font-size: var(--fs-sm); color: var(--color-tinta-suave); }
+.opcion__precio { font-family: var(--fuente-titulo); font-weight: 800; }
+
+.resumen-linea--sep { border-top: 1px solid var(--color-linea); padding-top: var(--space-2); margin-top: var(--space-2); }
+
+/* Pantalla de confirmación */
+.confirmacion {
+  max-width: 620px;
+  margin-inline: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding-block: var(--space-6);
+}
+.confirmacion__icono {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(31, 157, 87, 0.12);
+  color: var(--color-exito);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.confirmacion h1 { font-size: var(--fs-2xl); }
+.confirmacion__resumen {
+  width: 100%;
+  max-width: 420px;
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio-lg);
+  padding: var(--space-5);
+  margin-block: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  text-align: left;
+}
+.confirmacion__acciones { display: flex; gap: var(--space-3); flex-wrap: wrap; justify-content: center; }
+
+@media (max-width: 820px) {
+  .checkout { grid-template-columns: 1fr; }
+  .checkout .carrito__resumen { position: static; }
+}
+@media (max-width: 480px) {
+  .campos-grid { grid-template-columns: 1fr; }
+}
+
+
+/* ==========================================================================
+   30. MEGA-MENÚ — lista plana de productos
+   ========================================================================== */
+.megamenu__lista {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px var(--space-6);
+  align-content: start;
+}
+
+
+/* ==========================================================================
+   31. CARRITO DRAWER (panel lateral, estilo BPN)
+   ========================================================================== */
+.drawer { position: fixed; inset: 0; z-index: 120; }
+.drawer__overlay { position: absolute; inset: 0; background: rgba(8, 12, 18, 0.55); opacity: 0; transition: opacity 0.25s ease; }
+.drawer.abierto .drawer__overlay { opacity: 1; }
+.drawer__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 400px;
+  max-width: 92vw;
+  background: #fff;
+  box-shadow: var(--sombra-lg);
+  transform: translateX(100%);
+  transition: transform 0.28s ease;
+  display: flex;
+  flex-direction: column;
+}
+.drawer.abierto .drawer__panel { transform: translateX(0); }
+.drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-linea);
+  flex-shrink: 0;
+}
+.drawer__head h2 { font-size: var(--fs-lg); }
+.drawer__cerrar { color: var(--color-tinta); }
+.drawer__cuerpo { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+.drawer-item {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-linea);
+}
+.drawer-item__media { width: 64px; height: 64px; background: var(--color-fondo-suave); border-radius: var(--radio); display: flex; align-items: center; justify-content: center; padding: 6px; }
+.drawer-item__media img { max-width: 100%; max-height: 100%; object-fit: contain; mix-blend-mode: multiply; }
+.drawer-item__info { display: flex; flex-direction: column; gap: 6px; }
+.drawer-item__nombre { font-family: var(--fuente-titulo); font-weight: 700; font-size: var(--fs-sm); line-height: 1.2; }
+.drawer-item__nombre:hover { color: var(--color-primario-texto); }
+.drawer-item__precio { font-size: var(--fs-sm); color: var(--color-tinta-suave); }
+.drawer-item__quitar { align-self: flex-start; color: var(--color-tinta-suave); }
+.drawer-item__quitar:hover { color: var(--color-alerta); }
+.drawer-item__quitar svg { width: 18px; height: 18px; }
+
+.drawer-upsell { padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--color-linea); background: var(--color-fondo-suave); }
+.drawer-upsell h3 { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-3); color: var(--color-tinta-suave); }
+.upsell-item { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) 0; }
+.upsell-item img { width: 40px; height: 40px; object-fit: contain; mix-blend-mode: multiply; background: #fff; border-radius: 6px; flex-shrink: 0; }
+.upsell-item__nombre { flex: 1; font-size: var(--fs-sm); font-weight: 600; }
+.upsell-item__add { font-size: var(--fs-sm); font-weight: 700; color: var(--color-primario-texto); white-space: nowrap; }
+.upsell-item__add:hover { text-decoration: underline; }
+
+.drawer__footer {
+  margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding: var(--space-5);
+  border-top: 1px solid var(--color-linea);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.drawer__footer .resumen-linea { font-family: var(--fuente-titulo); font-weight: 800; font-size: var(--fs-md); }
+.drawer__nota { font-size: var(--fs-xs); color: var(--color-tinta-suave); }
+.drawer__footer .btn { margin-top: var(--space-1); }
+.drawer__vacio { padding: var(--space-8) var(--space-5); text-align: center; display: flex; flex-direction: column; gap: var(--space-4); align-items: center; }
+
+
+/* ==========================================================================
+   32. BANDA DE MARCA "SIN ATAJOS" (home)
+   ========================================================================== */
+.banda-sinatajos {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(239,125,42,0.18), transparent 45%),
+    var(--color-fondo-oscuro);
+  color: #fff;
+}
+.banda-sinatajos__inner {
+  max-width: 740px;
+  margin-inline: auto;
+  text-align: center;
+  padding-block: var(--space-9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+.banda-sinatajos h2 { color: #fff; font-size: var(--fs-2xl); max-width: 18ch; }
+.banda-sinatajos p { color: rgba(255, 255, 255, 0.82); max-width: 56ch; }
+
+
+/* ==========================================================================
+   33. PÁGINA DE PRODUCTO — secciones de marketing (bloques de marca)
+   ========================================================================== */
+/* Banda de beneficio destacado */
+.prod-banda { background: linear-gradient(120deg, #16191D, var(--color-secundario)); color: #fff; }
+.prod-banda .contenedor { padding-block: var(--space-6); }
+.prod-banda__txt { display: block; text-align: center; font-family: var(--fuente-titulo); font-weight: 800; font-size: var(--fs-lg); }
+
+/* Beneficios (tarjetas con ícono) */
+.beneficios-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-5); }
+.beneficio-card {
+  text-align: center;
+  padding: var(--space-6) var(--space-5);
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+.beneficio-card__icono {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--color-primario-tinte);
+  color: var(--color-primario);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: var(--space-2);
+}
+.beneficio-card h3 { font-size: var(--fs-md); }
+.beneficio-card p { font-size: var(--fs-sm); color: var(--color-tinta-suave); }
+
+/* Sobre el producto */
+.prod-sobre { max-width: 760px; }
+.prod-sobre__texto { text-align: center; color: var(--color-tinta-suave); font-size: var(--fs-md); }
+
+/* Ingredientes */
+.ingredientes-lista { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-4); max-width: 920px; margin-inline: auto; }
+.ingrediente { padding: var(--space-4) var(--space-5); border-left: 3px solid var(--color-primario); background: var(--color-fondo-suave); border-radius: 0 var(--radio) var(--radio) 0; }
+.ingrediente h3 { font-size: var(--fs-md); }
+.ingrediente p { font-size: var(--fs-sm); color: var(--color-tinta-suave); }
+
+/* Modo de uso */
+.prod-uso { display: flex; align-items: center; gap: var(--space-6); max-width: 760px; }
+.prod-uso__icono { flex-shrink: 0; width: 72px; height: 72px; border-radius: 50%; background: #fff; border: 1px solid var(--color-linea); display: flex; align-items: center; justify-content: center; color: var(--color-primario); }
+.prod-uso h2 { font-size: var(--fs-xl); }
+.prod-uso p { color: var(--color-tinta-suave); }
+
+/* FAQ */
+.prod-faq { max-width: 760px; }
+.faq-item { border-bottom: 1px solid var(--color-linea); padding: var(--space-4) 0; }
+.faq-item summary { font-family: var(--fuente-titulo); font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: "+"; font-size: 1.5rem; color: var(--color-primario); line-height: 1; }
+.faq-item[open] summary::after { content: "−"; }
+.faq-item p { margin-top: var(--space-3); color: var(--color-tinta-suave); font-size: var(--fs-sm); }
+
+@media (max-width: 560px) {
+  .prod-uso { flex-direction: column; text-align: center; }
+}
+
+
+/* ==========================================================================
+   34. PÁGINAS DE CONTENIDO (Quiénes somos)
+   ========================================================================== */
+.pagina-hero {
+  background: linear-gradient(120deg, #082247 0%, var(--color-secundario) 60%, #0d4f97 100%);
+  color: #fff;
+}
+.pagina-hero .contenedor { padding-block: var(--space-8); text-align: center; }
+.pagina-hero .eyebrow { color: var(--color-primario-tinte); } /* peach claro sobre hero navy (contraste AA) */
+.pagina-hero h1 { color: #fff; font-size: var(--fs-hero); }
+.pagina-hero p { color: rgba(255, 255, 255, 0.85); max-width: 60ch; margin: var(--space-3) auto 0; }
+
+.sobre-historia { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-7); align-items: center; }
+.sobre-historia h2 { font-size: var(--fs-2xl); }
+.sobre-historia p { color: var(--color-tinta-suave); margin-top: var(--space-3); }
+.sobre-historia strong { color: var(--color-tinta); }
+/* La columna de la derecha mostraba un packshot de producto sobre fondo gris.
+   En una página que habla de quiénes somos, una foto de envase no dice nada:
+   ahora va la planta de Olimp, que es de lo que habla el texto. */
+.sobre-historia__media {
+  position: relative;
+  margin: 0;
+  border-radius: var(--radio-lg);
+  overflow: hidden;
+  background: var(--color-secundario);   /* se ve mientras carga la foto */
+  align-self: stretch;
+  min-height: 420px;
+}
+.sobre-historia__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.sobre-historia__media figcaption {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: var(--space-5);
+  color: rgba(255, 255, 255, 0.82);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  /* La foto ya viene oscurecida abajo, pero no lo suficiente para garantizar
+     contraste si algún día se cambia por otra. */
+  background: linear-gradient(180deg, rgba(4, 12, 26, 0) 0%, rgba(4, 12, 26, 0.85) 55%);
+}
+.sobre-historia__media figcaption strong {
+  display: block;
+  color: #fff;
+  font-family: var(--fuente-titulo);
+  font-size: var(--fs-md);
+  margin-bottom: 4px;
+}
+
+/* Cifras de respaldo, debajo del texto */
+.sobre-datos {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-linea);
+}
+.sobre-datos li { display: flex; flex-direction: column; gap: 2px; }
+.sobre-datos strong {
+  font-family: var(--fuente-titulo);
+  font-size: var(--fs-lg);
+  color: var(--color-secundario);
+  line-height: 1.1;
+}
+.sobre-datos span { font-size: var(--fs-sm); color: var(--color-tinta-suave); }
+
+.fila-cta { display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; }
+
+@media (max-width: 820px) {
+  .sobre-historia { grid-template-columns: 1fr; }
+  .sobre-historia__media { order: -1; min-height: 300px; }
+}
+
+
+/* ==========================================================================
+   35. CONTACTO — dónde comprar (tiendas) + formulario
+   ========================================================================== */
+
+.contacto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-7); align-items: start; }
+.contacto-info h2 { font-size: var(--fs-2xl); }
+.contacto-info p { color: var(--color-tinta-suave); margin-block: var(--space-3); }
+.contacto-info .btn { margin-bottom: var(--space-4); }
+.contacto-datos { display: flex; flex-direction: column; gap: var(--space-2); font-size: var(--fs-sm); }
+.contacto-datos li { color: var(--color-tinta-suave); }
+.contacto-datos strong { color: var(--color-tinta); }
+.contacto-form { background: #fff; border: 1px solid var(--color-linea); border-radius: var(--radio-lg); padding: var(--space-6); }
+.contacto-form textarea {
+  padding: 0.7em 0.9em;
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio);
+  font-family: inherit;
+  font-size: var(--fs-base);
+  width: 100%;
+  resize: vertical;
+}
+
+@media (max-width: 820px) {
+  .contacto-grid { grid-template-columns: 1fr; }
+}
+
+
+/* ==========================================================================
+   36. ARTÍCULO / GUÍA DE USO (contenido largo)
+   ========================================================================== */
+.articulo__hero { background: var(--color-fondo-suave); border-bottom: 1px solid var(--color-linea); padding-block: var(--space-7); }
+.articulo__volver { font-size: var(--fs-sm); color: var(--color-tinta-suave); }
+.articulo__volver:hover { color: var(--color-primario-texto); }
+.articulo__hero .eyebrow { margin-top: var(--space-4); }
+.articulo__hero h1 { font-size: var(--fs-2xl); max-width: 24ch; margin-top: var(--space-2); }
+.articulo__meta { font-size: var(--fs-sm); color: var(--color-tinta-suave); margin-top: var(--space-2); }
+
+.articulo__cuerpo { max-width: 720px; padding-block: var(--space-7); }
+.articulo__cuerpo h2 { font-size: var(--fs-xl); margin-top: var(--space-6); margin-bottom: var(--space-3); }
+.articulo__cuerpo p { margin-bottom: var(--space-4); }
+.articulo__cuerpo ul { list-style: disc; padding-left: var(--space-5); margin-bottom: var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); }
+
+.articulo__cta {
+  margin-top: var(--space-7);
+  padding: var(--space-6);
+  background: var(--color-primario-tinte);
+  border-radius: var(--radio-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+.articulo__cta h3 { font-size: var(--fs-md); }
+.articulo__cta p { margin: 0; color: var(--color-tinta-suave); }
+
+
+/* ==========================================================================
+   37. GUÍA DE USO INLINE (secciones en la página de producto)
+   ========================================================================== */
+/* Lo que sí / lo que no */
+.sino-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); max-width: 900px; margin-inline: auto; }
+.sino { border: 1px solid var(--color-linea); border-radius: var(--radio-lg); padding: var(--space-5); }
+.sino h3 { font-size: var(--fs-md); margin-bottom: var(--space-3); }
+.sino ul { display: flex; flex-direction: column; gap: var(--space-2); }
+.sino li { position: relative; padding-left: 1.7em; color: var(--color-tinta); }
+.sino li::before { position: absolute; left: 0; font-weight: 800; }
+.sino--si { border-top: 3px solid var(--color-exito); }
+.sino--si li::before { content: "✓"; color: var(--color-exito); }
+.sino--no { border-top: 3px solid var(--color-alerta); }
+.sino--no li::before { content: "✕"; color: var(--color-alerta); }
+
+/* Cómo tomarla (dosis + pasos numerados) */
+.guia-uso { max-width: 760px; }
+.guia-uso__dosis { color: var(--color-tinta); margin-bottom: var(--space-4); }
+.guia-pasos { list-style: none; counter-reset: paso; display: flex; flex-direction: column; gap: var(--space-3); }
+.guia-pasos li { position: relative; padding-left: 2.6em; color: var(--color-tinta); }
+.guia-pasos li::before {
+  counter-increment: paso; content: counter(paso);
+  position: absolute; left: 0; top: 0;
+  width: 1.8em; height: 1.8em; border-radius: 50%;
+  background: var(--color-primario); color: #fff;
+  font-family: var(--fuente-titulo); font-weight: 800; font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Qué esperar (línea de tiempo) */
+.timeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-5); max-width: 900px; margin-inline: auto; }
+.timeline__item { border-left: 3px solid var(--color-primario); padding: var(--space-2) var(--space-4); }
+.timeline__etapa { display: block; font-family: var(--fuente-titulo); font-weight: 800; color: var(--color-secundario); font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+.timeline__item p { color: var(--color-tinta-suave); font-size: var(--fs-sm); }
+
+/* Cuidados */
+.guia-cuidados { max-width: 760px; }
+.guia-lista { display: flex; flex-direction: column; gap: var(--space-2); }
+.guia-lista li { position: relative; padding-left: 1.4em; color: var(--color-tinta-suave); }
+.guia-lista li::before { content: "•"; position: absolute; left: 0; color: var(--color-primario); font-weight: 800; }
+
+@media (max-width: 640px) { .sino-grid { grid-template-columns: 1fr; } }
+
+
+/* ==========================================================================
+   38. PANEL DE ADMINISTRADOR (admin.html)
+   ========================================================================== */
+.admin-body { background: var(--color-fondo-suave); }
+
+.admin-top {
+  position: sticky; top: 0; z-index: 50;
+  background: #fff; border-bottom: 1px solid var(--color-linea);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-4); padding: var(--space-3) var(--space-5); flex-wrap: wrap;
+}
+.admin-top__brand { font-family: var(--fuente-titulo); }
+.admin-demo { background: var(--color-primario); color: #fff; font-size: var(--fs-xs); font-weight: 800; padding: 2px 8px; border-radius: var(--radio-pill); margin-left: 6px; }
+.admin-acciones { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.admin-acciones .btn { font-size: var(--fs-sm); padding: 0.6em 1em; }
+.admin-import { cursor: pointer; }
+
+.admin-aviso {
+  max-width: 920px; margin: var(--space-5) auto 0;
+  background: #FEF6E9; border: 1px solid #F3D9A9; color: #6b4e16;
+  border-radius: var(--radio); padding: var(--space-4) var(--space-5); font-size: var(--fs-sm);
+}
+
+.admin-form { max-width: 920px; margin-inline: auto; padding: var(--space-5) var(--space-5) var(--space-9); display: flex; flex-direction: column; gap: var(--space-4); }
+
+.admin-sec { background: #fff; border: 1px solid var(--color-linea); border-radius: var(--radio-lg); overflow: hidden; }
+.admin-sec > summary { cursor: pointer; padding: var(--space-4) var(--space-5); font-family: var(--fuente-titulo); font-weight: 700; font-size: var(--fs-md); list-style: none; display: flex; align-items: center; justify-content: space-between; }
+.admin-sec > summary::-webkit-details-marker { display: none; }
+.admin-sec > summary::after { content: "▸"; color: var(--color-primario); }
+.admin-sec[open] > summary::after { content: "▾"; }
+.admin-sec[open] > summary { border-bottom: 1px solid var(--color-linea); }
+.admin-sec__body { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
+
+.admin-campo { display: flex; flex-direction: column; gap: 5px; }
+.admin-campo__label { font-size: var(--fs-sm); font-weight: 600; }
+.admin-form input, .admin-form textarea, .admin-form select { width: 100%; padding: 0.6em 0.8em; border: 1px solid var(--color-linea); border-radius: var(--radio); font-family: inherit; font-size: var(--fs-sm); background: #fff; }
+.admin-form textarea { resize: vertical; }
+.admin-hint { font-size: var(--fs-xs); color: var(--color-tinta-suave); }
+.admin-hint code, .admin-login__nota code { background: var(--color-fondo-suave); padding: 1px 4px; border-radius: 4px; }
+
+.admin-enlace { display: flex; flex-direction: column; gap: 5px; }
+.admin-enlace__row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+
+.admin-img__row { display: flex; gap: var(--space-4); align-items: flex-start; }
+.admin-img__preview { width: 90px; height: 90px; object-fit: contain; background: var(--color-fondo-suave); border: 1px solid var(--color-linea); border-radius: var(--radio); padding: 6px; flex-shrink: 0; }
+.admin-img__ctrl { display: flex; flex-direction: column; gap: 6px; }
+
+.admin-grupo { border: 1px solid var(--color-linea); border-left: 3px solid var(--color-primario); border-radius: var(--radio); padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); background: var(--color-fondo); }
+.admin-grupo__t { font-size: var(--fs-md); }
+
+.admin-tienda { display: grid; grid-template-columns: 1fr 1fr 1.4fr auto; gap: var(--space-2); margin-bottom: var(--space-2); align-items: center; }
+.admin-tienda__del { color: var(--color-alerta); font-weight: 800; padding: 0 0.5em; }
+
+.admin-barra-guardar { position: sticky; bottom: 0; background: rgba(255, 255, 255, 0.95); border-top: 1px solid var(--color-linea); padding: var(--space-3) var(--space-5); text-align: center; backdrop-filter: blur(4px); }
+
+.admin-login { min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: var(--space-5); }
+.admin-login__card { width: 100%; max-width: 380px; background: #fff; border: 1px solid var(--color-linea); border-radius: var(--radio-lg); padding: var(--space-7); display: flex; flex-direction: column; gap: var(--space-3); box-shadow: var(--sombra); }
+.admin-login__card h1 { font-size: var(--fs-xl); }
+.admin-login__card input { padding: 0.7em 0.9em; border: 1px solid var(--color-linea); border-radius: var(--radio); font-size: var(--fs-base); }
+.admin-login__err { color: var(--color-alerta); font-size: var(--fs-sm); }
+.admin-login__nota { font-size: var(--fs-xs); color: var(--color-tinta-suave); }
+
+@media (max-width: 560px) {
+  .admin-enlace__row { grid-template-columns: 1fr; }
+  .admin-tienda { grid-template-columns: 1fr 1fr; }
+}
+
+
+/* ==========================================================================
+   39. HERO "BANNER COMPLETO" + COMUNIDAD / INSTAGRAM
+   --------------------------------------------------------------------------
+   Hero: cuando un slide tiene modo 'banner', la imagen cubre TODO el
+   rectángulo (object-fit: cover) con un velo oscuro para que el texto se lea.
+   Comunidad: grilla de posteos estilo Instagram que enlazan al perfil.
+   ========================================================================== */
+
+/* --- Hero: modo banner completo --- */
+.hero__slide { position: relative; }
+.hero__cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* cubre todo el rectángulo; recorta lo que sobra */
+  /* Las portadas tienen el sujeto a la derecha y el aire a la izquierda, que es
+     donde va el titular. El 72% hace que en celular —donde el recorte es
+     horizontal— el sujeto no se pierda; el 42% deja las cabezas dentro cuando
+     en pantalla ancha el recorte pasa a ser vertical. */
+  object-position: 78% 42%;
+}
+/* Velo oscuro de izquierda a derecha para legibilidad del texto */
+.hero__slide--banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    rgba(7, 13, 24, 0.82) 0%,
+    rgba(7, 13, 24, 0.55) 42%,
+    rgba(7, 13, 24, 0.18) 75%,
+    rgba(7, 13, 24, 0.05) 100%);
+}
+.hero__slide--banner .hero__inner {
+  position: relative;
+  z-index: 1;                 /* el texto va por encima del velo */
+  grid-template-columns: 1fr; /* sin columna de foto flotante */
+  /* Con un alto fijo, en una pantalla de 1920 el hero quedaba en 4:1 y "cover"
+     se comía un tercio de la portada a lo alto: por eso se veía cortada. Que el
+     alto crezca con el ancho lo mantiene cerca de 3:1, que es como están
+     generadas las imágenes. */
+  min-height: clamp(440px, 32vw, 600px);
+  align-content: center;
+}
+@media (max-width: 760px) {
+  .hero__slide--banner .hero__inner { min-height: 380px; }
+  .hero__slide--banner::after {
+    background: linear-gradient(180deg, rgba(7,13,24,0.72) 0%, rgba(7,13,24,0.45) 100%);
+  }
+}
+
+/* --- Comunidad / Instagram --- */
+.ig-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-2);
+}
+.ig-tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;                  /* cuadrado, como un post de IG */
+  overflow: hidden;
+  border-radius: var(--radio);
+  background: var(--color-fondo-suave);
+}
+.ig-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transicion);
+}
+.ig-tile:hover img { transform: scale(1.05); }
+.ig-tile__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  opacity: 0;
+  background: rgba(8, 12, 18, 0.45);
+  transition: opacity var(--transicion);
+}
+.ig-tile:hover .ig-tile__overlay,
+.ig-tile:focus-visible .ig-tile__overlay { opacity: 1; }
+.ig-tile__overlay svg { width: 28px; height: 28px; }
+@media (max-width: 900px) {
+  .ig-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+
+/* ==========================================================================
+   40. BUSCADOR (overlay de la lupa) + REDUCED MOTION
+   ========================================================================== */
+.buscador { position: fixed; inset: 0; z-index: 130; }
+.buscador__overlay { position: absolute; inset: 0; background: rgba(8, 12, 18, 0.45); opacity: 0; transition: opacity 0.2s ease; }
+.buscador.abierto .buscador__overlay { opacity: 1; }
+.buscador__panel {
+  position: relative;
+  background: #fff;
+  box-shadow: var(--sombra-lg);
+  padding-block: var(--space-4);
+  transform: translateY(-8px);
+  opacity: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.buscador.abierto .buscador__panel { transform: translateY(0); opacity: 1; }
+.buscador__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  border: 2px solid var(--color-linea);
+  border-radius: var(--radio-pill);
+  padding: 0.3em 0.5em 0.3em 1em;
+}
+.buscador__inner:focus-within { border-color: var(--color-secundario); }
+.buscador__inner svg { width: 20px; height: 20px; color: var(--color-tinta-suave); flex-shrink: 0; }
+.buscador__inner input { flex: 1; border: none; outline: none; background: transparent; font-size: 16px; padding: 0.5em 0; }
+.buscador__cerrar { font-size: 1.6rem; line-height: 1; color: var(--color-tinta-suave); padding: 0.15em 0.45em; border-radius: var(--radio-pill); }
+.buscador__cerrar:hover { background: var(--color-fondo-suave); color: var(--color-tinta); }
+.buscador__resultados { margin-top: var(--space-3); display: grid; gap: 2px; max-height: min(52vh, 430px); overflow: auto; }
+.buscador__ayuda { color: var(--color-tinta-suave); font-size: var(--fs-sm); padding: var(--space-2) var(--space-2) var(--space-3); }
+.buscador__ayuda a { color: var(--color-primario-texto); font-weight: 600; }
+.buscador__item { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-3); border-radius: var(--radio); }
+.buscador__item:hover { background: var(--color-fondo-suave); }
+.buscador__item img { width: 44px; height: 44px; object-fit: contain; background: var(--color-fondo-suave); border-radius: var(--radio-sm); padding: 4px; mix-blend-mode: multiply; flex-shrink: 0; }
+.buscador__item-info { display: flex; flex-direction: column; }
+.buscador__item-nombre { font-family: var(--fuente-titulo); font-weight: 700; font-size: var(--fs-sm); }
+.buscador__item-precio { font-size: var(--fs-xs); color: var(--color-tinta-suave); }
+.buscador__todos { display: block; margin-top: var(--space-2); padding: var(--space-3); text-align: center; font-family: var(--fuente-titulo); font-weight: 700; font-size: var(--fs-sm); color: var(--color-primario-texto); border-top: 1px solid var(--color-linea); }
+.buscador__todos:hover { background: var(--color-fondo-suave); }
+
+/* Si el sistema pide "reducir movimiento", apagamos transiciones decorativas.
+   (El autoplay del carrusel y la rotación de anuncios se apagan en JS.) */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .hero__track,
+  .barra-anuncios__item,
+  .card-producto,
+  .card-producto__media img,
+  .card-producto__flecha { transition: none !important; }
+}
+
+
+/* ==========================================================================
+   ALIADOS COMERCIALES  (sección traída del sitio en producción)
+   Logos de las cadenas, farmacias, gimnasios y tiendas donde se vende Olimp.
+   Cada logo trae su propia altura porque vienen con proporciones distintas.
+   ========================================================================== */
+/* CELDAS PAREJAS, NO UNA FILA SUELTA
+   --------------------------------------------------------------------------
+   Esto era `flex-wrap` y se veía dentado: los logos miden entre 100 y 190 px
+   de ancho, así que cada fila cortaba en un lugar distinto y la última
+   quedaba con uno o dos elementos centrados en el medio de la nada.
+
+   Se notaba poco con once aliados y se hizo evidente al pasar a catorce.
+
+   Con una grilla de celdas iguales, cada logo ocupa el mismo lugar sin
+   importar su forma, y una pared de logos vuelve a verse como una pared.
+   `auto-fit` acomoda solo la cantidad de columnas al ancho disponible.
+   -------------------------------------------------------------------------- */
+.aliados__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  align-items: center;
+  justify-items: center;
+  gap: var(--space-6) var(--space-4);
+  max-width: 1150px;
+  margin: 0 auto;
+}
+/* Ningún logo se sale de su celda por más ancho que sea el archivo. */
+.aliados__grid > * { max-width: 100%; }
+/* Los logos van A COLOR, no en gris.
+
+   Poner una pared de logos en gris es la convención habitual, y sirve cuando
+   los logos son de sponsors y lo que importa es que no le roben protagonismo a
+   tu marca. Acá el objetivo es otro: esta sección contesta "¿dónde lo compro?".
+   Alguien que busca su local lo reconoce por el color antes que por el nombre.
+
+   Y había un problema práctico: estaban en gris con hover a color. En celular
+   no existe el hover, así que para la mayoría de los visitantes nunca iban a
+   verse a color.
+
+   Es además como está en la web anterior de Vitalica. */
+.aliados__logo {
+  width: auto;
+  object-fit: contain;
+  opacity: .92;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.aliados__logo:hover { opacity: 1; transform: translateY(-2px); }
+@media (max-width: 640px) {
+  /* Celdas más chicas: en un teléfono entran tres por fila en vez de dos. */
+  .aliados__grid {
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+    gap: var(--space-5) var(--space-3);
+  }
+  /* Achica los logos en celular SIN dejarlos sin altura: min() sobre la
+     variable que pone el JS. No usar max-height acá (ver home.js: sin altura
+     propia el lazy-load nunca se dispara y no cargan nunca). */
+  .aliados__logo { height: min(var(--alto, 46px), 46px); }
+}
+
+
+/* ==========================================================================
+   FICHA TÉCNICA DE PRODUCTO  (stats, sabores y catálogo PDF)
+   Recupera lo que el sitio actual mostraba en el modal.
+   ========================================================================== */
+.ficha-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+.stat-badge {
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio);
+  padding: var(--space-3);
+  text-align: center;
+  background: var(--color-fondo-suave);
+}
+.stat-badge__label {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--color-tinta-suave);
+  font-weight: 600;
+}
+.stat-badge__valor {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: var(--fs-lg);
+  color: var(--color-secundario);
+  margin-top: 2px;
+}
+
+.ficha-sabores { margin-top: var(--space-5); }
+.ficha-sabores__titulo {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-tinta-suave);
+  margin-bottom: var(--space-2);
+}
+.ficha-sabores__lista { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.sabor-chip {
+  border: 1px solid var(--color-linea);
+  border-radius: 999px;
+  padding: .35rem .8rem;
+  font-size: var(--fs-sm);
+  background: #fff;
+}
+
+.ficha-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+
+/* ==========================================================================
+   BOTÓN WHATSAPP (variante verde, para CTAs de "consultar por este producto")
+   ========================================================================== */
+.btn--whatsapp {
+  background: #25D366;
+  color: #0B2E17;
+  border: 1px solid #25D366;
+}
+.btn--whatsapp:hover { background: #20BA5A; border-color: #20BA5A; color: #0B2E17; }
+
+
+/* ==========================================================================
+   EMBED DE INSTAGRAM (Curator.io) — reemplaza la grilla simulada
+   ========================================================================== */
+.ig-embed { min-height: 200px; }
+.ig-embed .crt-logo { font-size: var(--fs-xs); opacity: .6; }
+
+/* Contacto del footer (reemplaza los badges de tarjetas) */
+.footer-sitio__contacto {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  align-items: center;
+  font-size: var(--fs-sm);
+}
+.footer-sitio__contacto a { color: #fff; opacity: .85; }
+.footer-sitio__contacto a:hover { opacity: 1; text-decoration: underline; }
+
+
+/* ==========================================================================
+   28. POP-UP DE CAMPAÑA (lo arma assets/js/popups.js)
+   --------------------------------------------------------------------------
+   Se apoya en los tokens de marca: el panel usa el fondo y los bordes del
+   sistema, y los botones son los mismos .btn del resto del sitio. No trae
+   colores propios a propósito — si mañana cambia el naranja, esto cambia solo.
+   ========================================================================== */
+.popup {
+  position: fixed;
+  inset: 0;
+  z-index: 120;              /* por encima del drawer del carrito (100) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.popup--visible { opacity: 1; pointer-events: auto; }
+
+.popup__velo {
+  position: absolute;
+  inset: 0;
+  background: rgba(7, 13, 24, 0.62);
+}
+
+.popup__panel {
+  position: relative;
+  width: min(440px, 100%);
+  max-height: calc(100vh - var(--space-8));
+  overflow-y: auto;
+  background: var(--color-fondo);
+  border-radius: var(--radio-md);
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.45);
+  transform: translateY(10px) scale(0.98);
+  transition: transform 0.2s ease;
+}
+.popup--visible .popup__panel { transform: translateY(0) scale(1); }
+
+.popup__cerrar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radio-pill);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--color-tinta);
+  font-size: 1.6rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transicion);
+}
+.popup__cerrar:hover { background: #fff; }
+
+.popup__imagen {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radio-md) var(--radio-md) 0 0;
+}
+
+.popup__cuerpo { padding: var(--space-6); }
+
+.popup__etiqueta {
+  font-family: var(--fuente-titulo);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  font-size: var(--fs-xs);
+  color: var(--color-primario-texto);
+  margin-bottom: var(--space-2);
+}
+
+.popup__titulo {
+  font-size: var(--fs-xl);
+  line-height: 1.15;
+  margin: 0 0 var(--space-3);
+}
+
+.popup__texto {
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-md);
+  margin: 0;
+}
+
+.popup__acciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+@media (max-width: 480px) {
+  .popup__cuerpo { padding: var(--space-5); }
+  .popup__titulo { font-size: var(--fs-lg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popup, .popup__panel { transition: none; }
+}
+
+
+/* ==========================================================================
+   29. CHECKOUT — MEDIOS DE PAGO Y LOCAL DE RETIRO
+   ========================================================================== */
+
+/* Nota que aparece bajo una opción cuando el medio de pago la necesita. */
+.opcion__nota {
+  margin-top: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-fondo-suave);
+  border-left: 3px solid var(--color-primario);
+  border-radius: var(--radio-sm);
+  font-size: var(--fs-sm);
+  color: var(--color-tinta-suave);
+}
+.opcion__nota strong { color: var(--color-tinta); }
+
+/* Selector del local donde se retira. */
+.selector-local {
+  margin-top: var(--space-4);
+}
+.selector-local label {
+  display: block;
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  margin-bottom: var(--space-2);
+}
+.selector-local select {
+  width: 100%;
+  padding: 0.75rem var(--space-3);
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio-sm);
+  background: var(--color-fondo);
+  color: var(--color-tinta);
+  font: inherit;
+  font-size: var(--fs-md);
+}
+.selector-local select:focus-visible {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 1px;
+}
+
+/* Línea de envío dentro del resumen: se distingue del subtotal. */
+.resumen-linea--envio span:last-child { font-weight: 600; }
+.resumen-linea--envio .envio-gratis { color: var(--color-exito); font-weight: 700; }
+
+/* Número de pedido en la pantalla de confirmación. */
+.confirmacion__numero {
+  display: inline-block;
+  margin: var(--space-3) 0 var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-fondo-suave);
+  border: 1px dashed var(--color-linea);
+  border-radius: var(--radio-sm);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-tinta);
+}
+
+
+/* ==========================================================================
+   30. SELECTOR DE VARIANTE (sabor y presentación) — página de producto
+   --------------------------------------------------------------------------
+   Los chips son <button> de verdad, no enlaces: se activan con la barra
+   espaciadora y anuncian su estado con aria-pressed. El elegido se marca con
+   el navy de marca, no solo con un borde: el borde solo no alcanza para
+   distinguirlo de un chip deshabilitado.
+   ========================================================================== */
+.variantes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: var(--space-5) 0;
+  padding: var(--space-5) 0;
+  border-top: 1px solid var(--color-linea);
+  border-bottom: 1px solid var(--color-linea);
+}
+
+.variantes__titulo {
+  font-family: var(--fuente-titulo);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  font-size: var(--fs-xs);
+  color: var(--color-tinta-suave);
+  margin-bottom: var(--space-3);
+}
+
+.variantes__lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* La foto del envase en cada sabor. producto.js la escribe siempre, pero en
+   este diseño no se muestra: el chip sigue siendo texto con emoji, como
+   estaba. La agregó la propuesta de rediseño (assets/css/tema-2026.css) y
+   ahí se enciende. Si la propuesta se descarta, se borra esta regla y el
+   bloque `foto` de filaOpciones() en assets/js/pages/producto.js. */
+.variante-chip__foto { display: none; }
+
+.variante-chip {
+  padding: 0.6rem 1rem;
+  min-height: 44px;              /* objetivo táctil cómodo */
+  border: 1.5px solid var(--color-linea);
+  border-radius: var(--radio-pill);
+  background: var(--color-fondo);
+  color: var(--color-tinta);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--transicion), background var(--transicion), color var(--transicion);
+}
+.variante-chip:hover:not(:disabled):not([aria-pressed="true"]) {
+  border-color: var(--color-secundario);
+}
+.variante-chip[aria-pressed="true"] {
+  background: var(--color-secundario);
+  border-color: var(--color-secundario);
+  color: #fff;
+}
+.variante-chip:focus-visible {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 2px;
+}
+
+/* No disponible en esa combinación: se apaga y se tacha, pero se sigue
+   viendo. Ocultarlo dejaría al cliente preguntándose si existe. */
+.variante-chip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  background: var(--color-fondo-suave);
+}
+
+/* --- La variante elegida, mostrada en el carrito y el panel lateral --- */
+.carrito-item__variante,
+.drawer-item__variante {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--color-tinta-suave);
+  margin-top: 2px;
+}
+
+
+/* ==========================================================================
+   31. PRECIO CON PROMOCIÓN
+   --------------------------------------------------------------------------
+   El precio de lista tachado va AL LADO del nuevo, no debajo: leído de
+   corrido ("Gs. 280.000, antes Gs. 330.000") el ahorro se entiende solo.
+   Va en gris apagado y más chico — si compite en peso visual con el precio
+   vigente, el cliente duda de cuál paga.
+   ========================================================================== */
+.precio-antes {
+  color: var(--color-tinta-suave);
+  font-weight: 500;
+  font-size: 0.78em;
+  margin-left: 0.4em;
+  text-decoration-thickness: 1.5px;
+}
+
+/* El precio promocional en naranja de marca: es el color de "acción" del
+   sitio y acá la acción es aprovechar el descuento. */
+.card-producto__precio .precio--promo,
+.producto__precio .precio--promo { color: var(--color-primario-texto); }
+
+/* En el carrito y el checkout el tachado también aparece, para que el
+   descuento siga visible hasta el final. */
+.carrito-item__unit .precio-antes,
+.resumen-linea .precio-antes { font-size: 0.85em; }
+
+
+/* --- Panel de administrador: campos nuevos de la sección de campañas --- */
+.admin-campo select,
+.admin-campo input[type="date"] {
+  width: 100%;
+  padding: 0.6rem var(--space-3);
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio-sm);
+  background: var(--color-fondo);
+  color: var(--color-tinta);
+  font: inherit;
+}
+.admin-sub {
+  margin: var(--space-4) 0 var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-linea);
+  font-family: var(--fuente-titulo);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-tinta-suave);
+}
+.admin-vencida {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-alerta);
+  background: rgba(214, 69, 69, 0.12);
+  padding: 2px 8px;
+  border-radius: var(--radio-sm);
+  vertical-align: middle;
+}
+.admin-nota-seccion {
+  margin-bottom: var(--space-5);
+  padding: var(--space-4);
+  background: var(--color-fondo-suave);
+  border-left: 3px solid var(--color-secundario);
+  border-radius: var(--radio-sm);
+  font-size: var(--fs-sm);
+  color: var(--color-tinta-suave);
+}
+
+
+/* ==========================================================================
+   32. PÁGINAS LEGALES (terminos.html · privacidad.html)
+   --------------------------------------------------------------------------
+   Texto largo para leer, no para escanear. Medida de línea acotada, jerarquía
+   clara y nada de decoración: son documentos, no piezas de marketing.
+   ========================================================================== */
+.legal {
+  max-width: 760px;
+}
+.legal h2 {
+  font-size: var(--fs-lg);
+  margin: var(--space-7) 0 var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-linea);
+}
+.legal h2:first-of-type { margin-top: var(--space-5); }
+.legal p,
+.legal li {
+  color: var(--color-tinta-suave);
+  line-height: 1.75;
+}
+.legal p { margin-bottom: var(--space-3); }
+.legal strong { color: var(--color-tinta); }
+.legal ul {
+  margin: 0 0 var(--space-4);
+  padding-left: var(--space-5);
+}
+.legal li { margin-bottom: var(--space-2); }
+.legal a {
+  color: var(--color-primario-texto);
+  font-weight: 600;
+  text-decoration: underline;
+}
+.legal code {
+  background: var(--color-fondo-suave);
+  padding: 1px 6px;
+  border-radius: var(--radio-sm);
+  font-size: 0.9em;
+}
+.legal__fecha {
+  font-size: var(--fs-sm);
+  color: var(--color-tinta-suave);
+  padding-bottom: var(--space-4);
+  border-bottom: 2px solid var(--color-linea);
+}
+
+/* Resumen en lenguaje simple, arriba de la política de privacidad. */
+.legal__resumen {
+  margin: var(--space-5) 0 var(--space-6);
+  padding: var(--space-5);
+  background: var(--color-secundario-tinte);
+  border-radius: var(--radio-md);
+}
+.legal__resumen p { margin-bottom: var(--space-2); color: var(--color-tinta); }
+.legal__resumen ul { margin-bottom: 0; }
+.legal__resumen li { color: var(--color-tinta); }
+
+/* Bloque de advertencia (uso responsable, datos de tarjeta). */
+.legal__aviso {
+  margin: var(--space-4) 0 var(--space-5);
+  padding: var(--space-5);
+  background: var(--color-primario-tinte);
+  border-left: 4px solid var(--color-primario);
+  border-radius: var(--radio-sm);
+}
+.legal__aviso p:last-child { margin-bottom: 0; }
+
+/* Dato de empresa sin cargar. Deliberadamente llamativo: un documento legal
+   con un hueco no se puede publicar, y un guion discreto se pasa por alto. */
+.legal__falta {
+  background: var(--color-primario-tinte);
+  color: var(--color-primario-texto);
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: var(--radio-sm);
+  border: 1px dashed var(--color-primario);
+  white-space: nowrap;
+}
+.legal__pendiente {
+  margin-bottom: var(--space-6);
+  padding: var(--space-5);
+  background: var(--color-primario-tinte);
+  border: 1px solid var(--color-primario);
+  border-radius: var(--radio-md);
+  font-size: var(--fs-sm);
+  line-height: 1.7;
+  color: var(--color-tinta);
+}
+
+/* Enlaces legales del footer */
+.footer-sitio__enlaces-legales {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2) var(--space-5);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.footer-sitio__enlaces-legales a {
+  color: #fff;
+  opacity: 0.85;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}
+.footer-sitio__enlaces-legales a:hover { opacity: 1; text-decoration: underline; }
+
+
+/* ==========================================================================
+   33. FICHA DE PRODUCTO EN CELULAR — que el precio y el botón se vean
+   --------------------------------------------------------------------------
+   El problema medido: en 375×812 la foto ocupaba 556 px de los 703 útiles de
+   la primera pantalla, y había que bajar DOS pantallas completas para llegar
+   a "Agregar al carrito". La mayoría entra desde el celular, así que mucha
+   gente se iba sin ver siquiera el precio.
+
+   Dos correcciones:
+     1) La foto se achica en celular. Sigue siendo grande, pero deja lugar.
+     2) Aparece una barra fija abajo con el precio y el botón, apenas el botón
+        real sale de la vista. Es lo que hacen las tiendas que convierten:
+        la decisión de comprar puede tomarse en cualquier punto de la página,
+        y la acción tiene que estar ahí cuando eso pasa.
+   ========================================================================== */
+@media (max-width: 760px) {
+  .producto__media {
+    padding: var(--space-4);
+    min-height: 0;
+  }
+  .producto__media img { max-height: 260px; }
+}
+
+/* --- Barra fija de compra (solo celular) --- */
+.compra-fija {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 70;
+  display: none;              /* se activa por JS solo en celular */
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  background: var(--color-fondo);
+  border-top: 1px solid var(--color-linea);
+  box-shadow: 0 -6px 24px -8px rgba(0, 0, 0, 0.18);
+  transform: translateY(110%);
+  transition: transform 0.22s ease;
+}
+.compra-fija--visible { transform: translateY(0); }
+
+.compra-fija__info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.compra-fija__nombre {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--color-tinta-suave);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.compra-fija__precio {
+  display: block;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: var(--fs-lg);
+  color: var(--color-tinta);
+  line-height: 1.2;
+}
+.compra-fija__precio .precio-antes { font-size: 0.7em; }
+.compra-fija .btn { flex: 0 0 auto; }
+
+@media (max-width: 760px) {
+  .compra-fija { display: flex; }
+  /* El botón de WhatsApp sube para no quedar tapado por la barra. */
+  body.con-compra-fija .whatsapp-flotante { bottom: 96px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .compra-fija { transition: none; }
+}
+
+
+/* ==========================================================================
+   34. PÁGINA 404
+   --------------------------------------------------------------------------
+   Un 404 sin salida es una visita perdida. Esta ofrece los cuatro caminos
+   que la gente busca realmente, en vez del típico "volver al inicio" solo.
+   ========================================================================== */
+.error-404 { text-align: center; padding-block: var(--space-8); }
+.error-404 h1 { margin-bottom: var(--space-4); }
+.error-404__texto {
+  max-width: 52ch;
+  margin: 0 auto var(--space-6);
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-md);
+}
+.error-404__acciones {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-8);
+}
+.error-404__atajos {
+  max-width: 460px;
+  margin: 0 auto var(--space-7);
+  padding: var(--space-5) var(--space-6);
+  background: var(--color-fondo-suave);
+  border-radius: var(--radio-md);
+  text-align: left;
+}
+.error-404__atajos h2 {
+  font-size: var(--fs-md);
+  margin-bottom: var(--space-3);
+}
+.error-404__atajos ul { margin: 0; padding-left: var(--space-5); }
+.error-404__atajos li { margin-bottom: var(--space-2); }
+.error-404__atajos a { color: var(--color-primario-texto); font-weight: 600; }
+.error-404__atajos a:hover { text-decoration: underline; }
+.error-404__ayuda { color: var(--color-tinta-suave); margin-bottom: var(--space-3); }
+
+/* Punto de retiro único: se muestra la dirección, no se pregunta nada. */
+.punto-retiro {
+  margin-top: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-fondo-suave);
+  border-left: 3px solid var(--color-secundario);
+  border-radius: var(--radio-sm);
+}
+.punto-retiro__titulo {
+  font-family: var(--fuente-titulo);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--color-tinta-suave);
+  margin-bottom: var(--space-2);
+}
+.punto-retiro__dir { margin: 0; line-height: 1.6; }
+.punto-retiro__horario {
+  margin: var(--space-2) 0 0;
+  font-size: var(--fs-sm);
+  color: var(--color-tinta-suave);
+}
+
+/* Medio de pago que no aplica a la entrega elegida. */
+.opcion--apagada { opacity: 0.45; }
+.opcion--apagada .opcion__texto strong { text-decoration: line-through; }
+
+
+/* ==========================================================================
+   35. COMPROBANTE DEL PEDIDO (pantalla + PDF)
+   --------------------------------------------------------------------------
+   El botón "Descargar mi pedido" abre la impresión del navegador, que en
+   todos —Chrome, Safari, y también en el celular— ofrece "Guardar como PDF".
+
+   Se eligió así en vez de una librería de PDF: son ~300 KB que el visitante
+   descarga en TODAS las páginas para una función que usa una minoría, cuando
+   el navegador ya lo hace y con mejor tipografía. La contra es un clic extra
+   (elegir "Guardar como PDF" en el diálogo); vale la pena.
+   ========================================================================== */
+
+/* --- Bloques de datos del comprobante --- */
+.comprobante-bloques {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-5);
+  max-width: 560px;
+  margin: var(--space-6) auto 0;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-linea);
+  text-align: left;
+}
+.comprobante-bloques h2 {
+  font-family: var(--fuente-titulo);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-tinta-suave);
+  margin: 0 0 var(--space-2);
+}
+.comprobante-bloques p { margin: 0; font-size: var(--fs-sm); line-height: 1.6; }
+
+.comprobante-nota {
+  max-width: 560px;
+  margin: var(--space-6) auto 0;
+  padding: var(--space-4);
+  background: var(--color-primario-tinte);
+  border-radius: var(--radio-sm);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  text-align: left;
+}
+
+.confirmacion__fecha {
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-sm);
+  margin-top: calc(var(--space-2) * -1);
+}
+
+/* Encabezado y pie del comprobante: ocultos en pantalla, visibles en papel */
+.comprobante-cabecera,
+.comprobante-pie { display: none; }
+
+
+/* ==========================================================================
+   36. IMPRESIÓN — cómo se ve el pedido guardado en PDF
+   --------------------------------------------------------------------------
+   Se quita todo lo que no sirve en un papel: menú, pie del sitio, botón de
+   WhatsApp flotante, los propios botones y el pop-up si estuviera abierto.
+   Un enlace no se puede tocar en una hoja impresa.
+   ========================================================================== */
+@media print {
+  /* Fondo blanco y tinta negra: ahorra tóner y se lee mejor. */
+  body { background: #fff !important; color: #000; }
+
+  /* Fuera todo lo que no es el comprobante */
+  #chrome-top,
+  #chrome-bottom,
+  .header-sitio,
+  .barra-anuncios,
+  .footer-sitio,
+  .whatsapp-flotante,
+  .compra-fija,
+  .popup,
+  .drawer,
+  .confirmacion__acciones,
+  .confirmacion__icono,
+  .confirmacion__ayuda,
+  .breadcrumb,
+  .pagina-hero,
+  .pagina-cabecera { display: none !important; }
+
+  main, .seccion, .contenedor { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
+
+  /* Encabezado con la marca y los datos fiscales: en papel hace falta. */
+  .comprobante-cabecera {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    padding-bottom: 12px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #000;
+    text-align: left;
+  }
+  .comprobante-marca {
+    font-family: var(--fuente-titulo);
+    font-size: 20pt;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin: 0;
+  }
+  .comprobante-sub { margin: 2px 0 0; font-size: 8pt; color: #444; }
+  .comprobante-datos { font-size: 8pt; color: #444; text-align: right; line-height: 1.5; }
+
+  .confirmacion { text-align: left; }
+  .confirmacion h1 { font-size: 15pt; margin: 0 0 4px; }
+  .confirmacion__intro { font-size: 10pt; margin: 0 0 16px; }
+
+  .confirmacion__numero {
+    display: inline-block;
+    border: 1px solid #000;
+    background: none !important;
+    font-size: 12pt;
+    padding: 6px 14px;
+  }
+  .confirmacion__fecha { font-size: 9pt; margin: 6px 0 0; }
+
+  .confirmacion__resumen,
+  .comprobante-bloques,
+  .comprobante-nota { max-width: 100%; margin-left: 0; margin-right: 0; }
+
+  .comprobante-nota {
+    background: none !important;
+    border: 1px solid #000;
+    font-size: 9pt;
+  }
+
+  .comprobante-pie {
+    display: block !important;
+    margin-top: 28px;
+    padding-top: 10px;
+    border-top: 1px solid #999;
+    font-size: 8pt;
+    color: #555;
+    text-align: center;
+  }
+
+  /* Que una línea de producto no quede cortada entre dos hojas */
+  .resumen-linea, .comprobante-bloques > div { break-inside: avoid; }
+
+  @page { margin: 14mm; }
+}
+
+
+/* ==========================================================================
+   37. PANTALLA DE CARGA
+   --------------------------------------------------------------------------
+   POR QUÉ EXISTE
+   El header, el carrusel y la grilla de productos los arma JavaScript. Entre
+   que el navegador pinta el HTML y que el JS termina, hay un instante en que
+   la página se ve vacía y después "salta" cuando aparece todo junto. En una
+   compu no se nota; en un celular con datos móviles, sí.
+
+   CÓMO SE VA
+   La quita el JS apenas el contenido está listo (ver main.js). Pero además
+   tiene una animación de seguridad que la desvanece a los 5 segundos pase lo
+   que pase: si el JS fallara, una pantalla de carga eterna dejaría el sitio
+   inutilizable, que es mucho peor que el salto que vino a evitar.
+
+   Los estilos van en styles.css y no dentro de cada página porque la hoja se
+   carga en el <head> y bloquea el pintado: para cuando el navegador dibuja
+   algo, esto ya está aplicado.
+   ========================================================================== */
+.cargando {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  background: var(--color-fondo);
+  animation: cargando-red-de-seguridad 5s forwards;
+}
+
+/* Marca en texto, no en imagen: una imagen todavía no descargada dejaría el
+   recuadro vacío, que es justo lo que esto viene a evitar. */
+.cargando__marca {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: clamp(1.6rem, 6vw, 2.2rem);
+  letter-spacing: 0.22em;
+  color: var(--color-tinta);
+  text-indent: 0.22em;          /* compensa el espaciado de la última letra */
+}
+.cargando__marca span { color: var(--color-primario); }
+
+.cargando__sub {
+  font-size: var(--fs-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-tinta-suave);
+}
+
+/* Barra de progreso REAL.
+   El ancho refleja cuánto se descargó de verdad (ver main.js), no un tiempo
+   inventado. Un porcentaje falso que siempre tarda lo mismo le agrega espera
+   a todo el mundo, incluso cuando el sitio ya estaba listo. */
+.cargando__barra {
+  width: 180px;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--color-linea);
+  overflow: hidden;
+}
+.cargando__relleno {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--color-primario);
+  transition: width 0.18s linear;
+}
+
+.cargando__pct {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  letter-spacing: 0.08em;
+  color: var(--color-tinta-suave);
+  font-variant-numeric: tabular-nums;
+  margin-top: calc(var(--space-3) * -1);
+}
+
+/* Red de seguridad: si el JS nunca la quita, igual desaparece. */
+@keyframes cargando-red-de-seguridad {
+  0%, 80% { opacity: 1; }
+  100%    { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+
+/* Salida normal, cuando el contenido ya está listo. */
+.cargando--listo {
+  animation: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Con movimiento reducido NO se puede sacar la animación de .cargando: esa
+   animación es la red de seguridad que hace desaparecer la pantalla de carga
+   si el JavaScript nunca llega a correr. Sin ella, alguien con movimiento
+   reducido activado —que en varias PC de oficina viene puesto de fábrica— se
+   queda mirando el "0%" para siempre.
+
+   Lo que sí se saca es el desvanecido: en vez de atenuarse, corta seco. */
+@keyframes cargando-red-de-seguridad-seca {
+  0%, 99% { opacity: 1; }
+  100%    { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cargando { animation: cargando-red-de-seguridad-seca 5s forwards; }
+  .cargando--listo { transition: none; visibility: hidden; }
+}
+
+/* Acceso al área interna, en el pie. Deliberadamente apagado: tiene que
+   estar para el equipo, sin competir con los enlaces que le importan al
+   cliente. */
+.footer-sitio__acceso {
+  color: #fff;
+  opacity: 0.45;
+  margin-left: 6px;
+  font-size: 0.92em;
+}
+.footer-sitio__acceso:hover { opacity: 0.9; text-decoration: underline; }
+
+/* ==========================================================================
+   38. AVISO DE COOKIES
+   --------------------------------------------------------------------------
+   Aparece solo la primera vez, abajo. No tapa el contenido en escritorio
+   (es una barra angosta) y en celular se apoya sobre el borde inferior.
+   Se puede volver a abrir desde el enlace "Cookies" del footer.
+   ========================================================================== */
+.cookies {
+  position: fixed;
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: var(--space-4);
+  z-index: 60;                 /* por encima del botón de WhatsApp (50) */
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  max-width: 900px;
+  margin-inline: auto;
+  padding: var(--space-5);
+  background: #0B1B33;
+  color: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radio-lg);
+  box-shadow: 0 18px 40px rgba(3, 10, 22, 0.45);
+  /* Entra desde abajo. Empieza oculto para que no parpadee antes de que el
+     JS decida si hay que mostrarlo. */
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.cookies--visible { opacity: 1; transform: none; }
+.cookies__texto { flex: 1 1 380px; min-width: 0; }
+.cookies__texto strong {
+  display: block;
+  color: #fff;
+  font-family: var(--fuente-titulo);
+  font-size: var(--fs-md);
+  margin-bottom: 4px;
+}
+/* El color va explícito: la regla global de <p> pisa lo que hereda de .cookies
+   y el texto quedaba oscuro sobre fondo oscuro, ilegible. */
+.cookies__texto p { font-size: var(--fs-sm); line-height: 1.5; margin: 0; color: rgba(255, 255, 255, 0.82); }
+.cookies__texto a { color: var(--color-primario-tinte); text-decoration: underline; }
+.cookies__acciones { display: flex; gap: var(--space-3); flex: 0 0 auto; }
+.cookies__acciones .btn { white-space: nowrap; }
+
+/* Mientras se ve el cartel, el botón flotante de WhatsApp se corre para
+   arriba: si no, en celular queda justo encima de "Aceptar" y no se puede
+   tocar. La clase la pone y la saca analitica.js. */
+.con-cookies .whatsapp-flotante { transform: translateY(-104px); }
+
+@media (max-width: 620px) {
+  .cookies { left: 0; right: 0; bottom: 0; border-radius: var(--radio-lg) var(--radio-lg) 0 0; }
+  .cookies__acciones { width: 100%; }
+  .cookies__acciones .btn { flex: 1; }
+  .con-cookies .whatsapp-flotante { transform: translateY(-186px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cookies { transition: none; }
+}
+
+/* Botón "Hacé tu pedido" del header.
+   Va al WhatsApp de consumidor final (lo pide el brief de marketing).
+   Se oculta en celular: ahí el botón flotante de WhatsApp ya cumple la
+   misma función y el header no tiene lugar. */
+.header-sitio__pedido {
+  padding: 10px 18px;
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+@media (max-width: 1040px) {
+  .header-sitio__pedido { display: none; }
+}
+
+/* ==========================================================================
+   39. CIENCIA REAL — los tres pilares de Olimp
+   --------------------------------------------------------------------------
+   Va justo debajo del hero. Antes de mostrar productos, explica por qué
+   hay que creerle a la marca: laboratorio propio, producción farmacéutica
+   certificada y SHIME® (el simulador digestivo).
+   ========================================================================== */
+.ciencia { background: var(--color-fondo-suave); }
+.ciencia__intro {
+  max-width: 68ch;
+  margin-inline: auto;
+  color: var(--color-tinta-suave);
+}
+.pilares-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-7);
+}
+.pilar {
+  background: #fff;
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio-lg);
+  padding: var(--space-6);
+  text-align: center;
+}
+/* Los tres archivos NO son un juego de íconos parejo: "frasco" es un
+   pictograma vertical (356x473), mientras que "made in europe" (601x239) y
+   "shime" (852x193) son logotipos apaisados. Metidos a la fuerza en un
+   cuadrado de 72x72 con object-fit:contain, los dos logotipos quedaban
+   diminutos al lado del frasco.
+
+   Solución: una franja de alto fijo donde cada uno entra con SU proporción,
+   limitado a lo ancho. Así los tres apoyan en la misma línea y ocupan un peso
+   visual parecido, sin deformarse. */
+.pilar__icono {
+  display: block;
+  margin: 0 auto var(--space-4);   /* 'auto' los centra: text-align no alcanza
+                                      porque son bloque */
+  height: 56px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+}
+.pilar__titulo {
+  font-size: var(--fs-md);
+  margin-bottom: var(--space-2);
+}
+.pilar__texto {
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--color-tinta-suave);
+}
+
+/* ==========================================================================
+   40. FICHA DE USO (guias.js) — en la página de producto
+   --------------------------------------------------------------------------
+   Contenido de marketing: dosificación por perfil, errores comunes, qué
+   esperar y conservación. Son fichas largas, así que van en acordeones:
+   la primera abierta y el resto plegadas, para no empujar el resto de la
+   página fuera de la pantalla.
+   ========================================================================== */
+.guia__bajada { color: var(--color-tinta-suave); max-width: 60ch; margin-inline: auto; }
+
+.guia__seccion {
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio);
+  background: #fff;
+  margin-bottom: var(--space-3);
+  overflow: hidden;
+}
+.guia__resumen {
+  cursor: pointer;
+  padding: var(--space-4) var(--space-5);
+  font-family: var(--fuente-titulo);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.guia__resumen::-webkit-details-marker { display: none; }
+/* Flecha propia: la nativa cambia de forma entre navegadores */
+.guia__resumen::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 8px; height: 8px;
+  border-right: 2px solid var(--color-primario);
+  border-bottom: 2px solid var(--color-primario);
+  transform: rotate(-45deg);
+  transition: transform 0.2s ease;
+}
+.guia__seccion[open] .guia__resumen::before { transform: rotate(45deg); }
+.guia__resumen:hover { background: var(--color-fondo-suave); }
+
+.guia__cuerpo { padding: 0 var(--space-5) var(--space-5); }
+.guia__cuerpo p {
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-sm);
+  line-height: 1.65;
+  margin-bottom: var(--space-3);
+}
+.guia__lista { list-style: none; margin: 0 0 var(--space-3); padding: 0; }
+.guia__item {
+  position: relative;
+  padding-left: var(--space-5);
+  margin-bottom: var(--space-3);
+  font-size: var(--fs-sm);
+  line-height: 1.65;
+  color: var(--color-tinta-suave);
+}
+.guia__item::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 9px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--color-primario);
+}
+.guia__item strong { color: var(--color-tinta); }
+.guia__item--sub { margin-left: var(--space-5); }
+
+/* Los "qué NO hacer" venían marcados con ❌ en el documento. Se los distingue
+   con color en vez de con el emoji, que se ve distinto en cada sistema. */
+.guia__item--aviso::before {
+  content: "✕";
+  background: none;
+  color: #C0392B;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1;
+  top: 4px;
+  width: auto; height: auto;
+}
+.guia__item--aviso strong { color: #C0392B; }
+
+
+/* ==========================================================================
+   41. EMBAJADORES DE OLIMP
+   --------------------------------------------------------------------------
+   Prueba social: los atletas del equipo internacional de Olimp usan la misma
+   línea que traemos. Retratos cuadrados, nombre debajo, sin biografía
+   (no tenemos esos datos confirmados; ver data.js).
+   ========================================================================== */
+.embajadores__intro {
+  max-width: 60ch;
+  margin-inline: auto;
+  color: var(--color-tinta-suave);
+}
+.embajadores__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-7);
+}
+.embajador { margin: 0; }
+.embajador__foto {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--radio-lg);
+  display: block;
+  /* Un pelín desaturados para que la fila se vea pareja: las fotos vienen de
+     sesiones distintas y con virados muy diferentes entre sí. */
+  filter: saturate(0.9) contrast(1.03);
+}
+.embajador__nombre {
+  margin-top: var(--space-3);
+  text-align: center;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  color: var(--color-tinta);
+}
+
+/* ==========================================================================
+   42. DIFERENCIALES DEL CATÁLOGO (página de producto)
+   --------------------------------------------------------------------------
+   Los cuatro puntos con los que el catálogo oficial explica por qué el
+   producto no es uno más. Van en dos columnas: son textos largos y en una
+   sola columna la línea se vuelve incómoda de leer.
+   ========================================================================== */
+.dif-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+  max-width: 940px;
+  margin-inline: auto;
+}
+.dif {
+  background: #fff;
+  border: 1px solid var(--color-linea);
+  border-left: 3px solid var(--color-primario);
+  border-radius: var(--radio);
+  padding: var(--space-5);
+}
+.dif__titulo {
+  font-size: var(--fs-md);
+  margin-bottom: var(--space-2);
+}
+.dif__texto {
+  font-size: var(--fs-sm);
+  line-height: 1.65;
+  color: var(--color-tinta-suave);
+  margin: 0;
+}
+
+/* Nombre de un aliado que todavía no mandó su logo: en vez de dejar el hueco
+   se muestra el nombre, con un peso parecido al de los logos que lo rodean. */
+/* Aliado que todavía no mandó su logo: se muestra el nombre.
+
+   Sin recuadro punteado: al lado de logos a color, un recuadro de línea
+   cortada parece un error de carga y no "falta este archivo". Así, con la
+   tipografía de títulos, se lee como un logotipo más y no desentona. */
+.aliados__nombre {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 46px;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: var(--fs-md);
+  letter-spacing: -0.01em;
+  color: var(--color-tinta);
+  opacity: .82;
+}
+/* Etiqueta del panel admin que dice si el comercio tiene logo cargado */
+.admin-tienda__logo { font-size: 12px; color: var(--color-tinta-suave); white-space: nowrap; }
+
+/* El precio adentro del botón "Agregar al carrito". producto.js lo escribe
+   siempre, pero en este diseño no se muestra: lo agregó la propuesta de
+   rediseño (assets/css/tema-2026.css) y ahí se enciende. */
+.btn__precio { display: none; }
+
+
+/* ==========================================================================
+   40. MEDIDOR DE ENVÍO GRATIS (carrito drawer)
+   --------------------------------------------------------------------------
+   Solo aparece si VITALICA_CONFIG.envio.gratisDesde tiene un número. Lo dibuja
+   medidorEnvio() en assets/js/main.js.
+
+   La barra usa un <span> con width en línea en vez de una animación: el valor
+   cambia al agregar o quitar productos y una transición de ancho lo hace
+   legible sin que parezca que la página se recarga.
+   ========================================================================== */
+.envio-medidor {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-linea);
+  background: var(--color-fondo-suave);
+}
+.envio-medidor__texto {
+  font-size: var(--fs-sm);
+  color: var(--color-tinta-suave);
+  margin-bottom: var(--space-2);
+}
+.envio-medidor__texto strong {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  color: var(--color-tinta);
+}
+.envio-medidor__barra {
+  height: 6px;
+  border-radius: var(--radio-pill);
+  background: var(--color-linea);
+  overflow: hidden;
+}
+.envio-medidor__barra span {
+  display: block;
+  height: 100%;
+  background: var(--color-primario);
+  transition: width 280ms ease;
+}
+/* Cuando ya se llegó, el verde dice "listo" mejor que el naranja de marca,
+   que acá significa "te falta". */
+.envio-medidor--logrado { background: #EDF7F1; }
+.envio-medidor--logrado .envio-medidor__barra span { background: var(--color-exito); }
+.envio-medidor--logrado .envio-medidor__texto strong { color: var(--color-exito); }
+
+@media (prefers-reduced-motion: reduce) {
+  .envio-medidor__barra span { transition: none; }
+}
+
+/* La etiqueta "Destacado" la agregó la propuesta de rediseño: en este diseño
+   no se muestra, para que la grilla siga viéndose como estaba.
+   Se enciende en assets/css/tema-2026.css. */
+.tag--destacado { display: none; }
+
+
+/* En la ficha de producto, el botón flotante de WhatsApp se acostaba encima
+   del botón de comprar en pantallas medianas (una ventana de ~975 px, o media
+   pantalla). Tapaba justo la acción principal.
+   Arriba de 760 px se oculta: esa misma ficha ya tiene su propio botón
+   "Consultar por WhatsApp" abajo del de comprar, así que no se pierde nada.
+   Abajo de 760 px se queda, porque ahí la barra fija ya lo empuja hacia
+   arriba y no hay choque. */
+@media (min-width: 761px) {
+  body.con-compra-fija .whatsapp-flotante { display: none; }
+}
+
+/* Aviso de "esta foto es de otra presentación" (ficha de producto).
+   Lo llena refrescar() en assets/js/pages/producto.js y solo aparece cuando
+   falta el packshot del envase elegido. Va discreto a propósito: es una
+   aclaración honesta, no una advertencia. */
+.producto__nota-foto {
+  margin-top: var(--space-2);
+  font-size: var(--fs-xs);
+  color: var(--color-tinta-suave);
+  text-align: center;
+}
+
+
+/* ==========================================================================
+   41. EMBAJADOR SIN FOTO  ·  placa con las iniciales
+   --------------------------------------------------------------------------
+   Los cinco embajadores de Vitalica están cargados (salen de los contratos
+   firmados) pero todavía no hay foto de ninguno. En vez de un <img> roto, se
+   dibuja una placa con las iniciales y el borde cortado, igual que el disco
+   del sabor sin packshot: se lee como "falta esto", no como una decisión.
+   Desaparece sola en cuanto se carga la ruta de la foto en data.js.
+   ========================================================================== */
+.embajador__foto--falta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-fondo-suave);
+  border: 2px dashed var(--color-linea);
+  color: var(--color-tinta-suave);
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  letter-spacing: 0.04em;
+}
+.embajador__disciplina {
+  font-size: var(--fs-sm);
+  color: var(--color-tinta-suave);
+  margin-top: 2px;
+}
+.embajador__ig {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--color-primario-texto);
+}
+
+/* Texto solo para lectores de pantalla. Se usa en etiquetas que en pantalla
+   se entienden por contexto pero que sin nombre quedan mudas —por ejemplo el
+   selector de orden del catálogo, que se ve como una lista desplegable pero
+   no dice de qué. No se usa display:none porque eso también lo oculta del
+   lector, que es justo lo contrario de lo que se busca. */
+.visualmente-oculto {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* ==========================================================================
+   43. CATÁLOGO CON PANEL DE FILTROS
+   --------------------------------------------------------------------------
+   El panel lateral, el contador y el selector de orden los agregó la
+   propuesta de rediseño. En ESTE diseño no se muestran: la página sigue
+   filtrando con los chips de arriba, como estaba.
+   Se encienden en assets/css/tema-2026.css (sección 22).
+   ========================================================================== */
+.catalogo__filtros,
+.catalogo__barra { display: none; }
+
+/* El formulario del newsletter puede partirse en dos renglones. Hoy entra en
+   uno, pero es una fila de campo + botón dentro de un ancho que depende de la
+   pantalla: si el botón crece —por texto más largo o por otro diseño— sin
+   esto empuja la página entera y aparece scroll horizontal. Pasó. */
+.newsletter__form { flex-wrap: wrap; }
+.newsletter__form input { min-width: 12rem; }
+
+/* La foto de los mosaicos de objetivo la agregó la propuesta de rediseño.
+   En este diseño no se muestra: cada mosaico tiene su degradado de color.
+   Se enciende en assets/css/tema-2026.css. */
+.categoria-card__foto { display: none; }
+
+/* La foto de las tarjetas de guía la agregó la propuesta de rediseño; en este
+   diseño la portada sigue siendo un bloque de color. Se enciende en
+   assets/css/tema-2026.css. */
+.card-articulo__foto { display: none; }
+
+/* La tira de tres fotos de "Quiénes somos" la agregó la propuesta de
+   rediseño. En este diseño no se muestra. Se enciende en tema-2026.css. */
+.tira-marca { display: none; }
+
+/* La foto de los pilares de "Ciencia real" la agregó la propuesta de
+   rediseño; en este diseño sigue el ícono gris. Se enciende en tema-2026. */
+.pilar__foto { display: none; }
+
+
+/* ==========================================================================
+   40. EMBAJADORES Y NUTRICIONISTAS, EN DOS COLUMNAS
+   --------------------------------------------------------------------------
+   Pedido: "en el apartado de embajadores, que sea 2 columnas, una de los
+   embajadores y otra de los nutricionistas".
+
+   El HTML con las dos columnas lo arma home.js, y SOLO si los dos grupos
+   tienen gente. Hoy no: la planilla de contratos no trae la profesión de
+   nadie, así que los cinco están como embajadores y la sección se dibuja
+   como siempre. El CSS de abajo está listo para cuando lleguen.
+
+   En celular las dos columnas se apilan. Cuatro personas en dos columnas de
+   180px no entran en un teléfono; una debajo de la otra, sí.
+   ========================================================================== */
+.embajadores__columnas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-7);
+  margin-top: var(--space-7);
+}
+.embajadores__columna-titulo {
+  font-family: var(--fuente-titulo);
+  font-size: var(--fs-lg);
+  margin-bottom: var(--space-1);
+}
+.embajadores__columna-texto {
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-sm);
+  margin-bottom: var(--space-5);
+}
+/* Adentro de una columna la grilla ya no arranca con el aire de la sección
+   entera: ese espacio lo pone el texto de arriba. */
+.embajadores__columna .embajadores__grid { margin-top: 0; }
+
+@media (max-width: 760px) {
+  .embajadores__columnas {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}
+
+/* Una línea entre las dos columnas, para que se lean como dos listas y no
+   como una sola grilla de ocho. */
+
+
+/* La columna que todavía no tiene a nadie: un renglón que explica, no un
+   hueco. Con borde punteado, que es como se dibuja "acá va algo". */
+.embajadores__vacio {
+  margin: 0;
+  padding: var(--space-6) var(--space-5);
+  border: 1px dashed var(--color-linea);
+  border-radius: var(--radio-lg);
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-sm);
+  text-align: center;
+}
+
+
+/* ==========================================================================
+   43. EL VISOR DE FOTOS  ·  la imagen en grande
+   --------------------------------------------------------------------------
+   Se abre tocando la foto del producto. Ocupa la pantalla entera con el
+   fondo desenfocado, que es donde el vidrio de verdad se luce: detrás hay
+   toda la página.
+
+   Va en styles.css y NO en el tema, aunque el vidrio sea del 2026, porque
+   el visor lo arma producto.js en los dos diseños. Un elemento que existe
+   en ambos necesita estilo en ambos: si viviera solo en el tema, en el
+   diseño actual se abriría una caja sin formato encima de la página.
+   ========================================================================== */
+.visor {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 220ms ease, visibility 220ms;
+}
+.visor--abierto { opacity: 1; visibility: visible; }
+
+.visor__fondo {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 11, .88);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  cursor: zoom-out;
+}
+
+.visor__caja {
+  position: relative;
+  max-width: min(92vw, 1000px);
+  max-height: 88vh;
+  overflow: auto;
+  border-radius: var(--radio-lg);
+}
+
+.visor__foto {
+  display: block;
+  max-width: 100%;
+  max-height: 88vh;
+  width: auto;
+  margin-inline: auto;
+  background: #fff;
+  border-radius: var(--radio-lg);
+  cursor: zoom-in;
+  transition: transform 260ms ease;
+  transform-origin: center center;
+}
+/* El acercamiento. Se hace con transform y no cambiando el ancho porque
+   transform lo resuelve la placa de video: se mueve suave hasta en un
+   teléfono modesto. */
+.visor--cerca .visor__foto {
+  transform: scale(2);
+  cursor: zoom-out;
+}
+.visor--cerca .visor__caja { overflow: scroll; }
+
+/* Los botones: círculos de vidrio, como las flechas del carrusel. */
+.visor__btn {
+  position: absolute;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .14);
+  -webkit-backdrop-filter: saturate(170%) blur(20px);
+  backdrop-filter: saturate(170%) blur(20px);
+  color: #fff;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+.visor__btn:hover { background: rgba(255, 255, 255, .26); }
+.visor__btn--cerrar { top: 20px; right: 20px; font-size: 1.8rem; }
+.visor__btn--antes  { left: 20px;  top: 50%; transform: translateY(-50%); }
+.visor__btn--luego  { right: 20px; top: 50%; transform: translateY(-50%); }
+
+.visor__pie {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 6px 16px;
+  border-radius: var(--radio-pill);
+  background: rgba(255, 255, 255, .12);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  color: #fff;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+/* Con el visor abierto, el fondo no se desplaza: si no, al cerrarlo uno
+   aparece en otra parte de la página sin saber por qué. */
+body.con-visor { overflow: hidden; }
+
+/* La foto del producto avisa que se puede ampliar. */
+.producto__foto--ampliable { cursor: zoom-in; }
+.producto__foto--ampliable:focus-visible {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 4px;
+}
+
+/* En celular los botones laterales se comen la foto: bajan al pie, al lado
+   del contador. */
+@media (max-width: 560px) {
+  .visor__btn--antes  { left: 16px;  top: auto; bottom: 18px; transform: none; }
+  .visor__btn--luego  { right: 16px; top: auto; bottom: 18px; transform: none; }
+  .visor__btn { width: 40px; height: 40px; }
+  .visor__caja { max-width: 94vw; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visor, .visor__foto { transition: none; }
+}
+
+
+/* ==========================================================================
+   44. LA CUENTA DEBAJO DEL BOTÓN  ·  "3 × Gs. 200.000"
+   --------------------------------------------------------------------------
+   Aparece solo cuando se lleva más de una unidad. Sirve para que los dos
+   números de la ficha no se pisen: el grande de arriba es el precio de UNO
+   y el del botón es el TOTAL. Sin este renglón, con cantidad 3 la página
+   mostraba dos importes distintos y no se entendía cuál se iba a cobrar.
+   ========================================================================== */
+.producto__cuenta {
+  margin: var(--space-2) 0 0;
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--color-tinta-suave);
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ==========================================================================
+   45. BUSCADOR — ATAJOS Y GUÍAS EN LOS RESULTADOS
+   --------------------------------------------------------------------------
+   Los atajos son los seis botones que aparecen con el campo vacío. Antes ahí
+   había un cartel que no llevaba a ninguna parte.
+
+   Y las guías de uso ahora salen entre los resultados: mucha gente busca
+   "cómo tomar creatina", y eso lo contesta un artículo, no un envase. Van
+   marcadas con una línea naranja a la izquierda para que se lean como otra
+   cosa distinta a un producto.
+   ========================================================================== */
+.buscador__atajos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-2) 0 var(--space-4);
+}
+.buscador__atajo {
+  padding: 8px 16px;
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio-pill);
+  background: transparent;
+  color: var(--color-tinta);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--transicion), background var(--transicion);
+}
+.buscador__atajo:hover {
+  border-color: var(--color-primario);
+  background: var(--color-fondo-suave);
+}
+
+.buscador__item--guia { border-left: 3px solid var(--color-primario); }
+.buscador__item--guia img { object-fit: cover; }
+.buscador__item-icono {
+  display: block;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radio);
+  background: var(--color-fondo-suave);
+}

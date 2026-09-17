@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vista previa · Ficha técnica de producto · Vitalica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..900&family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+<style>
+/* Tokens de marca (copiados de styles.css solo para esta vista previa) */
+:root{
+  --color-primario:#EF7D2A; --color-primario-oscuro:#D2651A; --color-primario-texto:#A85410;
+  --color-secundario:#0B55A3; --color-secundario-oscuro:#083F7A;
+  --color-tinta:#16191D; --color-tinta-suave:#565C66;
+  --color-linea:#E2E5EA; --color-fondo-suave:#F5F6F8;
+  --radio:8px; --radio-lg:14px;
+  --space-1:.25rem; --space-2:.5rem; --space-3:.75rem; --space-4:1rem;
+  --space-5:1.5rem; --space-6:2rem; --space-7:3rem; --space-8:4rem;
+  --fs-sm:.9375rem; --fs-md:1.125rem;
+  --fuente-titulo:"Montserrat",system-ui,sans-serif;
+  --fuente-texto:"Inter",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--fuente-texto);color:var(--color-tinta);background:#fff;line-height:1.6}
+h1,h2,h3{font-family:var(--fuente-titulo);line-height:1.2;margin:0}
+.contenedor{max-width:1200px;margin-inline:auto;padding-inline:var(--space-5)}
+.aviso{background:var(--color-fondo-suave);border-bottom:1px solid var(--color-linea);padding:var(--space-4) 0;font-size:var(--fs-sm)}
+.aviso__inner{display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:center;justify-content:space-between}
+.aviso select{font:inherit;padding:.5rem .75rem;border:1px solid var(--color-linea);border-radius:var(--radio);background:#fff;min-height:44px}
+/* ============================================================================
+   VITALICA — Ficha técnica de producto (acordeones + tablas)
+   ----------------------------------------------------------------------------
+   Hoja aparte para no tocar styles.css. Usa los tokens del sistema de diseño;
+   los valores después de la coma son de respaldo por si el token cambia de
+   nombre, así el bloque nunca queda sin estilo.
+   ========================================================================== */
+
+.ficha {
+  padding-block: var(--space-7, 3rem);
+}
+
+.ficha__contenedor {
+  max-width: 820px;
+  margin-inline: auto;
+}
+
+.ficha__titulo {
+  margin: 0 0 var(--space-4, 1rem);
+}
+
+/* --- Acordeón (usa <details>/<summary> nativos: accesible y sin JS) ------- */
+
+.acordeon {
+  border-bottom: 1px solid var(--color-linea, #E2E5EA);
+}
+.acordeon:first-of-type {
+  border-top: 1px solid var(--color-linea, #E2E5EA);
+}
+
+.acordeon__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4, 1rem);
+  padding: var(--space-4, 1rem) 0;
+  min-height: 44px;                      /* objetivo táctil */
+  cursor: pointer;
+  font-family: var(--fuente-titulo, "Montserrat", sans-serif);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  color: var(--color-tinta, #16191D);
+  list-style: none;                      /* saca el triangulito por defecto */
+}
+.acordeon__cabecera::-webkit-details-marker { display: none; }
+
+.acordeon__cabecera:hover { color: var(--color-secundario, #0B55A3); }
+
+.acordeon__cabecera:focus-visible {
+  outline: 2px solid var(--color-secundario, #0B55A3);
+  outline-offset: 3px;
+  border-radius: var(--radio, 6px);
+}
+
+.acordeon__flecha {
+  flex: none;
+  color: var(--color-tinta-suave, #565C66);
+  transition: transform .18s ease;
+}
+.acordeon[open] .acordeon__cabecera { color: var(--color-secundario, #0B55A3); }
+.acordeon[open] .acordeon__flecha   { transform: rotate(180deg); }
+
+.acordeon__cuerpo {
+  padding-bottom: var(--space-5, 1.5rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acordeon__flecha { transition: none; }
+}
+
+/* --- Lista de especificaciones (dato / valor) ---------------------------- */
+
+.ficha-specs {
+  display: grid;
+  grid-template-columns: minmax(9rem, 15rem) 1fr;
+  margin: 0;
+  font-size: var(--fs-sm, .9375rem);
+}
+
+.ficha-specs dt,
+.ficha-specs dd {
+  padding: .6rem 0;
+  border-top: 1px solid var(--color-linea, #E2E5EA);
+  margin: 0;
+}
+.ficha-specs dt:first-of-type,
+.ficha-specs dt:first-of-type + dd { border-top: 0; }
+
+.ficha-specs dt {
+  font-weight: 600;
+  color: var(--color-tinta-suave, #565C66);
+  padding-right: var(--space-4, 1rem);
+}
+.ficha-specs dd {
+  color: var(--color-tinta, #16191D);
+}
+
+/* En celular: dato arriba, valor abajo */
+@media (max-width: 560px) {
+  .ficha-specs { grid-template-columns: 1fr; }
+  .ficha-specs dt { padding-bottom: 0; }
+  .ficha-specs dd { padding-top: .15rem; border-top: 0; }
+  .ficha-specs dt:first-of-type + dd { border-top: 0; }
+}
+
+/* --- Tabla nutricional --------------------------------------------------- */
+
+.ficha-porcion {
+  margin: 0 0 var(--space-3, .75rem);
+  font-size: var(--fs-sm, .9375rem);
+  color: var(--color-tinta-suave, #565C66);
+}
+.ficha-porcion strong { color: var(--color-tinta, #16191D); }
+
+.ficha-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm, .9375rem);
+}
+
+.ficha-tabla th,
+.ficha-tabla td {
+  text-align: left;
+  padding: .6rem .5rem;
+  border-bottom: 1px solid var(--color-linea, #E2E5EA);
+}
+.ficha-tabla th:first-child,
+.ficha-tabla td:first-child { padding-left: 0; }
+.ficha-tabla th:not(:first-child),
+.ficha-tabla td:not(:first-child) { text-align: right; white-space: nowrap; }
+
+.ficha-tabla thead th {
+  font-family: var(--fuente-titulo, "Montserrat", sans-serif);
+  font-size: .8125rem;
+  letter-spacing: .02em;
+  color: var(--color-tinta-suave, #565C66);
+  border-bottom-width: 2px;
+}
+
+.ficha-tabla tbody tr:last-child th,
+.ficha-tabla tbody tr:last-child td { border-bottom: 0; }
+
+.ficha-tabla td:first-child { color: var(--color-tinta, #16191D); }
+
+/* Filas indentadas: en los datos, el nombre empieza con dos espacios
+   (ej. "  de los cuales azúcares") y se muestra como sub-ítem. */
+.ficha-tabla .es-subfila td:first-child {
+  padding-left: 1.25rem;
+  color: var(--color-tinta-suave, #565C66);
+}
+
+.ficha-nota {
+  margin: var(--space-3, .75rem) 0 0;
+  font-size: .8125rem;
+  line-height: 1.5;
+  color: var(--color-tinta-suave, #565C66);
+}
+
+/* --- Código de artículo -------------------------------------------------- */
+
+.ficha-codigo {
+  margin: var(--space-4, 1rem) 0 0;
+  font-size: .8125rem;
+  color: var(--color-tinta-suave, #565C66);
+}
+.ficha-codigo strong { font-weight: 600; }
+
+</style>
+</head>
+<body>
+
+<div class="aviso">
+  <div class="contenedor aviso__inner">
+    <span><strong>Vista previa</strong> — así se vería la ficha técnica dentro de la página de producto.</span>
+    <label>Producto: <select id="selector"></select></label>
+  </div>
+</div>
+
+<div data-ficha-tecnica></div>
+
+<script>
+/* ============================================================================
+   VITALICA — FICHAS TÉCNICAS DE PRODUCTO
+   ----------------------------------------------------------------------------
+   Este archivo agrega la "Ficha técnica" y la "Información nutricional" a la
+   página de producto, al estilo de la tabla de especificaciones de ASG.
+
+   NO toca ningún archivo existente: se carga aparte y producto-ficha.js lo lee.
+
+   ⚠️ IMPORTANTE — DOS COSAS QUE HAY QUE REVISAR ANTES DE MOSTRAR ESTO:
+
+   1) LOS ID. Cada bloque de abajo se llama igual que el `id` del producto en
+      `assets/js/data.js` (el mismo que va en la URL: producto.html?id=XXXX).
+      Verificados contra la maqueta: whey-protein-complex, creatine-monohydrate,
+      redweiler, gold-omega-3-sport.
+      Los otros 6 están marcados con  // ⚠️ VERIFICAR ID  — abrí data.js, copiá
+      el id real y renombrá la clave. Si un id no coincide, esa ficha
+      simplemente no se muestra (no rompe nada) y la consola del navegador
+      te avisa cuál falta.
+
+   2) LOS VALORES. Los números son de referencia, tomados de la línea Olimp,
+      pero HAY QUE CONFIRMARLOS CONTRA LA ETIQUETA del envase que vende
+      Vitalica antes de publicar. Los datos nutricionales publicados obligan
+      legalmente. Mientras tanto cada tabla muestra la nota al pie de
+      "valores de referencia".
+
+   CÓMO EDITAR
+   -----------
+   specs:  lista de pares  ['Nombre del dato', 'Valor']
+   nutricional.columnas: 1 o 2 columnas de valores
+   nutricional.filas:    ['Nutriente', 'valor col 1', 'valor col 2' (opcional)]
+   Borrar una fila = borrar la línea. Agregar = copiar una línea y cambiarla.
+   ========================================================================== */
+
+window.VITALICA_FICHAS = {
+
+  /* ---------------------------------------------------------------- 01 */
+  'whey-protein-complex': {
+    codigo: '20-000',
+    specs: [
+      ['Presentación',            '700 g · 1.800 g · 2.270 g'],
+      ['Porciones por envase',    '23 (700 g) · 60 (1.800 g)'],
+      ['Tamaño de porción',       '30 g (1 medidor)'],
+      ['Proteína por porción',    '23 g'],
+      ['Tipo de proteína',        'Concentrado (WPC) + aislado (WPI), filtrado en frío CFM'],
+      ['Sabores',                 'Chocolate · Vainilla · Frutilla · Cookies & cream'],
+      ['BCAA por porción',        '5,2 g'],
+      ['Aporta enzimas',          'Sí — complejo digestivo'],
+      ['Uso sugerido',            '1 porción después de entrenar o entre comidas'],
+      ['Origen',                  'Olimp Laboratories — Polonia'],
+      ['Vida útil',               '24 meses desde la fabricación']
+    ],
+    nutricional: {
+      porcion:  '30 g (1 medidor) en 250 ml de agua',
+      columnas: ['Por porción (30 g)', 'Por 100 g'],
+      filas: [
+        ['Valor energético',      '117 kcal',  '390 kcal'],
+        ['Proteínas',             '23 g',      '76,7 g'],
+        ['Carbohidratos',         '2,1 g',     '7,0 g'],
+        ['  de los cuales azúcares', '1,8 g',  '6,0 g'],
+        ['Grasas',                '1,5 g',     '5,0 g'],
+        ['  de las cuales saturadas', '0,9 g', '3,0 g'],
+        ['Sal',                   '0,2 g',     '0,7 g']
+      ]
+    }
+  },
+
+  /* ---------------------------------------------------------------- 02 */
+  'creatine-monohydrate': {
+    codigo: '20-001',
+    specs: [
+      ['Presentación',            '250 g · 500 g'],
+      ['Porciones por envase',    '83 (250 g) · 166 (500 g)'],
+      ['Tamaño de porción',       '3 g (1 cucharadita colmada)'],
+      ['Creatina por porción',    '3 g de monohidrato'],
+      ['Micronización',           '200 Mesh — disolución inmediata'],
+      ['Sabor',                   'Sin sabor (neutro)'],
+      ['Fase de carga',           'No es necesaria'],
+      ['Uso sugerido',            '1 porción por día, también los días sin entrenamiento'],
+      ['Origen',                  'Olimp Laboratories — Polonia'],
+      ['Vida útil',               '36 meses desde la fabricación']
+    ],
+    nutricional: {
+      porcion:  '3 g en 200 ml de agua, jugo o batido',
+      columnas: ['Por porción (3 g)'],
+      filas: [
+        ['Monohidrato de creatina', '3 g'],
+        ['Valor energético',        '0 kcal'],
+        ['Carbohidratos',           '0 g'],
+        ['Grasas',                  '0 g']
+      ]
+    }
+  },
+
+  /* ---------------------------------------------------------------- 03 */
+  'redweiler': {
+    codigo: '20-002',
+    specs: [
+      ['Presentación',            '480 g'],
+      ['Porciones por envase',    '30'],
+      ['Tamaño de porción',       '16 g (1 medidor)'],
+      ['Cafeína por porción',     '200 mg'],
+      ['Beta-alanina por porción','2.500 mg'],
+      ['Citrulina por porción',   '1.000 mg'],
+      ['Creatina por porción',    '1.500 mg'],
+      ['Sabores',                 'Cola · Frutos rojos · Naranja'],
+      ['Uso sugerido',            '1 porción, 15–30 min antes de entrenar'],
+      ['Máximo por día',          '1 porción'],
+      ['No recomendado para',     'Menores de 18, embarazadas y personas sensibles a la cafeína'],
+      ['Origen',                  'Olimp Laboratories — Polonia']
+    ],
+    nutricional: {
+      porcion:  '16 g en 300 ml de agua',
+      columnas: ['Por porción (16 g)'],
+      filas: [
+        ['Beta-alanina',            '2.500 mg'],
+        ['L-citrulina',             '1.000 mg'],
+        ['Monohidrato de creatina', '1.500 mg'],
+        ['Cafeína',                 '200 mg'],
+        ['Taurina',                 '1.000 mg'],
+        ['Tirosina',                '500 mg'],
+        ['Vitamina B6',             '1,4 mg (100% VRN)'],
+        ['Vitamina B12',            '2,5 µg (100% VRN)']
+      ],
+      nota: 'VRN = valor de referencia de nutrientes. Contiene cafeína: no recomendado para niños ni embarazadas.'
+    }
+  },
+
+  /* ---------------------------------------------------------------- 04 */
+  'gold-omega-3-sport': {
+    codigo: '20-003',
+    specs: [
+      ['Presentación',            '120 cápsulas'],
+      ['Porciones por envase',    '120'],
+      ['Tamaño de porción',       '1 cápsula'],
+      ['Aceite de pescado',       '1.000 mg por cápsula'],
+      ['EPA por cápsula',         '330 mg'],
+      ['DHA por cápsula',         '220 mg'],
+      ['Vitamina E',              '12 mg (100% VRN)'],
+      ['Formato',                 'Cápsula blanda de gelatina'],
+      ['Uso sugerido',            '1 cápsula por día con una comida'],
+      ['Origen',                  'Olimp Laboratories — Polonia'],
+      ['Vida útil',               '24 meses desde la fabricación']
+    ],
+    nutricional: {
+      porcion:  '1 cápsula con una comida principal',
+      columnas: ['Por cápsula'],
+      filas: [
+        ['Aceite de pescado',   '1.000 mg'],
+        ['Omega 3 totales',     '600 mg'],
+        ['  EPA',               '330 mg'],
+        ['  DHA',               '220 mg'],
+        ['Vitamina E',          '12 mg (100% VRN)']
+      ],
+      nota: 'Contiene pescado. VRN = valor de referencia de nutrientes.'
+    }
+  },
+
+  /* ---------------------------------------------------------------- 05 */
+  'bcaa-xplode': {   // ⚠️ VERIFICAR ID contra data.js
+    codigo: '20-004',
+    specs: [
+      ['Presentación',            '500 g'],
+      ['Porciones por envase',    '50'],
+      ['Tamaño de porción',       '10 g (1 medidor)'],
+      ['BCAA por porción',        '6.000 mg — ratio 2:1:1'],
+      ['Glutamina por porción',   '1.000 mg'],
+      ['Sabores',                 'Sandía · Naranja · Manzana verde'],
+      ['Uso sugerido',            '1 porción antes, durante o después de entrenar'],
+      ['Origen',                  'Olimp Laboratories — Polonia']
+    ],
+    nutricional: {
+      porcion:  '10 g en 300 ml de agua',
+      columnas: ['Por porción (10 g)'],
+      filas: [
+        ['L-leucina',    '3.000 mg'],
+        ['L-isoleucina', '1.500 mg'],
+        ['L-valina',     '1.500 mg'],
+        ['L-glutamina',  '1.000 mg'],
+        ['Vitamina B6',  '1,4 mg (100% VRN)']
+      ]
+    }
+  },
+
+  /* ---------------------------------------------------------------- 06 */
+  'l-carnitine-3000-extreme': {   // ⚠️ VERIFICAR ID contra data.js
+    codigo: '20-005',
+    specs: [
+      ['Presentación',            '120 cápsulas'],
+      ['Porciones por envase',    '120'],
+      ['Tamaño de porción',       '1 cápsula'],
+      ['L-carnitina por cápsula', '3.000 mg de tartrato'],
+      ['Formato',                 'Cápsula'],
+      ['Uso sugerido',            '1 cápsula 30 min antes de la actividad física'],
+      ['Origen',                  'Olimp Laboratories — Polonia']
+    ],
+    nutricional: {
+      porcion:  '1 cápsula con agua, antes de entrenar',
+      columnas: ['Por cápsula'],
+      filas: [
+        ['L-carnitina tartrato', '3.000 mg'],
+        ['  equivale a L-carnitina', '2.000 mg']
+      ]
+    }
+  },
+
+  /* ---------------------------------------------------------------- 07 */
+  'gold-vit-min-anti-age': {   // ⚠️ VERIFICAR ID contra data.js
+    codigo: '20-006',
+    specs: [
+      ['Presentación',            '60 comprimidos'],
+      ['Porciones por envase',    '60'],
+      ['Tamaño de porción',       '1 comprimido'],
+      ['Vitaminas',               '13'],
+      ['Minerales',               '11'],
+      ['Uso sugerido',            '1 comprimido por día con una comida'],
+      ['Origen',                  'Olimp Laboratories — Polonia']
+    ],
+    nutricional: {
+      porcion:  '1 comprimido con el desayuno',
+      columnas: ['Por comprimido', '% VRN'],
+      filas: [
+        ['Vitamina C',  '80 mg',   '100%'],
+        ['Vitamina E',  '12 mg',   '100%'],
+        ['Vitamina D',  '5 µg',    '100%'],
+        ['Vitamina B6', '1,4 mg',  '100%'],
+        ['Vitamina B12','2,5 µg',  '100%'],
+        ['Zinc',        '10 mg',   '100%'],
+        ['Magnesio',    '56 mg',   '15%'],
+        ['Selenio',     '55 µg',   '100%']
+      ],
+      nota: 'Listado resumido. La composición completa figura en la etiqueta del envase.'
+    }
+  },
+
+  /* ---------------------------------------------------------------- 08 */
+  'glutamine-mega-caps': {   // ⚠️ VERIFICAR ID contra data.js
+    codigo: '20-007',
+    specs: [
+      ['Presentación',            '120 cápsulas'],
+      ['Porciones por envase',    '120'],
+      ['Tamaño de porción',       '1 cápsula'],
+      ['Glutamina por cápsula',   '1.400 mg'],
+      ['Formato',                 'Cápsula'],
+      ['Uso sugerido',            '1 cápsula después de entrenar y 1 antes de dormir'],
+      ['Origen',                  'Olimp Laboratories — Polonia']
+    ],
+    nutricional: {
+      porcion:  '1 cápsula con agua',
+      columnas: ['Por cápsula'],
+      filas: [
+        ['L-glutamina', '1.400 mg']
+      ]
+    }
+  },
+
+  /* ---------------------------------------------------------------- 09 */
+  'gain-bolic-6000': {   // ⚠️ VERIFICAR ID contra data.js
+    codigo: '20-008',
+    specs: [
+      ['Presentación',            '1.000 g · 3.500 g'],
+      ['Porciones por envase',    '10 (1.000 g) · 35 (3.500 g)'],
+      ['Tamaño de porción',       '100 g (4 medidores)'],
+      ['Proteína por porción',    '19 g'],
+      ['Carbohidratos por porción','72 g'],
+      ['Sabores',                 'Chocolate · Vainilla · Frutilla'],
+      ['Uso sugerido',            '1 porción después de entrenar o entre comidas'],
+      ['Origen',                  'Olimp Laboratories — Polonia']
+    ],
+    nutricional: {
+      porcion:  '100 g en 400 ml de leche o agua',
+      columnas: ['Por porción (100 g)', 'Por 100 g'],
+      filas: [
+        ['Valor energético', '380 kcal', '380 kcal'],
+        ['Proteínas',        '19 g',     '19 g'],
+        ['Carbohidratos',    '72 g',     '72 g'],
+        ['  de los cuales azúcares', '18 g', '18 g'],
+        ['Grasas',           '2,5 g',    '2,5 g']
+      ]
+    }
+  },
+
+  /* ---------------------------------------------------------------- 10 */
+  'chela-mag-b6-sport': {   // ⚠️ VERIFICAR ID contra data.js
+    codigo: '20-009',
+    specs: [
+      ['Presentación',            '60 cápsulas'],
+      ['Porciones por envase',    '60'],
+      ['Tamaño de porción',       '1 cápsula'],
+      ['Magnesio por cápsula',    '100 mg (quelato de Albion)'],
+      ['Vitamina B6 por cápsula', '1,4 mg'],
+      ['Formato',                 'Cápsula'],
+      ['Uso sugerido',            '1 a 2 cápsulas por día con una comida'],
+      ['Origen',                  'Olimp Laboratories — Polonia']
+    ],
+    nutricional: {
+      porcion:  '1 cápsula con una comida',
+      columnas: ['Por cápsula', '% VRN'],
+      filas: [
+        ['Magnesio',    '100 mg',  '27%'],
+        ['Vitamina B6', '1,4 mg',  '100%']
+      ]
+    }
+  }
+
+};
+
+</script>
+
+<script>
+// El contenido exacto de assets/js/pages/producto-ficha.js, envuelto en una
+// función para poder repintarlo al cambiar de producto en el selector.
+function renderFicha(){
+/* ============================================================================
+   VITALICA — Ficha técnica de producto
+   ----------------------------------------------------------------------------
+   Lee el ?id= de la URL, busca la ficha en VITALICA_FICHAS (data-fichas.js)
+   y la dibuja dentro de <div data-ficha-tecnica></div>.
+
+   Si el producto no tiene ficha cargada, no dibuja nada y avisa por consola
+   qué id faltó. Nunca rompe la página.
+   ========================================================================== */
+
+(function () {
+  'use strict';
+
+  var contenedor = document.querySelector('[data-ficha-tecnica]');
+  if (!contenedor) return;
+
+  var fichas = window.VITALICA_FICHAS || {};
+
+  // Normalmente el id sale del ?id= de la URL. La variable
+  // VITALICA_FICHA_ID_FORZADO existe solo para la vista previa y para pruebas;
+  // en el sitio no está definida, así que no cambia nada.
+  var id = window.VITALICA_FICHA_ID_FORZADO ||
+           new URLSearchParams(window.location.search).get('id');
+
+  var ficha = id ? fichas[id] : null;
+
+  if (!ficha) {
+    if (id) {
+      console.info(
+        '[Ficha técnica] No hay ficha cargada para el id "' + id + '".\n' +
+        'Ids disponibles en data-fichas.js: ' + Object.keys(fichas).join(', ')
+      );
+    }
+    return;
+  }
+
+  /* --- utilidades ------------------------------------------------------- */
+
+  // Escapa texto para que un valor con < o & no rompa el HTML.
+  function esc(txt) {
+    return String(txt == null ? '' : txt)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  var flecha =
+    '<svg class="acordeon__flecha" viewBox="0 0 24 24" width="20" height="20" ' +
+    'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" ' +
+    'stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+
+  // Arma un acordeón. `abierto` decide si arranca desplegado.
+  function acordeon(titulo, cuerpoHTML, abierto) {
+    return '' +
+      '<details class="acordeon"' + (abierto ? ' open' : '') + '>' +
+        '<summary class="acordeon__cabecera">' +
+          '<span>' + esc(titulo) + '</span>' + flecha +
+        '</summary>' +
+        '<div class="acordeon__cuerpo">' + cuerpoHTML + '</div>' +
+      '</details>';
+  }
+
+  /* --- bloque 1: especificaciones --------------------------------------- */
+
+  function bloqueSpecs(specs) {
+    if (!specs || !specs.length) return '';
+    var filas = specs.map(function (par) {
+      return '<dt>' + esc(par[0]) + '</dt><dd>' + esc(par[1]) + '</dd>';
+    }).join('');
+    return '<dl class="ficha-specs">' + filas + '</dl>';
+  }
+
+  /* --- bloque 2: información nutricional -------------------------------- */
+
+  function bloqueNutricional(n) {
+    if (!n || !n.filas || !n.filas.length) return '';
+
+    var html = '';
+
+    if (n.porcion) {
+      html += '<p class="ficha-porcion">Porción: <strong>' +
+              esc(n.porcion) + '</strong></p>';
+    }
+
+    var columnas = n.columnas || ['Cantidad'];
+
+    html += '<table class="ficha-tabla"><thead><tr><th scope="col">Nutriente</th>';
+    columnas.forEach(function (c) {
+      html += '<th scope="col">' + esc(c) + '</th>';
+    });
+    html += '</tr></thead><tbody>';
+
+    n.filas.forEach(function (fila) {
+      // Los nombres que arrancan con espacios se muestran indentados.
+      var esSub = /^\s{2,}/.test(fila[0]);
+      html += '<tr' + (esSub ? ' class="es-subfila"' : '') + '>';
+      html += '<td>' + esc(String(fila[0]).trim()) + '</td>';
+      for (var i = 0; i < columnas.length; i++) {
+        html += '<td>' + esc(fila[i + 1] || '—') + '</td>';
+      }
+      html += '</tr>';
+    });
+
+    html += '</tbody></table>';
+
+    html += '<p class="ficha-nota">' +
+            (n.nota ? esc(n.nota) + ' ' : '') +
+            'Valores de referencia. La información que manda es la de la ' +
+            'etiqueta del envase.</p>';
+
+    return html;
+  }
+
+  /* --- armado final ------------------------------------------------------ */
+
+  var partes = '';
+
+  var specs = bloqueSpecs(ficha.specs);
+  if (specs) partes += acordeon('Ficha técnica', specs, true);
+
+  var nutri = bloqueNutricional(ficha.nutricional);
+  if (nutri) partes += acordeon('Información nutricional', nutri, false);
+
+  if (!partes) return;
+
+  var codigo = ficha.codigo
+    ? '<p class="ficha-codigo">Código de artículo: <strong>' +
+      esc(ficha.codigo) + '</strong></p>'
+    : '';
+
+  contenedor.innerHTML =
+    '<section class="ficha">' +
+      '<div class="contenedor">' +
+        '<div class="ficha__contenedor">' +
+          '<h2 class="ficha__titulo">Detalle del producto</h2>' +
+          partes +
+          codigo +
+        '</div>' +
+      '</div>' +
+    '</section>';
+
+})();
+
+}
+</script>
+
+<script>
+(function(){
+  var sel  = document.getElementById('selector');
+  var cont = document.querySelector('[data-ficha-tecnica]');
+  var ids  = Object.keys(window.VITALICA_FICHAS);
+
+  ids.forEach(function(id){
+    var o = document.createElement('option');
+    o.value = id; o.textContent = id;
+    sel.appendChild(o);
+  });
+
+  function pintar(id){
+    window.VITALICA_FICHA_ID_FORZADO = id;
+    cont.innerHTML = '';
+    renderFicha();
+  }
+
+  sel.addEventListener('change', function(){ pintar(sel.value); });
+  pintar(ids[0]);
+})();
+</script>
+
+</body>
+</html>

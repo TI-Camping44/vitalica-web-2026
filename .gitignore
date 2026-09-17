@@ -1,0 +1,86 @@
+# ============================================================================
+# VITALICA — qué NO se sube al repositorio
+# ----------------------------------------------------------------------------
+# Regla de oro: si un archivo tiene una clave adentro, no entra acá. Ni en un
+# repositorio privado. Un repo privado se puede volver público por error, se
+# puede compartir con alguien que después se va, y el historial de git guarda
+# para siempre lo que se subió aunque después se borre el archivo.
+#
+# Para que otro pueda levantar el proyecto están los .ejemplo, que tienen la
+# misma forma pero con los valores vacíos.
+# ============================================================================
+
+
+# --- CREDENCIALES: esto no se sube nunca ------------------------------------
+ACCESOS.md
+odoo-credenciales.ini
+api/config.php
+htaccess
+.user.ini
+php.ini
+
+# La copia del paquete de pruebas arrastra los mismos archivos del servidor.
+_subir-a-pruebas/
+*.zip
+
+
+# --- DATOS DE CLIENTES ------------------------------------------------------
+# api/almacen guarda los pedidos que entran por la web: nombre, teléfono,
+# dirección y correo de personas reales. Hoy tiene pedidos de prueba míos,
+# pero en producción tiene clientes. No entra, ni de prueba: si se sube una
+# vez, queda en el historial de git para siempre.
+api/almacen/
+
+
+# --- MATERIAL INTERNO -------------------------------------------------------
+# Manual de marca, catálogos, contratos y planillas bajados del Drive. Son
+# documentos de la empresa, no del sitio, y pesan 119 MB.
+_drive/
+
+# Respaldos y descartes: historia del proyecto, no hace falta publicarla.
+_respaldo-*/
+_descartado/
+
+# Capturas de trabajo: se regeneran con herramientas/foto-pagina.ps1.
+_previsualizacion/
+
+
+# --- FOTOS EN CRUDO ---------------------------------------------------------
+# En assets/img hay 94 fotos sueltas de la biblioteca de Olimp que suman
+# 429 MB. El sitio usa ocho; el resto es el material del que salen los
+# recortes que sí están (assets/img/hero, /metas, /guias, /marca...).
+#
+# Se ignora todo lo que esté SUELTO en assets/img y se rescatan esas ocho con
+# "!". Las subcarpetas no se tocan: ahí viven las imágenes que el sitio sirve.
+assets/img/*.jpg
+assets/img/*.jpeg
+assets/img/*.JPG
+assets/img/*.JPEG
+assets/img/*.png
+assets/img/*.webp
+assets/img/*.heic
+
+!assets/img/banda-producto.jpg
+!assets/img/logo-olimp-negro.png
+!assets/img/logo-olimp.png
+!assets/img/logo-vitalica.png
+!assets/img/og-portada.webp
+!assets/img/olimp-laboratorio-web.jpg
+!assets/img/olimp-laboratorio.jpg
+!assets/img/producto-original.jpg
+
+# Lo mismo en la raíz del proyecto: quedaron sueltos de pruebas viejas.
+/*.webp
+/*.jpg
+/*.png
+/*.pdf
+!/favicon.ico
+
+
+# --- BASURA DE HERRAMIENTAS -------------------------------------------------
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store
+Thumbs.db
+desktop.ini
