@@ -79,13 +79,26 @@ foreach ($c in 'css', 'js', 'fonts') {
 $imgDestino = Join-Path $destino 'assets\img'
 New-Item -ItemType Directory $imgDestino -Force | Out-Null
 
-foreach ($sub in 'products', 'hero', 'aliados', 'pilares', 'embajadores', 'blog') {
-  $origen = Join-Path $raiz "assets\img\$sub"
-  if (Test-Path $origen) { Copy-Item $origen -Destination $imgDestino -Recurse -Force }
+# TODAS las subcarpetas, sin lista.
+#
+# Antes habia una lista escrita a mano y fallo exactamente como tenia que
+# fallar: le faltaban metas/, guias/ y marca/. El sitio se subio a produccion
+# con las cuatro tarjetas de "Que queres lograr?" y las tres de la guia de
+# uso mostrando el cuadrito de imagen rota.
+#
+# Una lista a mano de cosas que hay que actualizar cuando alguien agrega una
+# carpeta es una trampa: funciona hasta que alguien agrega una carpeta. Las
+# subcarpetas de assets/img son todas del sitio y pesan 25 MB en total, asi
+# que no hay nada que elegir.
+Get-ChildItem (Join-Path $raiz 'assets\img') -Directory | ForEach-Object {
+  Copy-Item $_.FullName -Destination $imgDestino -Recurse -Force
 }
 
 # Se leen los archivos del sitio y se saca qué fotos sueltas nombran.
-$fuentes = Get-ChildItem $raiz -Include *.html -File -Recurse -Depth 0
+# Solo los .html que estan en la raiz. Con -Recurse -Depth 0 igual entraba a
+# _respaldo-20260820\, y de ahi salian rutas de fotos que ese sitio viejo
+# usaba y este no.
+$fuentes = Get-ChildItem $raiz -Filter *.html -File
 $fuentes += Get-ChildItem (Join-Path $raiz 'assets\js')  -Include *.js  -File -Recurse
 $fuentes += Get-ChildItem (Join-Path $raiz 'assets\css') -Include *.css -File -Recurse
 
@@ -178,6 +191,49 @@ if ($faltan.Count -gt 0) {
   foreach ($n in $faltan) { "  falta  assets/img/$n" }
   ''
 }
+
+# --- La comprobacion que faltaba ---------------------------------------------
+# Se leen otra vez los archivos del sitio, ahora buscando CUALQUIER ruta de
+# assets/img (con carpeta o sin ella), y se confirma que cada una exista
+# dentro del paquete.
+#
+# Esto es lo que habria atajado el error de las carpetas: contar archivos no
+# sirve, porque el paquete estaba completo segun su propia lista. Lo que hay
+# que preguntar es si el sitio puede encontrar todo lo que nombra.
+# Se miran los archivos QUE VAN EN EL PAQUETE, no los del proyecto: lo que
+# importa es si el sitio publicado va a encontrar lo que nombra.
+$delPaquete  = Get-ChildItem $destino -Filter *.html -File
+$delPaquete += Get-ChildItem (Join-Path $destino 'assets\js')  -Include *.js  -File -Recurse
+$delPaquete += Get-ChildItem (Join-Path $destino 'assets\css') -Include *.css -File -Recurse
+
+$rutas = New-Object System.Collections.Generic.HashSet[string]
+foreach ($f in $delPaquete) {
+  $texto = Get-Content $f.FullName -Raw -ErrorAction SilentlyContinue
+  if (-not $texto) { continue }
+  # Los comentarios se sacan antes de buscar. En data-fichas.js hay uno que
+  # explica como se nombran las fotos y cita un archivo de ejemplo que no
+  # existe; sin esto, la comprobacion lo daba por roto.
+  $texto = [regex]::Replace($texto, '(?s)/\*.*?\*/', ' ')
+  $texto = [regex]::Replace($texto, '(?m)^\s*//.*$', ' ')
+  $texto = [regex]::Replace($texto, '(?s)<!--.*?-->', ' ')
+  foreach ($m in [regex]::Matches($texto, 'assets/img/[A-Za-z0-9._/-]+\.(?:jpg|jpeg|png|webp|svg)')) {
+    [void]$rutas.Add($m.Value)
+  }
+}
+$rotas = @()
+foreach ($r in ($rutas | Sort-Object)) {
+  if (-not (Test-Path (Join-Path $destino ($r -replace '/', '\')))) { $rotas += $r }
+}
+''
+if ($rotas.Count -gt 0) {
+  "IMAGENES ROTAS: el sitio nombra $($rotas.Count) archivo(s) que no estan en el paquete"
+  foreach ($r in $rotas) { "  falta  $r" }
+  ''
+  'NO subas este paquete.'
+  exit 1
+}
+"$($rutas.Count) imagenes nombradas por el sitio, todas presentes."
+''
 
 'Tiene que estar:'
 foreach ($f in 'assets\css\styles.css','assets\css\tema-2026.css','assets\js\data.js',

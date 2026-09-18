@@ -96,3 +96,4 @@ _subir-a-produccion/
 
 # El zip para subir por cPanel: sale del paquete, no se versiona.
 vitalica-produccion.zip
+vitalica-arreglo.zip
