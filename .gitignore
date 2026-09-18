@@ -90,3 +90,6 @@ node_modules/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# El paquete armado para produccion: se regenera con el script.
+_subir-a-produccion/

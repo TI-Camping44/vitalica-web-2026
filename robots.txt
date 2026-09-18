@@ -5,9 +5,10 @@ User-agent: *
 
 # Páginas internas: no aportan nada en resultados de búsqueda
 # y el panel no debería aparecer nunca.
-Disallow: /admin.html
+Disallow: /admin.php
 Disallow: /muestra.html
 Disallow: /vista-previa-ficha.html
+Disallow: /vista-previa-marca.html
 Disallow: /api/
 Disallow: /_respaldo-20260820/
 Disallow: /_descartado/
