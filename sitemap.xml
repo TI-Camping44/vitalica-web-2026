@@ -37,6 +37,15 @@
   <url><loc>https://vitalica.com.py/guia-proteina-suero.html</loc><priority>0.7</priority></url>
   <url><loc>https://vitalica.com.py/guia-pre-entrenos.html</loc><priority>0.7</priority></url>
 
+  <!-- NOTICIAS: este bloque lo reescribe solo api/blog.php cada vez que
+       marketing publica o despublica una nota. No editarlo a mano. -->
+  <!-- NOTICIAS:INICIO -->
+  <url><loc>https://vitalica.com.py/noticias.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://vitalica.com.py/nota.html?id=que-significa-que-olimp-fabrique-bajo-estandar-farmaceutico</loc><lastmod>2026-09-18</lastmod><priority>0.6</priority></url>
+  <url><loc>https://vitalica.com.py/nota.html?id=shime-el-sistema-digestivo-artificial-de-olimp</loc><lastmod>2026-09-16</lastmod><priority>0.6</priority></url>
+  <url><loc>https://vitalica.com.py/nota.html?id=olimp-en-numeros</loc><lastmod>2026-09-12</lastmod><priority>0.6</priority></url>
+  <!-- NOTICIAS:FIN -->
+
   <!-- Institucionales -->
   <url><loc>https://vitalica.com.py/sobre.html</loc><priority>0.6</priority></url>
   <url><loc>https://vitalica.com.py/contacto.html</loc><priority>0.6</priority></url>

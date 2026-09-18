@@ -215,6 +215,7 @@ function h($t): string { return htmlspecialchars((string)$t, ENT_QUOTES, 'UTF-8'
 <div class="barra">
   <strong>VITALICA</strong>
   <span>Noticias</span>
+  <a href="acceso.php">← Menú</a>
   <a href="panel.php">Pedidos</a>
   <a href="../admin.php">Configuración</a>
   <a href="../noticias.html" target="_blank">Ver el blog ↗</a>

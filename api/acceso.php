@@ -26,10 +26,14 @@ if (isset($_POST['clave'])) {
     $error = sesion_login((string)($_POST['usuario'] ?? ''), (string)$_POST['clave']);
     if ($error === '') {
         // Si venía de una página puntual, lo devolvemos ahí.
-        $destinos = ['panel.php' => 'panel.php', 'admin.php' => '../admin.php', 'equipo.php' => 'equipo.php'];
+        $destinos = ['panel.php' => 'panel.php', 'admin.php' => '../admin.php',
+                     'equipo.php' => 'equipo.php', 'blog.php' => 'blog.php'];
         $ir = $destinos[$volver] ?? 'acceso.php';
         // Si no es administrador, no lo mandamos a una página que va a rechazarlo.
-        if (!sesion_es_admin() && $ir !== 'panel.php') $ir = 'acceso.php';
+        // Pedidos y noticias los puede usar cualquier usuario del área interna:
+        // marketing carga sus notas sin depender de que le den permisos de admin.
+        $libres = ['panel.php', 'blog.php'];
+        if (!sesion_es_admin() && !in_array($ir, $libres, true)) $ir = 'acceso.php';
         header('Location: ' . $ir);
         exit;
     }
@@ -95,6 +99,7 @@ function e($s): string { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'
   .opcion__ico{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;margin-bottom:14px}
   .opcion--pedidos .opcion__ico{background:var(--naranja-suave);color:var(--naranja-txt)}
   .opcion--config .opcion__ico{background:var(--navy-suave);color:var(--navy)}
+  .opcion--noticias .opcion__ico{background:#E6F1EA;color:#2C6B49}
   .opcion--equipo .opcion__ico{background:#EDEEF1;color:var(--suave)}
   .opcion h2{font-size:16.5px;margin:0 0 5px}
   .opcion p{margin:0;color:var(--suave);font-size:13.5px;line-height:1.5}
@@ -139,6 +144,18 @@ function e($s): string { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'
       </span>
       <h2>Pedidos</h2>
       <p>Ver y procesar los pedidos que entran por la web. Estados, responsables y contacto con el cliente.</p>
+    </a>
+
+    <a class="opcion opcion--noticias" href="blog.php">
+      <span class="opcion__ico">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9h4"/>
+          <path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/>
+        </svg>
+      </span>
+      <h2>Noticias</h2>
+      <p>Escribir y publicar notas del blog. Texto, fotos, enlaces y citas, sin pedirle nada a nadie.</p>
     </a>
 
     <a class="opcion opcion--config" href="../admin.php">

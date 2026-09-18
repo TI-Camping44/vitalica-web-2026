@@ -4,7 +4,7 @@
    GENERADO POR api/blog.php. No editar a mano: se sobrescribe entero cada
    vez que se guarda una nota desde el panel.
    El original está en api/almacen/blog.json.
-   Última escritura: 18/09/2026 14:37
+   Última escritura: 18/09/2026 14:51
    ========================================================================== */
 const VITALICA_NOTICIAS = [
     {

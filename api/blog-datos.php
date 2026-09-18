@@ -39,7 +39,8 @@ function notas_ordenar(array $notas): array {
  * título alcanzaría para romper la página entera si esto se armara pegando
  * texto.
  */
-function notas_guardar(array $notas, string $archivo, string $publicado): string {
+function notas_guardar(array $notas, string $archivo, string $publicado,
+                       ?string $sitemap = null): string {
     $notas = notas_ordenar($notas);
 
     $dir = dirname($archivo);
@@ -64,7 +65,60 @@ function notas_guardar(array $notas, string $archivo, string $publicado): string
     if (@file_put_contents($publicado, $cab . $cuerpo . ";\n", LOCK_EX) === false) {
         return 'Guardé la nota pero no pude publicar el archivo del sitio. Revisá los permisos de assets/js.';
     }
+
+    // El mapa del sitio es lo último y es opcional: si falla, la nota ya está
+    // publicada igual. No tiene sentido devolver un error rojo por esto.
+    // Tres niveles arriba de assets/js/data-noticias.js esta la raiz del sitio,
+    // tanto si el camino viene absoluto como relativo.
+    sitemap_refrescar($notas, $sitemap ?? (dirname($publicado, 3) . '/sitemap.xml'));
+
     return '';
+}
+
+/**
+ * Reescribe el bloque de noticias del mapa del sitio.
+ *
+ * POR QUÉ ESTÁ ACÁ Y NO LO HAGO YO A MANO
+ * ---------------------------------------
+ * El sitemap es lo que Google lee para enterarse de que existe una página.
+ * Si marketing publica una nota y nadie toca el sitemap, la nota queda
+ * publicada pero invisible para el buscador hasta que alguien se acuerde.
+ * Acordarse es exactamente lo que no hay que pedirle a nadie.
+ *
+ * Solo toca lo que hay entre los dos comentarios marcadores. El resto del
+ * archivo (productos, guías, institucionales) queda intacto: si alguien
+ * agrega una URL a mano en otra parte, esto no se la borra.
+ *
+ * Si los marcadores no están, no hace nada y no rompe: prefiero un sitemap
+ * desactualizado a un sitemap roto.
+ */
+function sitemap_refrescar(array $notas, string $sitemap): void {
+    if (!is_file($sitemap) || !is_writable($sitemap)) return;
+
+    $xml = (string)@file_get_contents($sitemap);
+    $ini = '<!-- NOTICIAS:INICIO -->';
+    $fin = '<!-- NOTICIAS:FIN -->';
+    $a = strpos($xml, $ini);
+    $b = strpos($xml, $fin);
+    if ($a === false || $b === false || $b < $a) return;
+
+    $base = 'https://vitalica.com.py/';
+    $l = ["  <url><loc>{$base}noticias.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>"];
+
+    foreach (notas_ordenar($notas) as $n) {
+        // Los borradores no se listan: todavía no existen para el visitante.
+        if (empty($n['publicada'])) continue;
+        $id = (string)($n['id'] ?? '');
+        if ($id === '') continue;
+        $fecha = preg_match('/^\d{4}-\d{2}-\d{2}$/', (string)($n['fecha'] ?? ''))
+               ? "<lastmod>{$n['fecha']}</lastmod>" : '';
+        $l[] = "  <url><loc>{$base}nota.html?id=" . rawurlencode($id) . "</loc>"
+             . $fecha . "<priority>0.6</priority></url>";
+    }
+
+    $medio = "\n" . implode("\n", $l) . "\n  ";
+    $xml = substr($xml, 0, $a + strlen($ini)) . $medio . substr($xml, $b);
+    @file_put_contents($sitemap, $xml, LOCK_EX);
 }
 
 /* ---------------------------------------------------------------------------
