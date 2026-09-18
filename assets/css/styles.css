@@ -4006,7 +4006,11 @@ body.con-visor { overflow: hidden; }
   }
   .nota-card--destacada .nota-card__media {
     flex: 0 0 52%;
-    aspect-ratio: auto;
+    /* Proporción fija y no `auto`: con `auto` la altura la manda la foto, y
+       una portada vertical estiraba la tarjeta dejando medio metro de blanco
+       al lado del texto. Con 3/2 la destacada mide siempre lo mismo, sirva
+       la foto que sirva. */
+    aspect-ratio: 3 / 2;
   }
   .nota-card--destacada .nota-card__cuerpo {
     justify-content: center;
