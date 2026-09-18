@@ -472,7 +472,7 @@ const VITALICA_HERO = [
   {
     modo: 'banner',
     eyebrow: 'Calidad europea',
-    titulo: '35+ años de<br>ciencia deportiva.',
+    titulo: '+35 años de<br>ciencia deportiva.',
     texto: 'Olimp fabrica en Polonia con estándares europeos. Productos originales, con respaldo y resultados.',
     imagen: 'assets/img/hero/portada-3.jpg',
     cta1: { texto: 'Conocé Olimp', href: 'sobre.html' },

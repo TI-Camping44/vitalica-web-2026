@@ -300,13 +300,42 @@
 
 /* Un velo más duro del lado del texto: en BPN el titular nunca pelea con la
    foto, porque la foto está apagada justo detrás de las letras. */
-[data-tema="2026"] .hero__slide--banner .hero__inner::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(5,5,6,.92) 0%, rgba(5,5,6,.72) 38%, rgba(5,5,6,0) 72%);
-  z-index: 0;
-  pointer-events: none;
+/* EL VELO VA SOBRE LA DIAPOSITIVA, NO SOBRE EL CONTENEDOR
+   --------------------------------------------------------------------------
+   Acá el velo colgaba de .hero__inner, que es el contenedor con ancho
+   máximo (1320 px) y márgenes a los costados. O sea que el degradado no
+   cubría la foto: cubría una caja de 1320 px en el medio de la foto, con dos
+   bordes rectos bien visibles. En pantallas anchas se veía literalmente un
+   recuadro negro apoyado encima de la imagen.
+
+   La diapositiva sí ocupa todo el ancho, así que el velo va ahí. styles.css
+   ya lo tenía resuelto con `.hero__slide--banner::after { inset: 0 }`; lo
+   único que hace falta es cambiarle los colores, no volver a inventarlo.
+
+   Y el degradado termina en 0 de opacidad, no en un valor bajo: si termina
+   en 0,05 queda un escalón contra el borde derecho de la foto. Tiene que
+   morir del todo. */
+[data-tema="2026"] .hero__slide--banner .hero__inner::before { content: none; }
+
+[data-tema="2026"] .hero__slide--banner::after {
+  background: linear-gradient(90deg,
+    rgba(5, 5, 6, 0.94) 0%,
+    rgba(5, 5, 6, 0.82) 28%,
+    rgba(5, 5, 6, 0.52) 52%,
+    rgba(5, 5, 6, 0.18) 76%,
+    rgba(5, 5, 6, 0.00) 100%);
+}
+
+/* En celular el recorte es horizontal y el texto queda sobre el medio de la
+   foto, así que el degradado tiene que bajar en vertical: de costado no
+   taparía nada donde hace falta. */
+@media (max-width: 760px) {
+  [data-tema="2026"] .hero__slide--banner::after {
+    background: linear-gradient(180deg,
+      rgba(5, 5, 6, 0.80) 0%,
+      rgba(5, 5, 6, 0.62) 45%,
+      rgba(5, 5, 6, 0.78) 100%);
+  }
 }
 [data-tema="2026"] .hero__slide--banner .hero__inner > * { position: relative; z-index: 1; }
 
@@ -2193,4 +2222,29 @@
 [data-tema="2026"] .seccion--plegada,
 [data-tema="2026"] .seccion--plegada.seccion--suave {
   background: transparent;
+}
+
+/* ==========================================================================
+   46. ALINEACIÓN ÓPTICA DEL TITULAR DEL HERO
+   --------------------------------------------------------------------------
+   Marketing vio que "CALIDAD EUROPEA" no arrancaba a la misma altura que
+   "+35 AÑOS". Medido en pantalla, las CAJAS están en la misma x exacta: no
+   era un error de maquetado.
+
+   Lo que pasa es que el trazo de una letra no empieza pegado al borde de su
+   caja: deja un margen propio (el "side bearing"). Ese margen es una
+   fracción del tamaño de la letra, así que a 12 px no se ve y a 80 px son
+   casi dos píxeles. El titular del hero es el único texto de la página lo
+   bastante grande como para que se note.
+
+   O sea que el que está corrido es el titular, no el eyebrow: el eyebrow, el
+   párrafo y los botones alinean todos contra el borde de la caja. Por eso la
+   corrección va acá y no allá, y con eso queda alineado con los tres.
+
+   Va en `em` y no en píxeles para que acompañe al tamaño: el titular usa
+   clamp() y mide distinto en cada pantalla. El valor sale de medir el trazo
+   de la "3" a 44 px, que entraba 1 px (1/44 = 0,023).
+   ========================================================================== */
+[data-tema="2026"] .hero__titulo {
+  margin-left: -0.023em;
 }
