@@ -2305,9 +2305,7 @@
   font-size: clamp(1.9rem, 3.2vw, 2.7rem);
   line-height: 1.04;
 }
-[data-tema="2026"] .nota__bajada,
-[data-tema="2026"] .nota__datos,
-[data-tema="2026"] .nota__volver { max-width: 68ch; }
+[data-tema="2026"] .nota__bajada { max-width: 68ch; }
 
 
 /* ==========================================================================
@@ -2362,39 +2360,114 @@
 
 
 /* ==========================================================================
-   49. LA NOTA EN PANTALLA ANCHA
+   49. LA NOTA  ·  barra de datos a la izquierda, nota a la derecha
    --------------------------------------------------------------------------
-   En un monitor de 1600px, el texto ocupa 618 (los 68 caracteres que se leen
-   cómodo) y quedan casi 500px de blanco a cada lado. El texto está bien
-   angosto —no se toca—, pero con la foto al mismo ancho la página entera se
-   lee como una tira flaquita en el medio de la nada.
+   El problema: en un monitor de 1920, la columna de lectura mide 618px (los
+   68 caracteres que se leen sin cansarse) y sobran 670 de blanco a CADA
+   lado. La página se ve como una tira flaca perdida en el medio.
 
-   La solución de toda la prensa: el texto se queda angosto y la FOTO se sale
-   a los costados. Pasan dos cosas a la vez: el aire deja de sentirse como un
-   error y la foto gana la presencia que tiene que tener la portada de una
-   nota.
+   LO QUE NO FUNCIONÓ, Y POR QUÉ QUEDA ESCRITO
+   Primero se probó la solución de los diarios en papel: dejar el texto
+   angosto y sacar la FOTO más ancha, a 980px. En un diario funciona porque
+   hay muchos elementos y se entiende que el desborde es a propósito. Acá
+   hay tres cosas —título, foto y texto— y lo único que registra el ojo es
+   que el título arranca en un borde y la foto en otro. No se lee como
+   diseño: se lee como algo mal alineado. Reportado dos veces.
 
-   Se aplica desde 1080px porque abajo de eso la foto ya llena el ancho y no
-   hay nada que ganar.
+   LO QUE SÍ
+   Una barra a la izquierda con la etiqueta, la fecha, los minutos y el
+   camino de vuelta. Resuelve las dos cosas a la vez:
+
+     · El bloque entero pasa a medir 860px en vez de 618, así que el aire
+       sobrante baja de 670 a 530 por lado y deja de dominar la pantalla.
+     · La composición queda anclada a la izquierda por algo que se ve, en
+       vez de flotar. Y el texto de lectura NO se ensancha: sigue en sus 68
+       caracteres, que es lo único que no se negocia.
+
+   La barra se queda fija mientras se baja. No es un adorno: en una nota
+   larga siempre se sabe qué se está leyendo y cómo volver al listado.
+
+   Debajo de 1024px la barra se apaga y todo vuelve a una sola columna, con
+   los datos arriba. Una barra lateral en un teléfono es una columna de 80px
+   que no le sirve a nadie.
    ========================================================================== */
-@media (min-width: 1080px) {
-  [data-tema="2026"] .nota__portada {
-    max-width: min(980px, 100%);
-    max-height: 520px;
+[data-tema="2026"] .nota__rejilla {
+  width: min(100% - 2 * var(--space-5), 68ch);
+  margin-inline: auto;
+}
+
+@media (min-width: 1024px) {
+  [data-tema="2026"] .nota__rejilla {
+    display: grid;
+    /* 200px de barra + 48 de aire + 68ch de lectura */
+    grid-template-columns: 200px minmax(0, 68ch);
+    gap: 48px;
+    width: fit-content;
+    max-width: calc(100% - 2 * var(--space-5));
+  }
+
+  [data-tema="2026"] .nota__barra {
+    position: sticky;
+    top: 120px;          /* debajo del header, que también es fijo */
+    align-self: start;
+    text-align: right;   /* pegada a la columna de lectura, no al vacío */
+    border-right: 1px solid var(--color-linea);
+    padding-right: 24px;
   }
 }
 
-/* --------------------------------------------------------------------------
-   El pie de datos de la cabecera: fecha y minutos de lectura.
-   Se separa del resto con una línea, para que el ojo entienda dónde termina
-   la entrada y dónde arranca la nota.
-   -------------------------------------------------------------------------- */
-[data-tema="2026"] .nota__datos {
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--color-linea);
+[data-tema="2026"] .nota__barra {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: var(--space-5);
+}
+
+[data-tema="2026"] .nota__volver {
+  margin-bottom: var(--space-3);
   font-size: var(--fs-xs);
+  font-weight: 700;
   letter-spacing: .08em;
   text-transform: uppercase;
+  color: var(--color-tinta-suave);
+}
+[data-tema="2026"] .nota__volver:hover { color: var(--color-primario-texto); }
+
+[data-tema="2026"] .nota__barra-etiqueta {
+  margin: 0;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--color-primario-texto);
+}
+
+[data-tema="2026"] .nota__barra-dato {
+  margin: 0;
+  font-size: var(--fs-xs);
+  letter-spacing: .04em;
+  color: var(--color-tinta-suave);
+}
+
+/* En una columna, la barra se lee como una línea de datos y no como una
+   pila de renglones sueltos. */
+@media (max-width: 1023px) {
+  [data-tema="2026"] .nota__barra {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 16px;
+  }
+  [data-tema="2026"] .nota__volver { flex: 0 0 100%; margin-bottom: 0; }
+}
+
+/* La foto y el texto ya viven dentro de la columna, así que no necesitan
+   ancho propio: lo hereda de la rejilla. */
+[data-tema="2026"] .nota__portada,
+[data-tema="2026"] .nota__cuerpo,
+[data-tema="2026"] .nota__cabecera {
+  max-width: none;
+  width: 100%;
 }
 
 

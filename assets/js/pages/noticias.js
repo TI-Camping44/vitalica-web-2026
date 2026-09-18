@@ -261,21 +261,46 @@
     var otras = publicadas().filter(function (x) { return x.id !== n.id; }).slice(0, 3);
 
     contNota.innerHTML =
+      /* DOS COLUMNAS: una barra de datos a la izquierda y la nota a la
+         derecha.
+
+         Antes era una sola columna centrada. En un monitor de 1920 eso deja
+         670px de blanco a cada lado y la nota se ve como una tira flaca
+         perdida en el medio. La barra le da un borde izquierdo al que
+         agarrarse, y de paso la fecha, la etiqueta y los minutos dejan de
+         estar apretados arriba del título.
+
+         La barra se queda fija mientras se lee (position: sticky en el CSS),
+         que es lo que hacen los diarios digitales: siempre sabés qué estás
+         leyendo y cómo volver.
+
+         En pantallas chicas la barra se apaga y todo vuelve a una columna,
+         con los datos arriba como siempre. */
       '<article class="nota">' +
-        '<div class="contenedor nota__cabecera">' +
-          '<a class="nota__volver" href="noticias.html">← Noticias</a>' +
-          (n.etiqueta ? '<p class="eyebrow">' + escapar(n.etiqueta) + '</p>' : '') +
-          '<h1>' + escapar(n.titulo) + '</h1>' +
-          (n.bajada ? '<p class="nota__bajada">' + escapar(n.bajada) + '</p>' : '') +
-          '<p class="nota__datos">' + fechaLarga(n.fecha) + ' · ' + minutos(n) + ' min de lectura' +
-            (n.autor ? ' · ' + escapar(n.autor) : '') + '</p>' +
-        '</div>' +
-        (n.portada
-          ? '<div class="contenedor"><img class="nota__portada" src="' + escapar(n.portada) +
-            '" alt="" width="1200" height="675"></div>'
-          : '') +
-        '<div class="contenedor nota__cuerpo">' +
-          (n.cuerpo || []).map(bloque).join('') +
+        '<div class="nota__rejilla">' +
+
+          '<aside class="nota__barra">' +
+            '<a class="nota__volver" href="noticias.html">← Noticias</a>' +
+            (n.etiqueta ? '<p class="nota__barra-etiqueta">' + escapar(n.etiqueta) + '</p>' : '') +
+            '<p class="nota__barra-dato">' + fechaLarga(n.fecha) + '</p>' +
+            '<p class="nota__barra-dato">' + minutos(n) + ' min de lectura</p>' +
+            (n.autor ? '<p class="nota__barra-dato">' + escapar(n.autor) + '</p>' : '') +
+          '</aside>' +
+
+          '<div class="nota__columna">' +
+            '<header class="nota__cabecera">' +
+              '<h1>' + escapar(n.titulo) + '</h1>' +
+              (n.bajada ? '<p class="nota__bajada">' + escapar(n.bajada) + '</p>' : '') +
+            '</header>' +
+            (n.portada
+              ? '<img class="nota__portada" src="' + escapar(n.portada) +
+                '" alt="" width="1200" height="675">'
+              : '') +
+            '<div class="nota__cuerpo">' +
+              (n.cuerpo || []).map(bloque).join('') +
+            '</div>' +
+          '</div>' +
+
         '</div>' +
       '</article>' +
       (otras.length

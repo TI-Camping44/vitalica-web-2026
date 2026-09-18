@@ -4038,11 +4038,7 @@ body.con-visor { overflow: hidden; }
   color: var(--color-tinta-suave);
   line-height: 1.6;
 }
-.nota__datos {
-  margin-top: var(--space-3);
-  color: var(--color-tinta-suave);
-  font-size: var(--fs-sm);
-}
+
 
 /* LA PORTADA DE LA NOTA VA RECORTADA, NO ENTERA
    ------------------------------------------------------------------
