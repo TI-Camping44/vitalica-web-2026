@@ -2359,3 +2359,192 @@
      que termina con tres palabras queda convertido en una fila de palabras
      sueltas separadas por medio centímetro. */
 }
+
+
+/* ==========================================================================
+   49. LA NOTA EN PANTALLA ANCHA
+   --------------------------------------------------------------------------
+   En un monitor de 1600px, el texto ocupa 618 (los 68 caracteres que se leen
+   cómodo) y quedan casi 500px de blanco a cada lado. El texto está bien
+   angosto —no se toca—, pero con la foto al mismo ancho la página entera se
+   lee como una tira flaquita en el medio de la nada.
+
+   La solución de toda la prensa: el texto se queda angosto y la FOTO se sale
+   a los costados. Pasan dos cosas a la vez: el aire deja de sentirse como un
+   error y la foto gana la presencia que tiene que tener la portada de una
+   nota.
+
+   Se aplica desde 1080px porque abajo de eso la foto ya llena el ancho y no
+   hay nada que ganar.
+   ========================================================================== */
+@media (min-width: 1080px) {
+  [data-tema="2026"] .nota__portada {
+    max-width: min(980px, 100%);
+    max-height: 520px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   El pie de datos de la cabecera: fecha y minutos de lectura.
+   Se separa del resto con una línea, para que el ojo entienda dónde termina
+   la entrada y dónde arranca la nota.
+   -------------------------------------------------------------------------- */
+[data-tema="2026"] .nota__datos {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-linea);
+  font-size: var(--fs-xs);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+
+/* ==========================================================================
+   50. EL LISTADO DE NOTICIAS  ·  destacada grande y entrada escalonada
+   --------------------------------------------------------------------------
+   Lo que se pidió: "más lindo y dinámico".
+
+   LA DESTACADA LLEVA EL TEXTO SOBRE LA FOTO
+   Antes era foto a un lado y texto al otro, que es lo que hace cualquier
+   blog y por eso no se distingue de la fila de abajo. Con el texto encima,
+   la primera nota se lee como la tapa de una revista y el ojo sabe por dónde
+   entrar.
+
+   Las dos cajas ya están una al lado de la otra en el HTML; acá se las
+   apila en la misma celda de una grilla, así que no hubo que tocar el
+   marcado. El velo oscuro no es decoración: es lo que hace que el texto
+   blanco se lea sobre cualquier foto, clara u oscura.
+
+   SOLO SI HAY FOTO
+   Si la nota no tiene portada, esto no aplica: texto blanco sobre nada es
+   texto invisible. Por eso la tarjeta declara en su clase si tiene foto o
+   no, y sin foto se queda con el diseño normal.
+
+   LA ENTRADA ESCALONADA
+   Las tarjetas suben 14px y se encienden al llegar a ellas, una detrás de
+   otra. El retraso lo pone el JavaScript; acá solo está la transición. Con
+   "reducir movimiento" activado, el JS ni siquiera agrega la clase y las
+   tarjetas nacen visibles.
+   ========================================================================== */
+
+/* --- La entrada ---------------------------------------------------------- */
+[data-tema="2026"] .nota-card.va-a-aparecer {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 520ms ease, transform 520ms cubic-bezier(.22, 1, .36, 1);
+}
+[data-tema="2026"] .nota-card.va-a-aparecer.es-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- La destacada, con el texto encima ----------------------------------- */
+@media (min-width: 761px) {
+  [data-tema="2026"] .nota-card--destacada.nota-card--con-foto {
+    display: grid;
+    grid-template-columns: 1fr;
+    /* Alto FIJO, no mínimo.
+       Con min-height el alto lo terminaba decidiendo la foto: la del
+       laboratorio es 900x750, o sea que a 1272px de ancho se estiraba a 1060
+       de alto. La tarjeta ocupaba una pantalla y media y había que bajar
+       dos veces para ver que abajo había más notas.
+       Con una altura fija manda la caja y la foto se recorta, que es lo que
+       tiene que pasar: la portada acompaña, no es la nota. */
+    height: clamp(380px, 34vw, 520px);
+  }
+  /* Las dos en la MISMA celda: la foto abajo, el texto arriba. */
+  [data-tema="2026"] .nota-card--destacada.nota-card--con-foto > .nota-card__media,
+  [data-tema="2026"] .nota-card--destacada.nota-card--con-foto > .nota-card__cuerpo {
+    grid-area: 1 / 1;
+  }
+  [data-tema="2026"] .nota-card--destacada.nota-card--con-foto > .nota-card__media {
+    flex: none;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+  }
+  [data-tema="2026"] .nota-card--destacada.nota-card--con-foto > .nota-card__cuerpo {
+    position: relative;
+    justify-content: flex-end;
+    padding: var(--space-7);
+    /* El velo. Arranca transparente arriba para no tapar la foto y se cierra
+       abajo, que es donde va el texto. */
+    background: linear-gradient(to top,
+                rgba(5, 5, 6, .92) 0%,
+                rgba(5, 5, 6, .78) 38%,
+                rgba(5, 5, 6, .30) 68%,
+                rgba(5, 5, 6, 0) 100%);
+  }
+  [data-tema="2026"] .nota-card--destacada.nota-card--con-foto .nota-card__titulo,
+  [data-tema="2026"] .nota-card--destacada.nota-card--con-foto .nota-card__bajada,
+  [data-tema="2026"] .nota-card--destacada.nota-card--con-foto .nota-card__pie {
+    color: #fff;
+  }
+  [data-tema="2026"] .nota-card--destacada.nota-card--con-foto .nota-card__bajada,
+  [data-tema="2026"] .nota-card--destacada.nota-card--con-foto .nota-card__pie {
+    opacity: .82;
+  }
+  [data-tema="2026"] .nota-card--destacada.nota-card--con-foto .nota-card__etiqueta {
+    color: var(--color-primario);
+  }
+  /* El pie tiene margin-top:auto para empujarse al fondo de una tarjeta
+     normal. Acá estorba: como el cuerpo ya se alinea abajo, ese auto se comía
+     195px y dejaba el título arriba, el pie abajo y un pozo en el medio.
+     Con el margen en cero, título, bajada y pie bajan juntos y se leen como
+     un solo bloque apoyado en el borde inferior. */
+  [data-tema="2026"] .nota-card--destacada.nota-card--con-foto .nota-card__pie {
+    margin-top: var(--space-4);
+    padding-top: 0;
+  }
+
+  [data-tema="2026"] .nota-card--destacada.nota-card--con-foto .nota-card__titulo {
+    max-width: 24ch;
+  }
+  [data-tema="2026"] .nota-card--destacada.nota-card--con-foto .nota-card__bajada {
+    max-width: 58ch;
+  }
+}
+
+/* --- El resto de las tarjetas, con más vida al pasar por encima ---------- */
+[data-tema="2026"] .nota-card {
+  transition: transform 260ms ease, box-shadow 260ms ease, border-color 260ms ease;
+}
+[data-tema="2026"] .nota-card:hover {
+  border-color: var(--color-primario);
+}
+[data-tema="2026"] .nota-card:hover .nota-card__foto {
+  transform: scale(1.06);
+}
+[data-tema="2026"] .nota-card__etiqueta {
+  transition: color 200ms ease;
+}
+
+
+/* --------------------------------------------------------------------------
+   50-bis. DOS COLUMNAS, NO CUATRO
+   --------------------------------------------------------------------------
+   La grilla era repeat(auto-fill, minmax(280px, 1fr)): con 1272px de ancho
+   armaba CUATRO columnas. Como hay tres notas y la primera va destacada
+   ocupando el ancho completo, abajo quedaban dos tarjetas de 294px en una
+   fila de cuatro huecos. Flaquitas, perdidas y con la mitad de la fila
+   vacía. Se veía como un error, no como un diseño.
+
+   Dos columnas es la medida que corresponde a un blog con pocas notas: la
+   tarjeta pasa de 294 a 620px, gana la foto, entra la bajada completa y
+   acompaña la escala de la destacada de arriba.
+
+   auto-fill con un mínimo alto haría casi lo mismo, pero el resultado
+   cambia solo según el ancho y aparecerían tres columnas en un monitor más
+   grande. Acá se dice cuántas van y se termina la discusión.
+   -------------------------------------------------------------------------- */
+[data-tema="2026"] .noticias__grid {
+  grid-template-columns: 1fr;
+}
+@media (min-width: 700px) {
+  [data-tema="2026"] .noticias__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  /* La destacada sigue cruzando las dos. */
+  [data-tema="2026"] .nota-card--destacada {
+    grid-column: 1 / -1;
+  }
+}

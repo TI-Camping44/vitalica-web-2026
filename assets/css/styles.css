@@ -4071,7 +4071,11 @@ body.con-visor { overflow: hidden; }
   max-height: 420px;
   object-fit: cover;
   object-position: center;
-  margin-block: var(--space-6);
+  /* margin-inline: auto y no solo margin-block. Sin esto la foto se queda
+     pegada al borde izquierdo del contenedor mientras la cabecera y el
+     cuerpo, que sí se centran, quedan 300px más a la derecha. Se ve como si
+     la página estuviera partida en dos. */
+  margin: var(--space-6) auto;
   border-radius: var(--radio-lg);
 }
 

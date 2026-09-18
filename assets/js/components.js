@@ -346,14 +346,29 @@ const Vitalica = {
             '<ul class="nav-principal__lista">' + items + '</ul>' +
           '</nav>' +
           '<div class="header-sitio__acciones">' +
-            // "Hacé tu pedido": es la acción de conversión, así que va como
-            // botón y no como un ítem más del menú. El brief de marketing pide
-            // que derive al WhatsApp de CONSUMIDOR FINAL, que es distinto del
-            // número general (ver whatsapp.consumidorFinal en data.js).
-            // En celular se esconde: ahí ya está el botón flotante de WhatsApp.
-            '<a class="btn btn--primario header-sitio__pedido" target="_blank" rel="noopener" href="' +
-              ((VITALICA_CONFIG.whatsapp && VITALICA_CONFIG.whatsapp.consumidorFinal) || this.linkWhatsapp()) +
-            '">Hacé tu pedido</a>' +
+            /* "Hacé tu pedido": es la acción de conversión, así que va como
+               botón y no como un ítem más del menú.
+
+               CAMBIADO EL 18/9/2026: ahora lleva al catálogo.
+
+               Antes abría el WhatsApp de consumidor final, que es lo que
+               pedía el brief de marketing (Drive: DIGITAL > PÁGINA WEB >
+               "AJUSTES PÁGINA WEB.pptx"). El problema es que el que toca ese
+               botón todavía no sabe qué quiere comprar: caía en un chat con
+               el cursor titilando y sin nada que decir, y ahí la mitad se
+               vuelve. Mandándolo al catálogo elige, arma el carrito, y el
+               WhatsApp se abre al final con el pedido ya escrito.
+
+               El WhatsApp no se pierde: está el botón flotante verde en
+               todas las páginas y el enlace del pie.
+
+               Si marketing quiere volver atrás, es cambiar este href por
+               VITALICA_CONFIG.whatsapp.consumidorFinal y devolver el
+               target="_blank".
+
+               En celular se esconde: ahí ya está el botón flotante. */
+            '<a class="btn btn--primario header-sitio__pedido" href="productos.html">' +
+              'Hacé tu pedido</a>' +
             '<button class="icono-accion" type="button" data-abrir-busqueda aria-label="Buscar productos">' + this.iconos.buscar + '</button>' +
             '<button class="icono-accion boton-carrito" type="button" data-abrir-carrito aria-label="Ver carrito">' +
               this.iconos.carrito +

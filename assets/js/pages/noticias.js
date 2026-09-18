@@ -23,6 +23,55 @@
       .sort(function (a, b) { return String(b.fecha || '').localeCompare(String(a.fecha || '')); });
   }
 
+  /* ------------------------------------------------------------------
+     Las tarjetas aparecen al llegar a ellas, una detrás de otra.
+
+     Es lo que se pidió como "más dinámico", pero con dos límites que valen
+     la pena dejar escritos:
+
+     · El retraso se corta a los 6 escalones. Sin tope, la tarjeta número
+       veinte tardaría dos segundos en aparecer y el visitante se queda
+       mirando un hueco blanco preguntándose si se rompió algo.
+
+     · Si el sistema tiene activado "reducir movimiento" no se anima nada.
+       No es un capricho de accesibilidad: hay gente a la que el movimiento
+       en pantalla le da mareo de verdad, y el sistema operativo ya tiene
+       una casilla donde lo dijo. Acá se la respeta.
+
+     Y si el navegador no tiene IntersectionObserver, las tarjetas quedan
+     visibles desde el principio. Nunca al revés: una animación que no
+     corre no puede dejar la página en blanco.
+     ------------------------------------------------------------------ */
+  function aparecer(caja) {
+    var tarjetas = caja.querySelectorAll('.nota-card');
+    if (!tarjetas.length) return;
+
+    var quieto = false;
+    try {
+      quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch (e) {}
+
+    if (quieto || !('IntersectionObserver' in window)) {
+      for (var i = 0; i < tarjetas.length; i++) tarjetas[i].classList.add('es-visible');
+      return;
+    }
+
+    for (var j = 0; j < tarjetas.length; j++) {
+      tarjetas[j].classList.add('va-a-aparecer');
+      tarjetas[j].style.transitionDelay = (Math.min(j, 6) * 70) + 'ms';
+    }
+
+    var ojo = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('es-visible');
+        ojo.unobserve(e.target);   // una sola vez: no reaparece al subir
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+
+    for (var k = 0; k < tarjetas.length; k++) ojo.observe(tarjetas[k]);
+  }
+
   function escapar(t) {
     return String(t == null ? '' : t)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -82,7 +131,8 @@
         ? '<img class="nota-card__foto" src="' + escapar(n.portada) + '" alt="" ' +
           'loading="lazy" width="800" height="500">'
         : '';
-      return '<a class="nota-card' + (destacada ? ' nota-card--destacada' : '') + '" ' +
+      return '<a class="nota-card' + (destacada ? ' nota-card--destacada' : '') +
+                 (n.portada ? ' nota-card--con-foto' : ' nota-card--sin-foto') + '" ' +
                'href="nota.html?id=' + encodeURIComponent(n.id) + '" ' +
                'data-etiqueta="' + escapar(n.etiqueta || '') + '">' +
                '<span class="nota-card__media">' + img + '</span>' +
@@ -117,6 +167,8 @@
         '</div>' +
       '</div>';
 
+    aparecer(contLista);
+
     var filtros = contLista.querySelector('[data-filtros]');
     if (filtros) {
       filtros.addEventListener('click', function (e) {
@@ -129,6 +181,11 @@
         contLista.querySelectorAll('.nota-card').forEach(function (c) {
           var entra = !quiere || c.dataset.etiqueta === quiere;
           c.hidden = !entra;
+          /* Al filtrar se dan por aparecidas. Si una tarjeta quedó abajo de
+             todo sin que el visitante llegara nunca a ella, todavía tiene la
+             clase de "aún no apareció", o sea opacidad cero: al filtrar se
+             mostraría un hueco en blanco y parecería que no hay resultados. */
+          if (entra) { c.classList.add('es-visible'); c.style.transitionDelay = '0ms'; }
           /* La destacada pierde su tamaño especial al filtrar: si no, queda
              una tarjeta gigante sola y descolgada. */
           c.classList.toggle('nota-card--destacada', entra && !quiere && c === contLista.querySelector('.nota-card'));
