@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Armá tu pedido · Vitalica</title>
+  <title>Noticias · Vitalica</title>
+  <meta name="description" content="Novedades, lanzamientos y notas de Vitalica, representante exclusivo de Olimp Sport Nutrition en Paraguay.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,17 +33,15 @@
   <div id="chrome-top"></div>
 
   <main>
-    <section class="pagina-cabecera">
+    <section class="pagina-hero">
       <div class="contenedor">
-        <p class="eyebrow">Último paso</p>
-        <h1>Armá tu pedido</h1>
+        <p class="eyebrow">Noticias</p>
+        <h1>Novedades y notas</h1>
+        <p>Lanzamientos, recomendaciones de uso y lo que va pasando con la línea de Olimp en Paraguay.</p>
       </div>
     </section>
 
-    <section class="seccion">
-      <!-- checkout.js arma el formulario, el resumen y la confirmación -->
-      <div class="contenedor" data-checkout></div>
-    </section>
+    <section class="seccion" data-noticias></section>
   </main>
 
   <div id="chrome-bottom"></div>
@@ -54,9 +53,10 @@
   <script src="assets/js/cart.js?v=53"></script>
   <script src="assets/js/components.js?v=53"></script>
   <script src="assets/js/main.js?v=53"></script>
-  <!-- Arma el PDF del pedido en el navegador. Solo lo necesita el checkout. -->
-  <script src="assets/js/pdf-pedido.js?v=53"></script>
-  <script src="assets/js/pages/checkout.js?v=53"></script>
+  <script src="assets/js/popups.js?v=53"></script>
+  <!-- Las notas del blog. Las escribe api/blog.php. -->
+  <script src="assets/js/data-noticias.js?v=53"></script>
+  <script src="assets/js/pages/noticias.js?v=53"></script>
 
 </body>
 </html>

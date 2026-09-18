@@ -31,6 +31,11 @@ _subir-a-pruebas/
 # vez, queda en el historial de git para siempre.
 api/almacen/
 
+# ...con UNA excepción: las notas del blog. No son datos de nadie, son
+# contenido del sitio, y tienen que viajar con el repositorio para que el
+# blog se vea también en GitHub Pages.
+!api/almacen/blog.json
+
 
 # --- MATERIAL INTERNO -------------------------------------------------------
 # Manual de marca, catálogos, contratos y planillas bajados del Drive. Son

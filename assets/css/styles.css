@@ -3870,3 +3870,247 @@ body.con-visor { overflow: hidden; }
   border-radius: var(--radio);
   background: var(--color-fondo-suave);
 }
+
+
+/* ==========================================================================
+   47. EL BLOG  ·  listado de notas y nota suelta
+   --------------------------------------------------------------------------
+   Va en styles.css y no en el tema porque el blog es estructura, no estilo:
+   tiene que verse bien en los dos diseños. Lo propio del 2026 (mayúsculas,
+   vidrio, radios) se agrega aparte en tema-2026.css.
+
+   DECISIONES QUE VALE LA PENA DEJAR ESCRITAS
+
+   · La primera nota va grande y a dos columnas. Con cinco notas todas
+     iguales, la sección se lee como un archivo muerto; con una destacada hay
+     una puerta de entrada evidente.
+
+   · El cuerpo de la nota se limita a 68ch de ancho. Es la medida de un
+     renglón cómodo: más largo y el ojo se pierde al volver a la izquierda.
+     Por eso la nota NO usa el ancho completo del contenedor aunque haya
+     lugar de sobra.
+
+   · Las tarjetas son <a> enteras, no un div con un enlace adentro. Así toda
+     la tarjeta se puede tocar, que en celular es la diferencia entre acertar
+     y no acertar.
+   ========================================================================== */
+
+/* --- Listado ------------------------------------------------------------ */
+.noticias__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-6);
+}
+
+.noticias__filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+.noticias__filtro {
+  padding: 8px 18px;
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio-pill);
+  background: transparent;
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--transicion), color var(--transicion), background var(--transicion);
+}
+.noticias__filtro:hover { border-color: var(--color-tinta-suave); color: var(--color-tinta); }
+.noticias__filtro.es-activo {
+  background: var(--color-tinta);
+  border-color: var(--color-tinta);
+  color: #fff;
+}
+
+.noticias__vacio {
+  padding: var(--space-8) 0;
+  text-align: center;
+  color: var(--color-tinta-suave);
+}
+
+/* --- Tarjeta ------------------------------------------------------------ */
+.nota-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio-lg);
+  background: var(--color-fondo);
+  transition: transform var(--transicion), box-shadow var(--transicion);
+}
+.nota-card:hover { transform: translateY(-3px); box-shadow: var(--sombra); }
+
+.nota-card__media {
+  display: block;
+  aspect-ratio: 16 / 10;
+  background: var(--color-fondo-suave);
+  overflow: hidden;
+}
+.nota-card__foto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 400ms ease;
+}
+.nota-card:hover .nota-card__foto { transform: scale(1.03); }
+
+.nota-card__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  flex: 1;
+}
+.nota-card__etiqueta {
+  align-self: flex-start;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-primario-texto);
+}
+.nota-card__titulo {
+  margin: 0;
+  font-family: var(--fuente-titulo);
+  font-size: var(--fs-lg);
+  line-height: 1.25;
+  color: var(--color-tinta);
+}
+.nota-card__bajada {
+  margin: 0;
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+}
+.nota-card__pie {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: auto;
+  padding-top: var(--space-3);
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-xs);
+}
+
+/* La destacada ocupa dos columnas y se acuesta: foto a un lado, texto al
+   otro. Debajo de 760px vuelve a ser una tarjeta común, porque en un
+   teléfono no hay dos columnas que ocupar. */
+@media (min-width: 761px) {
+  .nota-card--destacada {
+    grid-column: 1 / -1;
+    flex-direction: row;
+  }
+  .nota-card--destacada .nota-card__media {
+    flex: 0 0 52%;
+    aspect-ratio: auto;
+  }
+  .nota-card--destacada .nota-card__cuerpo {
+    justify-content: center;
+    padding: var(--space-7);
+  }
+  .nota-card--destacada .nota-card__titulo { font-size: var(--fs-xl); }
+}
+
+/* --- Una nota ----------------------------------------------------------- */
+.nota { padding-block: var(--space-7) var(--space-8); }
+
+.nota__cabecera { max-width: 68ch; }
+.nota__volver {
+  display: inline-block;
+  margin-bottom: var(--space-4);
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+.nota__volver:hover { color: var(--color-primario-texto); }
+
+.nota__cabecera h1 { margin-bottom: var(--space-3); }
+.nota__bajada {
+  font-size: var(--fs-md);
+  color: var(--color-tinta-suave);
+  line-height: 1.6;
+}
+.nota__datos {
+  margin-top: var(--space-3);
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-sm);
+}
+
+.nota__portada {
+  width: 100%;
+  height: auto;
+  margin-block: var(--space-6);
+  border-radius: var(--radio-lg);
+}
+
+/* El ancho de lectura. 68ch es lo que se lee sin esfuerzo; el resto del
+   contenedor queda vacío a propósito. */
+.nota__cuerpo { max-width: 68ch; }
+.nota__cuerpo > * { margin-bottom: var(--space-4); }
+.nota__cuerpo p {
+  color: var(--color-tinta);
+  line-height: 1.75;
+}
+.nota__cuerpo h2 {
+  margin-top: var(--space-7);
+  font-size: var(--fs-lg);
+}
+
+.nota__lista { padding-left: 1.2em; }
+.nota__lista li {
+  margin-bottom: var(--space-2);
+  line-height: 1.7;
+  list-style: disc;
+}
+
+.nota__figura { margin: var(--space-6) 0; }
+.nota__figura img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radio-lg);
+}
+.nota__figura figcaption {
+  margin-top: var(--space-2);
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-sm);
+}
+
+.nota__cita {
+  margin: var(--space-6) 0;
+  padding: var(--space-4) var(--space-5);
+  border-left: 3px solid var(--color-primario);
+  background: var(--color-fondo-suave);
+  border-radius: 0 var(--radio) var(--radio) 0;
+}
+.nota__cita p {
+  margin: 0;
+  font-size: var(--fs-md);
+  font-style: italic;
+}
+.nota__cita cite {
+  display: block;
+  margin-top: var(--space-2);
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-sm);
+  font-style: normal;
+}
+
+.nota__enlace a {
+  color: var(--color-primario-texto);
+  font-weight: 700;
+}
+.nota__enlace a:hover { text-decoration: underline; }
+
+.nota__noesta {
+  padding-block: var(--space-8);
+  text-align: center;
+}
+.nota__noesta h1 { margin-bottom: var(--space-3); }
+.nota__noesta p {
+  color: var(--color-tinta-suave);
+  margin-bottom: var(--space-5);
+}

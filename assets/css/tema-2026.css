@@ -2248,3 +2248,63 @@
 [data-tema="2026"] .hero__titulo {
   margin-left: -0.023em;
 }
+
+/* ==========================================================================
+   47. EL BLOG EN ESTE DISEÑO
+   --------------------------------------------------------------------------
+   La maqueta del blog vive en styles.css porque es estructura y tiene que
+   funcionar en los dos diseños. Acá va solo lo que cambia en el 2026:
+   titulares en mayúscula, la tarjeta sin marco y la foto en gris como el
+   resto de la fotografía editorial.
+   ========================================================================== */
+[data-tema="2026"] .nota-card {
+  border: 0;
+  border-radius: var(--radio-lg);
+  background: transparent;
+}
+[data-tema="2026"] .nota-card:hover { box-shadow: none; transform: translateY(-3px); }
+[data-tema="2026"] .nota-card__cuerpo { padding: var(--space-4) 0 0; }
+[data-tema="2026"] .nota-card--destacada .nota-card__cuerpo { padding: 0 0 0 var(--space-6); }
+
+[data-tema="2026"] .nota-card__media { border-radius: var(--radio-lg); }
+/* Editorial, o sea en gris: la misma regla que el resto de las fotos de
+   ambiente (ver sección 28). El color lo pone la marca, no la foto. */
+[data-tema="2026"] .nota-card__foto,
+[data-tema="2026"] .nota__portada {
+  filter: grayscale(1) contrast(1.05) brightness(0.95);
+}
+
+[data-tema="2026"] .nota-card__titulo {
+  font-stretch: 92%;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+[data-tema="2026"] .nota-card__etiqueta { font-stretch: 100%; }
+
+[data-tema="2026"] .noticias__filtro {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+[data-tema="2026"] .nota__cuerpo h2 {
+  font-stretch: 92%;
+  text-transform: uppercase;
+}
+
+/* El titular de una nota NO es un titular de portada.
+   Heredaba el tamaño de los <h1> del diseño, pensado para una frase de tres
+   palabras sobre una foto a sangre. Un título de nota tiene doce palabras y
+   vive en una columna de 68ch: al mismo tamaño ocupaba cinco renglones y la
+   nota arrancaba con un muro. */
+[data-tema="2026"] .nota__cabecera h1 {
+  max-width: 24ch;
+  font-size: clamp(1.9rem, 3.2vw, 2.7rem);
+  line-height: 1.04;
+}
+[data-tema="2026"] .nota__bajada,
+[data-tema="2026"] .nota__datos,
+[data-tema="2026"] .nota__volver { max-width: 68ch; }

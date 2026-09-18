@@ -208,6 +208,7 @@ const VITALICA_CONFIG = {
     { label: 'Olimp',           href: 'sobre.html' },
     { label: 'Productos',       href: 'productos.html', megamenu: true },
     { label: 'Guía de uso',     href: 'guia.html' },
+    { label: 'Noticias',        href: 'noticias.html' },
     { label: 'Puntos de venta', href: 'contacto.html#donde-comprar' },
     { label: 'Contacto',        href: 'contacto.html#hablemos' }
   ],

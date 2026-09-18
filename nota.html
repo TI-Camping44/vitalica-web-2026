@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Armá tu pedido · Vitalica</title>
+  <title>Nota · Vitalica</title>
+  <meta name="description" content="Nota del blog de Vitalica.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,18 +32,8 @@
 
   <div id="chrome-top"></div>
 
-  <main>
-    <section class="pagina-cabecera">
-      <div class="contenedor">
-        <p class="eyebrow">Último paso</p>
-        <h1>Armá tu pedido</h1>
-      </div>
-    </section>
-
-    <section class="seccion">
-      <!-- checkout.js arma el formulario, el resumen y la confirmación -->
-      <div class="contenedor" data-checkout></div>
-    </section>
+  <main data-nota>
+    <!-- noticias.js arma la nota entera a partir de ?id= -->
   </main>
 
   <div id="chrome-bottom"></div>
@@ -54,9 +45,10 @@
   <script src="assets/js/cart.js?v=53"></script>
   <script src="assets/js/components.js?v=53"></script>
   <script src="assets/js/main.js?v=53"></script>
-  <!-- Arma el PDF del pedido en el navegador. Solo lo necesita el checkout. -->
-  <script src="assets/js/pdf-pedido.js?v=53"></script>
-  <script src="assets/js/pages/checkout.js?v=53"></script>
+  <script src="assets/js/popups.js?v=53"></script>
+  <!-- Las notas del blog. Las escribe api/blog.php. -->
+  <script src="assets/js/data-noticias.js?v=53"></script>
+  <script src="assets/js/pages/noticias.js?v=53"></script>
 
 </body>
 </html>
