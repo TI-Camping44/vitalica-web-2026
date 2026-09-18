@@ -24,17 +24,28 @@
 #
 #  LO QUE ESTE PAQUETE NO PISA, A PROPÓSITO
 #  ----------------------------------------
-#    api/config.php    el servidor tiene el suyo, con las claves reales y los
-#                      usuarios del área interna. Si se sobrescribe, nadie
-#                      puede entrar al panel y los pedidos dejan de llegar.
+#    api/config.php    el de esta computadora manda los correos a archivos y
+#                      tiene un email de prueba. Lo arma, con los valores
+#                      reales, herramientas/armar-config-produccion.ps1, que
+#                      hay que correr DESPUÉS de este.
 #    api/almacen/      los pedidos de clientes de verdad. Nombres, teléfonos
 #                      y direcciones. Lo de tu computadora son pruebas.
-#    .htaccess         el del servidor puede tener reglas que acá no están.
 #    .user.ini, php.ini
 #
-#  Ninguno de esos archivos entra al paquete. Al subir por cPanel hay que
-#  subir SOLO lo que está adentro de _subir-a-produccion, sin borrar antes lo
-#  que hay: los que faltan del paquete quedan como están.
+#  OJO CON LO QUE HAY HOY EN vitalica.com.py
+#  -----------------------------------------
+#  El sitio publicado NO es este proyecto: es otra construcción, con su
+#  styles.css en la raíz, Font Awesome, Curator y el SDK de Facebook. O sea
+#  que allá no existe ningún archivo nuestro todavía.
+#
+#  Dos consecuencias:
+#
+#    · Los dos .htaccess van en el paquete, ya con el punto puesto. Allá no
+#      hay ninguno nuestro que respetar.
+#    · Al subir encima, los archivos del sitio viejo que no coincidan de
+#      nombre NO se borran: quedan sueltos y siguen siendo alcanzables.
+#      Limpiar eso es una decisión aparte, y va después de bajarse una copia
+#      de seguridad completa desde cPanel.
 # ============================================================================
 
 $raiz    = Split-Path -Parent $PSScriptRoot
@@ -95,8 +106,9 @@ foreach ($n in ($nombradas | Sort-Object)) {
 }
 
 # --- Archivos sueltos de la raíz ---------------------------------------------
-# 'htaccess' NO se copia: el del servidor manda. Ver la nota de arriba.
-$sueltos = @('*.html', '*.php', 'robots.txt', 'sitemap.xml', 'odoo-mapeo.json')
+# El 'htaccess' sin punto se copia acá con el resto y más abajo se vuelve a
+# poner con el punto delante. Ver el bloque de los .htaccess.
+$sueltos = @('*.html', '*.php', 'htaccess', 'robots.txt', 'sitemap.xml', 'odoo-mapeo.json')
 foreach ($p in $sueltos) {
   Get-ChildItem $raiz -Filter $p -File -ErrorAction SilentlyContinue |
     ForEach-Object { Copy-Item $_.FullName -Destination $destino -Force }
@@ -128,11 +140,29 @@ if (Test-Path $cfg) { Remove-Item $cfg -Force }
 $almacen = Join-Path $destino 'api\almacen'
 if (Test-Path $almacen) { Remove-Item $almacen -Recurse -Force }
 
-# api/htaccess tampoco: en el servidor ya está puesto como .htaccess y es el
-# que bloquea config.php y la carpeta de pedidos. Si se sube el archivo sin
-# punto, queda uno al lado sin efecto y da la falsa impresión de que protege.
-$ht = Join-Path $destino 'api\htaccess'
-if (Test-Path $ht) { Remove-Item $ht -Force }
+# --- Los .htaccess, ya con el punto puesto -----------------------------------
+# En el proyecto se guardan sin punto para que Windows no los esconda. En el
+# servidor TIENEN que llamarse .htaccess o no hacen absolutamente nada, y
+# renombrarlos a mano en cPanel es justo el paso que se saltea el que va
+# apurado. Si el de api/ no queda bien puesto, api/config.php --con la clave
+# del panel-- se descarga escribiendo la direccion en el navegador.
+#
+# El sitio que hoy esta en produccion NO es este proyecto, asi que alla no hay
+# ningun .htaccess nuestro: estos dos hay que subirlos si o si.
+foreach ($par in @(@('htaccess', '.htaccess'), @('api\htaccess', 'api\.htaccess'))) {
+  $sinPunto = Join-Path $raiz $par[0]
+  $conPunto = Join-Path $destino $par[1]
+  if (Test-Path $sinPunto) {
+    New-Item -ItemType Directory (Split-Path $conPunto) -Force | Out-Null
+    Copy-Item $sinPunto -Destination $conPunto -Force
+  } else {
+    "  AVISO: falta $($par[0]) en el proyecto"
+  }
+  # El de adentro del paquete sin punto se borra: si viajan los dos, en el
+  # servidor queda uno inerte al lado del bueno y confunde a quien revise.
+  $sobra = Join-Path $destino $par[0]
+  if (Test-Path $sobra) { Remove-Item $sobra -Force }
+}
 
 # --- Resumen ------------------------------------------------------------------
 $archivos = Get-ChildItem $destino -Recurse -File
@@ -153,14 +183,15 @@ if ($faltan.Count -gt 0) {
 foreach ($f in 'assets\css\styles.css','assets\css\tema-2026.css','assets\js\data.js',
                'assets\js\data-noticias.js','assets\js\pdf-pedido.js',
                'api\blog.php','api\blog-datos.php','noticias.html','nota.html',
-               'sitemap.xml','robots.txt','assets\img\og-portada.jpg') {
+               'sitemap.xml','robots.txt','assets\img\og-portada.jpg',
+               '.htaccess','api\.htaccess') {
   $ok = Test-Path (Join-Path $destino $f)
   "  {0} {1}" -f $(if ($ok) {'OK   '} else {'FALTA'}), $f
 }
 
 ''
 'NO tiene que estar:'
-foreach ($f in 'odoo-credenciales.ini','api\config.php','api\almacen','api\htaccess','api\prueba.php') {
+foreach ($f in 'odoo-credenciales.ini','api\almacen','htaccess','api\htaccess','api\prueba.php') {
   $hay = Test-Path (Join-Path $destino $f)
   "  {0} {1}" -f $(if ($hay) {'OJO  '} else {'OK   '}), $f
 }

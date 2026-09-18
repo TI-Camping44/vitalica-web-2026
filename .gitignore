@@ -93,3 +93,6 @@ desktop.ini
 
 # El paquete armado para produccion: se regenera con el script.
 _subir-a-produccion/
+
+# El zip para subir por cPanel: sale del paquete, no se versiona.
+vitalica-produccion.zip
