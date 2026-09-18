@@ -279,7 +279,7 @@ const VITALICA_CONFIG = {
      Las fotos siguen en assets/img/embajadores/. */
   embajadores: {
     eyebrow: 'Equipo Vitalica',
-    titulo: 'Los eligen los que compiten',
+    titulo: 'Nos eligen los que compiten',
     texto: 'Atletas y creadores paraguayos que entrenan con la línea de Olimp que traemos al país.',
 
     /* LOS DOS GRUPOS
