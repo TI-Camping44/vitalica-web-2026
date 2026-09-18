@@ -136,11 +136,11 @@ const VITALICA_CONFIG = {
      bloque y cambiá id, nombre y descripción. Para sacar uno, borralo.
 
      EL CAMPO 'entregas'
-     Dice en qué tipos de entrega tiene sentido ese medio de pago. Pagar en
-     efectivo al repartidor no aplica si el cliente va a retirar, y pagar con
-     tarjeta en el mostrador no aplica si el pedido se envía. Los medios que
-     no corresponden aparecen apagados y con el motivo, en vez de
-     desaparecer sin explicación.
+     Dice en qué tipos de entrega tiene sentido ese medio de pago. Pagar con
+     tarjeta en el mostrador no aplica si el pedido se envía, y retirar en el
+     local no aplica si pidió envío al interior. Los medios que no
+     corresponden aparecen apagados y con el motivo, en vez de desaparecer
+     sin explicación.
 
      Valores posibles: 'gran-asuncion', 'interior', 'retiro'.
      Si omitís el campo, el medio vale para todas. */
@@ -149,17 +149,37 @@ const VITALICA_CONFIG = {
       {
         id: 'transferencia',
         nombre: 'Transferencia bancaria',
-        descripcion: 'Te pasamos los datos y coordinás la transferencia',
+        descripcion: 'Te pasamos los datos y el pedido sale cuando se acredita',
         entregas: ['gran-asuncion', 'interior', 'retiro'],
         instrucciones: ''   // ← acá van banco, titular, cuenta y RUC
       },
-      {
-        id: 'efectivo-entrega',
-        nombre: 'Efectivo al recibir',
-        descripcion: 'Pagás al repartidor cuando te llega',
-        entregas: ['gran-asuncion', 'interior'],
-        instrucciones: 'Preparalo justo si podés: el repartidor no siempre lleva cambio.'
-      },
+
+      /* NO HAY PAGO CONTRA ENTREGA  ·  sacado el 18/9/2026
+         ------------------------------------------------------------------
+         Había una opción "Efectivo al recibir - Pagás al repartidor cuando
+         te llega". No se puede hacer: el reparto no cobra.
+
+         Ofrecer una forma de pago que después no existe es peor que no
+         ofrecerla. El cliente elige, arma el pedido, y recién cuando el
+         asesor le escribe se entera de que tiene que transferir igual. Eso
+         es una discusión al principio de la relación y algunos se caen ahí.
+
+         Para los envíos queda la transferencia, que se cobra ANTES de que
+         el pedido salga. Para quien retira siguen el efectivo y la tarjeta
+         en el mostrador: ahí el pago también pasa antes de entregar la
+         mercadería, así que el problema no existe.
+
+         SI USAN BILLETERA (Giros Tigo, Billetera Personal), descomentá este
+         bloque y listo. En el interior mucha gente paga así y no tiene
+         cuenta bancaria; sin esta opción, esos pedidos se pierden. */
+      // {
+      //   id: 'billetera',
+      //   nombre: 'Giros Tigo / Billetera Personal',
+      //   descripcion: 'Te pasamos el número y el pedido sale cuando llega el giro',
+      //   entregas: ['gran-asuncion', 'interior', 'retiro'],
+      //   instrucciones: ''   // ← acá va el número y a nombre de quién está
+      // },
+
       {
         id: 'efectivo-local',
         nombre: 'Efectivo al retirar',

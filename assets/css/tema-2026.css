@@ -2308,3 +2308,54 @@
 [data-tema="2026"] .nota__bajada,
 [data-tema="2026"] .nota__datos,
 [data-tema="2026"] .nota__volver { max-width: 68ch; }
+
+
+/* ==========================================================================
+   48. TEXTO JUSTIFICADO EN LA PROSA LARGA
+   --------------------------------------------------------------------------
+   Pedido concreto: el borde derecho desparejo molesta a la vista.
+
+   POR QUÉ NO ALCANZA CON PONER text-align: justify
+
+   Justificar en la web suele quedar PEOR que dejar el borde desparejo, y es
+   por una razón mecánica: para estirar el renglón hasta el margen, el
+   navegador reparte el sobrante entre los espacios de las palabras. Si en
+   ese renglón hay pocas palabras, cada espacio se agranda mucho, y esos
+   huecos se alinean verticalmente entre renglones formando los famosos
+   "ríos" de blanco. En castellano se nota más que en inglés porque nuestras
+   palabras son más largas.
+
+   La solución es partir palabras al final del renglón, que es lo que hace un
+   diario en papel. 'hyphens: auto' se lo pide al navegador, que usa el
+   diccionario del idioma declarado en <html lang="es">. Sin ese atributo no
+   corta nada y la justificación queda con los huecos.
+
+   DÓNDE SÍ Y DÓNDE NO
+
+   Solo en los bloques de prosa larga y ancha: la historia de Vitalica, el
+   cuerpo de una nota y los artículos de la guía. Ahí el renglón tiene 60 o
+   70 caracteres y entran palabras suficientes para repartir el sobrante sin
+   que se note.
+
+   En las tarjetas NO. Una tarjeta de 280px tiene renglones de 5 o 6 palabras
+   y ahí justificar deja huecos del ancho de un dedo. Lo mismo el texto de
+   los botones, las etiquetas y los pies de foto.
+
+   Y en pantallas angostas tampoco: debajo de 560px la columna se parece más
+   a una tarjeta que a una página, y el remedio es peor que la enfermedad.
+   ========================================================================== */
+@media (min-width: 561px) {
+  [data-tema="2026"] .sobre-historia p,
+  [data-tema="2026"] .articulo > p,
+  [data-tema="2026"] .nota__cuerpo p {
+    text-align: justify;
+    -webkit-hyphens: auto;
+            hyphens: auto;
+  }
+
+  /* Nota para quien venga después: el último renglón de cada párrafo NO se
+     estira, y eso ya lo hace 'justify' solo. Si alguna vez tenés la tentación
+     de poner 'justify-all', no: ese sí estira el último renglón, y un párrafo
+     que termina con tres palabras queda convertido en una fila de palabras
+     sueltas separadas por medio centímetro. */
+}

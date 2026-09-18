@@ -4044,9 +4044,33 @@ body.con-visor { overflow: hidden; }
   font-size: var(--fs-sm);
 }
 
+/* LA PORTADA DE LA NOTA VA RECORTADA, NO ENTERA
+   ------------------------------------------------------------------
+   Antes era width:100% con height:auto, o sea que la foto entraba con la
+   forma que tuviera. Y las que hay no son panorámicas: la del laboratorio
+   es 900x750 y la de producción es 550x985, más alta que ancha.
+
+   Puesta al ancho de la columna, esa última medía más de mil pixeles de
+   alto: el lector abría la nota, veía un paredón de foto y tenía que
+   arrastrar dos pantallas para llegar al primer párrafo. En una nota, la
+   foto acompaña; el texto es lo que se vino a leer.
+
+   Con aspect-ratio la caja manda y object-fit: cover recorta lo que sobra,
+   así cualquier foto que suba marketing entra bien sin tener que pedirle
+   que la recorte antes. El max-height es para las pantallas anchas, donde
+   16/9 de 68ch ya empieza a ser demasiado.
+
+   Va al mismo ancho que el texto y no al del contenedor: la nota se lee
+   como una sola columna en vez de como una foto ancha con un texto
+   angosto abajo. */
 .nota__portada {
+  display: block;
   width: 100%;
-  height: auto;
+  max-width: 68ch;
+  aspect-ratio: 16 / 9;
+  max-height: 420px;
+  object-fit: cover;
+  object-position: center;
   margin-block: var(--space-6);
   border-radius: var(--radio-lg);
 }

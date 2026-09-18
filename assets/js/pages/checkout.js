@@ -318,8 +318,8 @@
   }
 
   /* ---- Habilita solo los medios de pago que aplican a la entrega elegida.
-     Pagar en efectivo al repartidor no aplica si el cliente va a retirar, y
-     pagar en el mostrador no aplica si el pedido se envía.
+     Pagar con tarjeta o en efectivo en el mostrador no aplica si el pedido
+     se envía a domicilio.
 
      Los que no corresponden se apagan y se explica por qué, en vez de
      desaparecer: si una opción se esfuma, el cliente se pregunta si la vio
