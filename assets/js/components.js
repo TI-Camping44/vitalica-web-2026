@@ -102,6 +102,7 @@ const Vitalica = {
   iconos: {
     carrito: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>',
     buscar: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>',
+    cuenta: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
     menu: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>',
     cerrar: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
     chevron: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
@@ -369,6 +370,19 @@ const Vitalica = {
                En celular se esconde: ahí ya está el botón flotante. */
             '<a class="btn btn--primario header-sitio__pedido" href="productos.html">' +
               'Hacé tu pedido</a>' +
+            /* Cuenta. Arranca como "Ingresar" y cuenta.js lo cambia por el
+               nombre cuando el servidor confirma que hay sesion.
+
+               Arranca con el enlace ya puesto y no vacio a proposito: si el
+               JavaScript de la cuenta fallara, el boton igual lleva a la
+               pagina, que sabe resolverse sola. Un boton que aparece recien
+               cuando responde un pedido HTTP es un boton que a veces no
+               aparece. */
+            '<a class="icono-accion icono-accion--cuenta" href="cuenta.html" ' +
+               'data-cuenta-enlace aria-label="Mi cuenta" title="Mi cuenta">' +
+              this.iconos.cuenta +
+              '<span class="icono-accion__nombre" data-cuenta-nombre hidden></span>' +
+            '</a>' +
             '<button class="icono-accion" type="button" data-abrir-busqueda aria-label="Buscar productos">' + this.iconos.buscar + '</button>' +
             '<button class="icono-accion boton-carrito" type="button" data-abrir-carrito aria-label="Ver carrito">' +
               this.iconos.carrito +

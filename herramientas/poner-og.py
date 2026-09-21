@@ -118,6 +118,10 @@ PAGINAS = {
         'Términos y condiciones · Vitalica',
         'Condiciones de compra, envíos y devoluciones.',
         '/terminos.html'),
+    'cuenta.html': (
+        'Mi cuenta · Vitalica',
+        'Ingresá a tu cuenta para ver tus pedidos y tener tus datos cargados.',
+        '/cuenta.html'),
     '404.html': (
         'Página no encontrada · Vitalica',
         'El enlace que abriste ya no existe. Mirá los productos o escribinos.',
@@ -127,7 +131,7 @@ PAGINAS = {
 # Las que no deben aparecer en buscadores. Privacidad y terminos SI se indexan:
 # Meta y Google Merchant revisan que esas paginas existan y sean alcanzables
 # antes de aprobar una cuenta publicitaria.
-SIN_INDICE = ['carrito.html', 'checkout.html', '404.html']
+SIN_INDICE = ['carrito.html', 'checkout.html', '404.html', 'cuenta.html']
 
 MARCA_INI = '  <!-- COMPARTIR: lo que se ve al pegar el enlace en WhatsApp. -->'
 MARCA_FIN = '  <!-- /COMPARTIR -->'

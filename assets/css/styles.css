@@ -4142,3 +4142,194 @@ body.con-visor { overflow: hidden; }
   color: var(--color-tinta-suave);
   margin-bottom: var(--space-5);
 }
+
+
+/* ==========================================================================
+   LA PÁGINA DE CUENTA
+   --------------------------------------------------------------------------
+   Sin sesión es una caja angosta y centrada, como cualquier pantalla de
+   ingreso: no hay nada más en la página, así que ponerla al ancho completo
+   solo obligaría a recorrer el ojo de punta a punta para leer dos campos.
+
+   Con sesión pasa a dos columnas, porque ahí sí hay varias cosas que conviene
+   ver juntas sin bajar: los datos, la contraseña y abajo los pedidos.
+   ========================================================================== */
+
+.cuenta { padding-block: var(--space-7) var(--space-8); }
+
+/* --- Sin sesión ---------------------------------------------------------- */
+.cuenta__caja {
+  max-width: 420px;
+  margin-inline: auto;
+  padding: var(--space-6);
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio-lg);
+  background: var(--color-fondo);
+}
+
+.cuenta__tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: var(--space-5);
+  border-radius: var(--radio);
+  background: var(--color-fondo-suave);
+}
+.cuenta__tab {
+  padding: 10px 8px;
+  border: 0;
+  border-radius: calc(var(--radio) - 4px);
+  background: transparent;
+  color: var(--color-tinta-suave);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+.cuenta__tab.es-activo {
+  background: var(--color-fondo);
+  color: var(--color-tinta);
+  box-shadow: var(--sombra);
+}
+
+.cuenta__titulo { font-size: var(--fs-xl); margin: 0 0 var(--space-2); }
+.cuenta__intro {
+  margin: 0 0 var(--space-5);
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+}
+.cuenta__nota {
+  margin: 0 0 var(--space-4);
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+}
+.cuenta__pie {
+  margin: var(--space-5) 0 0;
+  text-align: center;
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-sm);
+}
+.cuenta__pie a { color: var(--color-primario-texto); font-weight: 600; }
+
+/* El texto de ayuda debajo de un campo. Explica lo que el campo no puede
+   decir solo: por qué pedimos el celular, cuánto tiene que medir la clave. */
+.campo__ayuda {
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+}
+
+.cuenta__error {
+  margin: 0 0 var(--space-4);
+  padding: 11px 14px;
+  border-radius: var(--radio);
+  background: #FBE7E5;
+  color: #A3342F;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+
+.cuenta__aviso {
+  margin: 0 0 var(--space-4);
+  padding: 11px 14px;
+  border-radius: var(--radio);
+  background: #E6F1EB;
+  color: #1F6B4A;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.btn--bloque { width: 100%; justify-content: center; }
+
+/* --- Con sesión ---------------------------------------------------------- */
+.cuenta__cabecera { margin-bottom: var(--space-6); }
+.cuenta__cabecera h1 { margin: 0; }
+
+.cuenta__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+@media (min-width: 760px) {
+  .cuenta__grid { grid-template-columns: 1fr 1fr; align-items: start; }
+}
+
+.cuenta__bloque {
+  padding: var(--space-5);
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio-lg);
+  background: var(--color-fondo);
+}
+.cuenta__bloque h2 {
+  margin: 0 0 var(--space-4);
+  font-size: var(--fs-md);
+}
+.cuenta__bloque--ancho { margin-top: var(--space-5); }
+
+.cuenta__pedidos { list-style: none; margin: 0; padding: 0; }
+.cuenta__pedido {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-linea);
+}
+.cuenta__pedido:last-child { border-bottom: 0; }
+.cuenta__pedido-fecha {
+  display: block;
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-xs);
+}
+.cuenta__pedido-der { display: flex; align-items: center; gap: var(--space-3); }
+.cuenta__pedido-total { font-weight: 700; font-variant-numeric: tabular-nums; }
+.cuenta__pedido-estado {
+  padding: 3px 10px;
+  border-radius: var(--radio-pill);
+  background: var(--color-fondo-suave);
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.cuenta__salidas {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-linea);
+}
+
+/* El enlace de cuenta en el encabezado. Con sesión muestra el nombre al lado
+   del icono; sin sesión, solo el icono, para no robarle lugar al carrito. */
+.icono-accion--cuenta { display: inline-flex; align-items: center; gap: 7px; }
+.icono-accion__nombre {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  max-width: 11ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 980px) { .icono-accion__nombre { display: none; } }
+/* Punto naranja sobre el icono cuando a la cuenta le falta el teléfono.
+   Sin teléfono no se puede coordinar una entrega, así que conviene que se
+   note antes de llegar al checkout y no ahí. */
+.icono-accion--incompleto { position: relative; }
+.icono-accion--incompleto::after {
+  content: '';
+  position: absolute;
+  top: 2px; right: 2px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--color-primario);
+  box-shadow: 0 0 0 2px var(--color-fondo);
+}

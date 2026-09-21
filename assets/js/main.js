@@ -30,6 +30,50 @@
     document.body.insertAdjacentHTML('beforeend', Vitalica.buscador());
     document.body.insertAdjacentHTML('beforeend', Vitalica.botonWhatsapp());
     vigilarDesplazamientoDelHeader();
+    saludarSiHaySesion();
+  }
+
+
+  /* ---------- 1-ter) El nombre en el encabezado ----------
+     Le pregunta al servidor quien esta conectado y, si hay alguien, pone su
+     nombre al lado del icono de cuenta.
+
+     TRES DECISIONES
+
+     Se pregunta DESPUES de armar el encabezado, no antes. Si esperara la
+     respuesta para dibujarlo, cada pagina del sitio tardaria en aparecer lo
+     que tarde el servidor, y para el 99% de los visitantes -que no tienen
+     cuenta- esa espera no sirve para nada.
+
+     Si falla, no pasa nada. El enlace ya esta puesto y lleva a cuenta.html,
+     que sabe resolverse sola. Esto solo agrega el nombre.
+
+     Y falla a proposito en silencio: en un sitio servido sin PHP -GitHub
+     Pages, una copia local- la consulta devuelve 404. No es un error que
+     nadie tenga que ver. */
+  function saludarSiHaySesion() {
+    var enlace = document.querySelector('[data-cuenta-enlace]');
+    if (!enlace || typeof fetch !== 'function') return;
+
+    fetch('api/cuenta.php?accion=yo', { credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        var c = d && d.ok && d.cliente;
+        if (!c) return;
+
+        var span = enlace.querySelector('[data-cuenta-nombre]');
+        if (span) {
+          span.textContent = String(c.nombre || '').split(' ')[0];
+          span.hidden = false;
+        }
+        enlace.setAttribute('aria-label', 'Mi cuenta, ' + (c.nombre || ''));
+        enlace.setAttribute('title', 'Mi cuenta');
+
+        /* Sin telefono no se puede cerrar un pedido, asi que se marca para
+           que la pagina de cuenta lo pida apenas entre. */
+        if (!c.completo) enlace.classList.add('icono-accion--incompleto');
+      })
+      .catch(function () { /* sin PHP o sin red: queda el icono y basta */ });
   }
 
 
