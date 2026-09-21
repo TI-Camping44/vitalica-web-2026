@@ -136,4 +136,40 @@ return [
     'company_id' => 2,
   ],
 
+
+  /* --- CUENTAS DE CLIENTES: la base de datos --------------------------------
+     Esto lo usan las cuentas de clientes. El resto del sitio sigue guardando
+     en archivos y no necesita nada de aca.
+
+     COMO SE CREA EN cPANEL
+     ----------------------
+       1. cPanel -> Bases de datos MySQL
+       2. "Crear base de datos nueva": poner  vitalica_web
+          Queda con el prefijo de la cuenta, algo como  vitalica_vitalica_web.
+          Copiar el nombre COMPLETO, con prefijo, que es el que va abajo.
+       3. "Usuarios de MySQL" -> crear uno. Usar el generador de contrasenas
+          de cPanel y guardarla en el gestor de contrasenas, no en un papel.
+       4. "Agregar usuario a la base de datos" -> marcar TODOS LOS PRIVILEGIOS.
+          Sin eso, el sitio no puede crear las tablas la primera vez.
+       5. Completar los cuatro valores de aca abajo.
+       6. Abrir una vez  https://vitalica.com.py/api/esquema.php  desde el
+          navegador, o correrlo por consola. Crea las tablas que falten y no
+          toca las que ya estan.
+
+     'host' casi siempre es localhost: la base vive en el mismo servidor que
+     el sitio. Si cPanel muestra otra cosa, va esa.
+
+     SI ESTA SECCION NO EXISTE, el sitio usa un archivo SQLite en
+     api/almacen/. Sirve para probar, pero en produccion va MySQL: SQLite
+     bloquea la base entera mientras escribe, y con varias personas comprando
+     a la vez eso se nota. */
+  'db' => [
+    'motor'   => 'mysql',
+    'host'    => 'localhost',
+    'puerto'  => 3306,
+    'base'    => '',   // el nombre COMPLETO, con el prefijo de la cuenta
+    'usuario' => '',
+    'clave'   => '',
+  ],
+
 ];
