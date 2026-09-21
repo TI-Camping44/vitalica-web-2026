@@ -28,6 +28,53 @@ sesion_exigir();
 </head>
 <body class="admin-body">
 
+  <!-- =====================================================================
+       BARRA DEL AREA INTERNA
+       ---------------------------------------------------------------------
+       Este era el UNICO panel sin forma de volver al menu: se entraba y se
+       quedaba encerrado, con el boton de atras del navegador como unica
+       salida. Los otros tres ya la tenian.
+
+       Va escrita en PHP y no la arma admin.js a proposito: si un dia el
+       JavaScript falla, la pantalla queda en blanco pero la salida sigue
+       estando. Una barra de navegacion que depende de que todo lo demas
+       funcione no sirve justamente el dia que hace falta.
+       ===================================================================== -->
+  <nav class="barra-interna">
+    <strong>VITALICA</strong>
+    <span class="barra-interna__aqui">Configuración</span>
+    <a href="api/acceso.php">← Menú</a>
+    <a href="api/panel.php">Pedidos</a>
+    <a href="api/blog.php">Noticias</a>
+    <a href="api/equipo.php">Equipo</a>
+    <a href="index.html" target="_blank" rel="noopener">Ver el sitio ↗</a>
+    <a href="api/acceso.php?salir=1" class="barra-interna__salir">Salir</a>
+  </nav>
+
+  <style>
+    /* Autocontenida: no depende de styles.css, que es la hoja del sitio
+       publico y podria cambiar por otro motivo. */
+    .barra-interna {
+      display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+      background: #16191D; color: #fff;
+      padding: 11px 20px;
+      font: 500 13.5px/1 Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    .barra-interna strong { letter-spacing: 1.5px; font-weight: 800; }
+    .barra-interna__aqui {
+      color: #EF7D2A; font-weight: 700;
+      padding-right: 18px; border-right: 1px solid #333;
+    }
+    .barra-interna a { color: #C9CDD4; text-decoration: none; }
+    .barra-interna a:hover { color: #fff; }
+    .barra-interna__salir { margin-left: auto; }
+    /* La cabecera del panel es sticky con top:0. Sin esto se monta encima
+       de la barra al bajar y tapa la salida. */
+    .admin-top { top: 41px !important; }
+    @media (max-width: 720px) { .admin-top { top: 0 !important; } }
+  </style>
+
+
   <!-- El panel completo lo arma admin.js (incluye la portada con clave) -->
   <div data-admin-app></div>
 

@@ -350,6 +350,9 @@ function telWa(string $t): string {
     <span class="top__sep"></span>
     <span class="top__meta"><?= date('d/m/Y H:i') ?></span>
     <a class="btn btn--sm" href="acceso.php">← Menú</a>
+    <a class="btn btn--sm" href="blog.php">Noticias</a>
+    <a class="btn btn--sm" href="../admin.php">Configuración</a>
+    <a class="btn btn--sm" href="equipo.php">Equipo</a>
     <a class="btn btn--sm" href="?salir=1">Salir</a>
   </div></div>
 

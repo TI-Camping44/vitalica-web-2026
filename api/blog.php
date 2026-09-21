@@ -218,6 +218,7 @@ function h($t): string { return htmlspecialchars((string)$t, ENT_QUOTES, 'UTF-8'
   <a href="acceso.php">← Menú</a>
   <a href="panel.php">Pedidos</a>
   <a href="../admin.php">Configuración</a>
+  <a href="equipo.php">Equipo</a>
   <a href="../noticias.html" target="_blank">Ver el blog ↗</a>
   <a href="acceso.php?salir=1" style="margin-left:auto">Salir</a>
 </div>

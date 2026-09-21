@@ -162,6 +162,10 @@ function cuando(?string $iso): string {
   <span class="top__sep"></span>
   <span class="quien"><?= h($yo['nombre']) ?></span>
   <a class="btn btn--sm" href="acceso.php">← Menú</a>
+  <a class="btn btn--sm" href="panel.php">Pedidos</a>
+  <a class="btn btn--sm" href="blog.php">Noticias</a>
+  <a class="btn btn--sm" href="../admin.php">Configuración</a>
+  <a class="btn btn--sm" href="acceso.php?salir=1">Salir</a>
 </div></div>
 
 <div class="wrap">
