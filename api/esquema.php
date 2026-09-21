@@ -150,7 +150,12 @@ function esquema_tablas(): array
             'email'      => "TEXTO(190) NOT NULL DEFAULT '' SINMAYUS",
             'total'      => 'ENTERO NOT NULL DEFAULT 0',
             'estado'     => "TEXTO(24) NOT NULL DEFAULT 'nuevo'",
-            'resumen'    => "LARGO NOT NULL DEFAULT ''",
+            /* NULL y no NOT NULL DEFAULT ''. MySQL prohibe poner valor por
+               omision en columnas TEXT, y devuelve el error 1101. SQLite lo
+               acepta sin chistar, asi que esto paso las pruebas locales y
+               reviento en el servidor. Ver esquema_revisar() mas abajo, que
+               ahora frena esta combinacion antes de llegar a MySQL. */
+            'resumen'    => 'LARGO NULL',
             'creado'     => 'FECHA NOT NULL',
             '@fk'        => ['cliente_id -> clientes(id) DESLIGA'],
             '@indices'   => [
@@ -222,9 +227,76 @@ function esquema_existe(string $tabla): bool
           WHERE table_schema = DATABASE() AND table_name = ?', [$tabla]);
 }
 
+/**
+ * Revisa las declaraciones contra las reglas de MySQL, ANTES de tocar la base.
+ *
+ * POR QUE EXISTE ESTA FUNCION
+ *
+ * Se desarrolla contra SQLite y se publica contra MySQL, y SQLite es mucho mas
+ * permisivo. Cuatro veces ya paso lo mismo: algo que aca funcionaba perfecto
+ * reventaba en el servidor, con el cliente esperando y un mensaje de MySQL que
+ * no dice donde esta el problema.
+ *
+ *   · "INDEX KEY nombre (col)"     no existe en MySQL
+ *   · INT contra INT UNSIGNED      rompe las claves foraneas
+ *   · mayusculas en el correo      MySQL no distingue, SQLite si
+ *   · DEFAULT en una columna TEXT  MySQL lo prohibe, error 1101
+ *
+ * Probar mas no alcanzaba: la prueba corria contra SQLite y pasaba. Lo que
+ * hacia falta era que las reglas de MySQL se revisen SIEMPRE, corra donde
+ * corra. Esto falla en esta computadora, antes de que nadie suba nada.
+ *
+ * Devuelve la lista de problemas. Vacia quiere decir que esta bien.
+ */
+function esquema_revisar(): array
+{
+    $problemas = [];
+
+    foreach (esquema_tablas() as $tabla => $cols) {
+        unset($cols['@indices'], $cols['@fk']);
+
+        foreach ($cols as $col => $decl) {
+            if (!is_string($decl)) continue;
+
+            /* Error 1101 de MySQL: las columnas de texto largo no pueden
+               tener valor por omision. */
+            if (strpos($decl, 'LARGO') !== false && stripos($decl, 'DEFAULT') !== false) {
+                $problemas[] = "$tabla.$col: una columna LARGO (TEXT) no puede llevar DEFAULT. "
+                             . "Usa 'LARGO NULL' y resolve el vacio en el codigo.";
+            }
+
+            /* NOT NULL sin valor por omision hace fallar cualquier INSERT que
+               no nombre la columna. Se permite solo donde el codigo siempre
+               la escribe: las fechas y los nombres. */
+            $sinDefecto = stripos($decl, 'NOT NULL') !== false
+                       && stripos($decl, 'DEFAULT') === false
+                       && $decl !== 'ID';
+            $siempreSeEscribe = in_array($col, ['creado', 'expira', 'cuando', 'nombre',
+                                                'email', 'numero', 'llave', 'token_hash',
+                                                'cliente_id'], true);
+            if ($sinDefecto && !$siempreSeEscribe) {
+                $problemas[] = "$tabla.$col: NOT NULL sin DEFAULT. Todo INSERT que no la "
+                             . "nombre va a fallar. Agregale DEFAULT o sumala a la lista "
+                             . "de columnas que el codigo siempre escribe.";
+            }
+        }
+    }
+
+    return $problemas;
+}
+
 /** Crea lo que falte. Devuelve qué hizo, para poder contarlo. */
 function esquema_crear(): array
 {
+    $problemas = esquema_revisar();
+    if ($problemas) {
+        throw new RuntimeException(
+            "El esquema tiene errores que MySQL va a rechazar:
+  - "
+            . implode("
+  - ", $problemas));
+    }
+
     $motor = esquema_motor();
     $hecho = [];
 
@@ -370,6 +442,33 @@ if (PHP_SAPI !== 'cli') {
            base. Eso no se muestra: se dice que fallo y que mire el archivo de
            configuracion, que es donde esta el problema el 90% de las veces. */
         $m = $ex->getMessage();
+
+        /* Distinguir NO PODER CONECTAR de conectar y que falle una consulta.
+           Son dos problemas de dueños distintos: lo primero lo arregla quien
+           administra el hosting, lo segundo lo arregla quien programa.
+
+           La primera version decía "revisá config.php" para todo. Cuando falló
+           la creación de una tabla —conexión perfecta, error mío en el SQL—
+           mandó a revisar un archivo que estaba bien. */
+        $esDeConexion = stripos($m, 'access denied')    !== false
+                     || stripos($m, 'unknown database') !== false
+                     || stripos($m, 'command denied')   !== false
+                     || stripos($m, 'denied to user')   !== false
+                     || stripos($m, 'connection refused') !== false
+                     || stripos($m, "can't connect")    !== false;
+
+        if (!$esDeConexion) {
+            echo '<div class="err"><b>La conexión funcionó, pero falló al crear las '
+               . 'tablas.</b><br>Esto es un error del código, no de tu configuración. '
+               . 'No toques nada: mandale la línea de abajo a quien programa.</div>';
+            echo '<p class="pie"><code>' . $e(substr($m, 0, 300)) . '</code></p>';
+            echo '<p class="pie">Las tablas que sí se crearon quedan. Al volver a abrir '
+               . 'esta página después del arreglo, se crean solo las que falten.</p>';
+            echo '<p class="pie"><a href="acceso.php">&larr; Volver al área interna</a></p>';
+            echo '</div></body></html>';
+            exit;
+        }
+
         $pista = 'Revisá la sección <code>db</code> de <code>api/config.php</code>.';
         if (stripos($m, 'access denied') !== false) {
             $pista = 'El usuario o la contraseña no coinciden. Acordate de que el '
