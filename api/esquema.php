@@ -299,6 +299,100 @@ function esquema_crear(): array
 /* ---------------------------------------------------------------------------
    Desde la consola
    --------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------
+   Desde el navegador
+   ---------------------------------------------------------------------------
+   En el servidor no hay consola a mano, asi que esto tambien se puede correr
+   abriendo la direccion:
+
+       https://vitalica.com.py/api/esquema.php
+
+   DETRAS DE LA SESION DEL AREA INTERNA, y no suelto.
+
+   Crear tablas no borra nada, pero dejar abierto al mundo un archivo que
+   escribe en la base es invitar a que alguien lo golpee mil veces por
+   minuto. Con la sesion puesta, para llegar aca hay que haber entrado antes
+   con usuario y contrasena.
+
+   Se pide ADMINISTRADOR y no cualquier usuario interno: esto toca la
+   estructura de la base, no el contenido del sitio.
+   --------------------------------------------------------------------------- */
+if (PHP_SAPI !== 'cli') {
+    require_once __DIR__ . '/sesion.php';
+    sesion_exigir_admin();
+
+    header('Content-Type: text/html; charset=utf-8');
+
+    $cfg   = db_config();
+    $motor = (string)($cfg['motor'] ?? 'mysql');
+    $donde = $motor === 'sqlite'
+        ? basename((string)($cfg['archivo'] ?? ''))
+        : ($cfg['usuario'] ?? '') . '@' . ($cfg['host'] ?? '') . '/' . ($cfg['base'] ?? '');
+
+    $e = function ($t) { return htmlspecialchars((string)$t, ENT_QUOTES, 'UTF-8'); };
+
+    echo '<!doctype html><html lang="es"><head><meta charset="utf-8">'
+       . '<meta name="viewport" content="width=device-width,initial-scale=1">'
+       . '<meta name="robots" content="noindex">'
+       . '<title>Base de datos &middot; Vitalica</title><style>'
+       . 'body{margin:0;padding:40px 20px;background:#F7F8FA;color:#16191D;'
+       . 'font:15px/1.6 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}'
+       . '.caja{max-width:620px;margin:0 auto;background:#fff;border:1px solid #E4E7EC;'
+       . 'border-radius:14px;padding:28px 30px;box-shadow:0 8px 28px -12px rgba(16,25,45,.16)}'
+       . 'h1{font-size:20px;margin:0 0 4px}p.sub{color:#5B6270;font-size:14px;margin:0 0 22px}'
+       . 'table{width:100%;border-collapse:collapse;font-size:14px}'
+       . 'td{padding:9px 0;border-bottom:1px solid #EEF0F3}'
+       . 'td:last-child{text-align:right;font-weight:700}'
+       . 'code{font-family:ui-monospace,Consolas,monospace;font-size:13px;color:#5B6270}'
+       . '.ok{color:#1F6B4A}.ya{color:#8A919E}.mal{color:#A3342F}'
+       . '.err{background:#FBE7E5;color:#A3342F;padding:14px 16px;border-radius:10px;'
+       . 'font-size:14px;margin-bottom:18px}'
+       . '.pie{margin-top:22px;font-size:13px;color:#8A919E}'
+       . 'a{color:#A85410}</style></head><body><div class="caja">';
+
+    echo '<h1>Base de datos</h1><p class="sub"><code>' . $e($motor) . ' &middot; '
+       . $e($donde) . '</code></p>';
+
+    try {
+        $hecho = esquema_crear();
+        echo '<table>';
+        foreach ($hecho as $tabla => $que) {
+            $clase = $que === 'creada' ? 'ok' : 'ya';
+            $n = (int)db_valor("SELECT COUNT(*) FROM `$tabla`");
+            echo '<tr><td>' . $e($tabla) . ' <code>' . $n . ' filas</code></td>'
+               . '<td class="' . $clase . '">' . $e($que) . '</td></tr>';
+        }
+        echo '</table>';
+        echo '<p class="pie">Listo. Se puede volver a abrir cuando haga falta: '
+           . 'crea lo que falte y no toca lo que ya esta.</p>';
+    } catch (Throwable $ex) {
+        /* El mensaje crudo de PDO puede traer el usuario y el nombre de la
+           base. Eso no se muestra: se dice que fallo y que mire el archivo de
+           configuracion, que es donde esta el problema el 90% de las veces. */
+        $m = $ex->getMessage();
+        $pista = 'Revisá la sección <code>db</code> de <code>api/config.php</code>.';
+        if (stripos($m, 'access denied') !== false) {
+            $pista = 'El usuario o la contraseña no coinciden. Acordate de que el '
+                   . 'usuario lleva el prefijo de la cuenta: <code>vitalica_sitio</code>, '
+                   . 'no <code>sitio</code>.';
+        } elseif (stripos($m, 'unknown database') !== false) {
+            $pista = 'Ese nombre de base no existe. También lleva prefijo: '
+                   . '<code>vitalica_web</code>.';
+        } elseif (stripos($m, 'command denied') !== false || stripos($m, 'denied to user') !== false) {
+            $pista = 'Al usuario le faltan permisos. En cPanel &rarr; '
+                   . '<b>Manage My Databases</b>, abajo, dale <b>ALL PRIVILEGES</b> '
+                   . 'sobre la base.';
+        }
+        echo '<div class="err"><b>No se pudo conectar.</b><br>' . $pista . '</div>';
+        echo '<p class="pie">Si no es ninguna de esas, mandale esta línea a quien '
+           . 'programa: <code>' . $e(substr($m, 0, 160)) . '</code></p>';
+    }
+
+    echo '<p class="pie"><a href="acceso.php">&larr; Volver al área interna</a></p>';
+    echo '</div></body></html>';
+    exit;
+}
+
 if (PHP_SAPI === 'cli' && realpath($argv[0] ?? '') === realpath(__FILE__)) {
     $cfg = db_config();
     $donde = ($cfg['motor'] ?? 'mysql') === 'sqlite'
