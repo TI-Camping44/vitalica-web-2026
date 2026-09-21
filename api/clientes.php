@@ -468,3 +468,145 @@ function clientes_cambiar_clave(int $id, string $actual, string $nueva): array
 
     return ['ok' => true];
 }
+
+
+/* ===========================================================================
+   PRUEBAS
+   ---------------------------------------------------------------------------
+       php api/clientes.php --probar
+
+   Corren contra la base de desarrollo y borran lo suyo al terminar. Todas las
+   cuentas de prueba usan correos que empiezan con "zz-prueba-", así que la
+   limpieza es inequívoca y no puede llevarse por delante a un cliente real.
+
+   Por qué este archivo tiene pruebas y otros no: acá se manejan contraseñas y
+   sesiones. Un error en el resto del sitio se ve enseguida; un error acá no
+   se ve hasta que alguien entra a una cuenta que no es suya.
+   =========================================================================== */
+if (PHP_SAPI === 'cli' && in_array('--probar', $argv ?? [], true)) {
+
+    $ok = 0; $mal = 0;
+    $prueba = function (string $que, $real, $esperado = true) use (&$ok, &$mal) {
+        $pasa = ($esperado === true) ? (bool)$real : ($real === $esperado);
+        if ($pasa) { $ok++;  printf("  ok   %s\n", $que); }
+        else       { $mal++; printf("  MAL  %s  (dio: %s)\n", $que, var_export($real, true)); }
+    };
+
+    $limpiar = function () {
+        foreach (db_filas("SELECT id FROM clientes WHERE email LIKE 'zz-prueba-%'") as $f) {
+            db_consulta('DELETE FROM clientes WHERE id = ?', [(int)$f['id']]);
+        }
+        db_consulta("DELETE FROM intentos WHERE llave LIKE '%zz-prueba-%'");
+        db_consulta("DELETE FROM pedidos WHERE numero LIKE 'ZZ-PRUEBA%'");
+    };
+    $limpiar();
+
+    echo "\nTELEFONO\n";
+    $prueba('0981 123 456 se normaliza',      clientes_telefono('0981 123 456'), '595981123456');
+    $prueba('+595 981 123456 tambien',        clientes_telefono('+595 981 123456'), '595981123456');
+    $prueba('(0981) 123-456 tambien',         clientes_telefono('(0981) 123-456'), '595981123456');
+    $prueba('981123456 sin el cero tambien',  clientes_telefono('981123456'), '595981123456');
+    $prueba('un fijo de Asuncion se rechaza', clientes_telefono('021 123 456'), '');
+    $prueba('vacio se rechaza',               clientes_telefono(''), '');
+    $prueba('letras se rechazan',             clientes_telefono('no tengo'), '');
+
+    echo "\nCORREO\n";
+    $prueba('se pasa a minusculas', clientes_email('  Juan@Gmail.Com '), 'juan@gmail.com');
+    $prueba('uno valido pasa',      clientes_email_valido('a@b.com'), true);
+    $prueba('uno sin arroba no',    clientes_email_valido('ab.com'), false);
+
+    echo "\nCONTRASENA\n";
+    $prueba('siete caracteres se rechazan', clientes_revisar_clave('1234567') !== '', true);
+    $prueba('ocho alcanzan',                clientes_revisar_clave('12345678'), '');
+
+    echo "\nREGISTRO\n";
+    $r = clientes_registrar('zz-prueba-uno@ejemplo.com', 'Juan Perez', '0981111111', 'clave-larga-1');
+    $prueba('se crea la cuenta', isset($r['id']), true);
+    $id = (int)($r['id'] ?? 0);
+
+    $prueba('el mismo correo en MAYUSCULAS se rechaza',
+        isset(clientes_registrar('ZZ-PRUEBA-UNO@ejemplo.com', 'Otro', '0981222222', 'clave-larga-2')['error']), true);
+    $prueba('sin celular valido se rechaza',
+        isset(clientes_registrar('zz-prueba-dos@ejemplo.com', 'Ana', '021555444', 'clave-larga-1')['error']), true);
+    $prueba('con clave corta se rechaza',
+        isset(clientes_registrar('zz-prueba-tres@ejemplo.com', 'Ana', '0981333333', 'corta')['error']), true);
+
+    $g = db_fila('SELECT * FROM clientes WHERE id = ?', [$id]);
+    $prueba('el correo quedo en minusculas',  $g['email'], 'zz-prueba-uno@ejemplo.com');
+    $prueba('el telefono quedo normalizado',  $g['telefono'], '595981111111');
+    $prueba('la clave NO se guarda en claro', strpos((string)$g['hash'], 'clave-larga-1'), false);
+
+    echo "\nINGRESO\n";
+    $i = clientes_ingresar('ZZ-Prueba-Uno@ejemplo.com', 'clave-larga-1');
+    $prueba('entra aunque escriba el correo con mayusculas', isset($i['cliente']), true);
+
+    $i2 = clientes_ingresar('zz-prueba-uno@ejemplo.com', 'la-que-no-es');
+    $prueba('con la clave mal no entra', isset($i2['error']), true);
+
+    $i3 = clientes_ingresar('zz-prueba-noexiste@ejemplo.com', 'cualquiera');
+    $prueba('un correo que no existe da el MISMO mensaje que clave mal',
+            ($i3['error'] ?? 'a') === ($i2['error'] ?? 'b'), true);
+
+    echo "\nFRENO DE INTENTOS\n";
+    for ($k = 0; $k <= CLIENTES_TOPE; $k++) {
+        clientes_ingresar('zz-prueba-uno@ejemplo.com', 'mal-a-proposito');
+    }
+    $prueba('pasados los intentos frena aun con la clave BUENA',
+            isset(clientes_ingresar('zz-prueba-uno@ejemplo.com', 'clave-larga-1')['error']), true);
+    db_consulta("DELETE FROM intentos WHERE llave LIKE '%zz-prueba-%'");
+    db_consulta("DELETE FROM intentos WHERE llave LIKE 'ip:%'");
+    $prueba('pasada la ventana vuelve a entrar',
+            isset(clientes_ingresar('zz-prueba-uno@ejemplo.com', 'clave-larga-1')['cliente']), true);
+
+    echo "\nGOOGLE\n";
+    $g1 = clientes_google('goog-zz-111', 'zz-prueba-google@ejemplo.com', 'Google Uno');
+    $prueba('crea la cuenta', isset($g1['cliente']), true);
+    $prueba('queda SIN telefono, porque Google no lo da',
+            trim((string)$g1['cliente']['telefono']), '');
+    $prueba('y por eso el perfil no esta completo',
+            clientes_perfil_completo($g1['cliente']), false);
+    $prueba('la segunda vez NO crea otra cuenta',
+            (int)clientes_google('goog-zz-111', 'zz-prueba-google@ejemplo.com', 'Google Uno')['cliente']['id'],
+            (int)$g1['cliente']['id']);
+
+    $g3 = clientes_google('goog-zz-222', 'zz-prueba-uno@ejemplo.com', 'Juan Perez');
+    $prueba('si el correo ya tenia cuenta, la VINCULA en vez de duplicar',
+            (int)$g3['cliente']['id'], $id);
+    $prueba('esa si tiene el perfil completo', clientes_perfil_completo($g3['cliente']), true);
+
+    echo "\nSESION\n";
+    $tok = clientes_sesion_abrir($id);
+    $prueba('el token tiene 64 caracteres', strlen($tok), 64);
+    $guardado = (string)db_valor('SELECT token_hash FROM sesiones WHERE cliente_id = ?', [$id]);
+    $prueba('en la base NO esta el token', $guardado !== $tok, true);
+    $prueba('esta su hash', $guardado, hash('sha256', $tok));
+
+    $_COOKIE[CLIENTES_COOKIE] = $tok;
+    $prueba('con la cookie puesta se reconoce al cliente',
+            (int)(clientes_actual()['id'] ?? 0), $id);
+
+    echo "\nCAMBIO DE CONTRASENA\n";
+    $prueba('sin la actual no deja',
+            isset(clientes_cambiar_clave($id, 'la-que-no-es', 'nueva-clave-larga')['error']), true);
+    $antes = (int)db_valor('SELECT COUNT(*) FROM sesiones WHERE cliente_id = ?', [$id]);
+    $prueba('con la actual si deja',
+            isset(clientes_cambiar_clave($id, 'clave-larga-1', 'nueva-clave-larga')['ok']), true);
+    $despues = (int)db_valor('SELECT COUNT(*) FROM sesiones WHERE cliente_id = ?', [$id]);
+    $prueba('y cierra las sesiones abiertas', $antes > 0 && $despues === 0, true);
+    $prueba('se entra con la nueva',
+            isset(clientes_ingresar('zz-prueba-uno@ejemplo.com', 'nueva-clave-larga')['cliente']), true);
+
+    echo "\nAL BORRAR LA CUENTA\n";
+    clientes_sesion_abrir($id);
+    db_consulta('INSERT INTO pedidos (numero, cliente_id, email, total, creado) VALUES (?,?,?,?,?)',
+                ['ZZ-PRUEBA-1', $id, 'zz-prueba-uno@ejemplo.com', 100000, db_ahora()]);
+    db_consulta('DELETE FROM clientes WHERE id = ?', [$id]);
+    $prueba('se van sus sesiones',
+            (int)db_valor('SELECT COUNT(*) FROM sesiones WHERE cliente_id = ?', [$id]), 0);
+    $ped = db_fila('SELECT cliente_id FROM pedidos WHERE numero = ?', ['ZZ-PRUEBA-1']);
+    $prueba('el pedido SOBREVIVE, sin dueno', $ped !== null && $ped['cliente_id'] === null, true);
+
+    $limpiar();
+    printf("\n  %d bien, %d mal\n\n", $ok, $mal);
+    exit($mal === 0 ? 0 : 1);
+}
