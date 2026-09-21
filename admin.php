@@ -55,11 +55,28 @@ sesion_exigir();
     /* Autocontenida: no depende de styles.css, que es la hoja del sitio
        publico y podria cambiar por otro motivo. */
     .barra-interna {
-      display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+      /* Fija arriba. Sin esto se iba al bajar y quedaba un hueco blanco de
+         41px sobre la cabecera del panel, que si es sticky. Peor todavia:
+         para volver al menu habia que subir hasta el principio, que es
+         justo lo que se queria evitar. */
+      position: sticky; top: 0;
+      z-index: 60;               /* la cabecera del panel usa 50 */
+      /* Alto FIJO, y el mismo numero mas abajo para bajar la cabecera.
+         Antes el padding decidia el alto: daba 36px y yo habia escrito 41
+         a ojo, asi que al bajar quedaba una franja blanca de 5px entre las
+         dos barras. Con un alto declarado, los dos numeros no pueden
+         desincronizarse. */
+      box-sizing: border-box;
+      height: 42px;
+      display: flex; align-items: center; gap: 18px;
+      overflow-x: auto;          /* en pantallas angostas se desliza, no se apila */
+      scrollbar-width: none;
       background: #16191D; color: #fff;
-      padding: 11px 20px;
+      padding: 0 20px;
       font: 500 13.5px/1 Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+      white-space: nowrap;
     }
+    .barra-interna::-webkit-scrollbar { display: none; }
     .barra-interna strong { letter-spacing: 1.5px; font-weight: 800; }
     .barra-interna__aqui {
       color: #EF7D2A; font-weight: 700;
@@ -69,9 +86,9 @@ sesion_exigir();
     .barra-interna a:hover { color: #fff; }
     .barra-interna__salir { margin-left: auto; }
     /* La cabecera del panel es sticky con top:0. Sin esto se monta encima
-       de la barra al bajar y tapa la salida. */
-    .admin-top { top: 41px !important; }
-    @media (max-width: 720px) { .admin-top { top: 0 !important; } }
+       de la barra al bajar y tapa la salida. Los 42px son EL ALTO DE LA
+       BARRA de arriba: si se cambia uno, se cambia el otro. */
+    .admin-top { top: 42px !important; }
   </style>
 
 
