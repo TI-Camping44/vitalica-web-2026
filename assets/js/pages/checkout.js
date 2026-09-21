@@ -321,7 +321,23 @@
           tel = '0' + tel.slice(3, 6) + ' ' + tel.slice(6, 9) + ' ' + tel.slice(9);
         }
 
-        poner('nombre', c.nombre);
+        /* La cuenta guarda "Nombre y apellido" en un solo campo, porque eso
+           es lo que entrega Google y lo que la gente escribe de corrido. El
+           checkout los tiene separados. Sin partirlo, "Facundo Colman"
+           entraba entero en Nombre y Apellido quedaba vacio.
+
+           Se corta en el PRIMER espacio y el resto va a apellido: asi
+           "Maria Jose Gonzalez Paredes" queda Maria / Jose Gonzalez Paredes.
+           No es perfecto -nadie puede adivinar donde termina un nombre
+           compuesto- pero lo que queda es corregible de un toque, y lo
+           importante es que el apellido NO quede vacio. */
+        var entero = String(c.nombre || '').trim();
+        var corte = entero.indexOf(' ');
+        var soloNombre = corte === -1 ? entero : entero.slice(0, corte);
+        var soloApellido = corte === -1 ? '' : entero.slice(corte + 1).trim();
+
+        poner('nombre', soloNombre);
+        poner('apellido', soloApellido);
         poner('telefono', tel);
         poner('email', c.email);
 
