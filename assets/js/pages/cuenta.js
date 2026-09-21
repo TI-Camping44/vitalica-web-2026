@@ -35,6 +35,7 @@
 
   var API = 'api/cuenta.php';
   var yo = null;          // el cliente conectado, o null
+  var googleId = '';      // el client_id de Google; vacio = sin boton
   var vista = 'ingreso';  // 'ingreso' | 'registro'
 
   function esc(t) {
@@ -159,6 +160,10 @@
             '</button>' +
           '</form>' +
 
+          (googleId ?
+            '<div class="cuenta__o"><span>o</span></div>' +
+            '<div class="cuenta__google" data-google></div>' : '') +
+
           '<p class="cuenta__pie">' +
             'Podés comprar sin cuenta cuando quieras. ' +
             '<a href="productos.html">Ver productos</a>.' +
@@ -277,6 +282,81 @@
     }
     var foco = caja.querySelector('input:not([disabled])');
     if (foco && !yo) foco.focus();
+
+    dibujarGoogle();
+  }
+
+
+  /* ------------------------------------------------------------------
+     EL BOTON DE GOOGLE
+
+     Se dibuja despues de cada repintado porque la pantalla se rehace
+     entera, y el boton que dibuja Google vive en el DOM: si no se lo
+     vuelve a pedir, queda el hueco vacio.
+
+     El script de Google se carga UNA sola vez y recien cuando hace falta.
+     Si alguien entra con la sesion ya abierta, no se le pide nada a un
+     servidor ajeno. Eso no es solo velocidad: es no contarle a Google que
+     esa persona entro, cuando no hay ningun motivo para hacerlo.
+     ------------------------------------------------------------------ */
+  var googleCargando = false;
+
+  function dibujarGoogle() {
+    var hueco = caja.querySelector('[data-google]');
+    if (!hueco || !googleId) return;
+
+    if (window.google && window.google.accounts && window.google.accounts.id) {
+      pintarBotonGoogle(hueco);
+      return;
+    }
+    if (googleCargando) return;
+    googleCargando = true;
+
+    var s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.async = true;
+    s.defer = true;
+    s.onload = function () {
+      var h = caja.querySelector('[data-google]');
+      if (h) pintarBotonGoogle(h);
+    };
+    /* Si el script no carga -sin internet, una red que bloquea Google- no se
+       muestra ningun error: el formulario de correo y contrasena sigue ahi y
+       funciona. Un cartel rojo por algo que la persona no puede arreglar solo
+       la asusta. */
+    s.onerror = function () { googleCargando = false; };
+    document.head.appendChild(s);
+  }
+
+  function pintarBotonGoogle(hueco) {
+    try {
+      window.google.accounts.id.initialize({
+        client_id: googleId,
+        callback: entrarConGoogle,
+        /* Sin la ventanita que aparece sola arriba a la derecha. Tapa el
+           contenido, sorprende, y en esta pagina el boton ya esta a la vista. */
+        auto_select: false,
+        cancel_on_tap_outside: true
+      });
+      window.google.accounts.id.renderButton(hueco, {
+        theme: 'outline',
+        size: 'large',
+        width: 340,
+        shape: 'pill',
+        text: 'continue_with',
+        locale: 'es'
+      });
+    } catch (e) { /* si Google cambia su interfaz, queda el formulario normal */ }
+  }
+
+  function entrarConGoogle(respuesta) {
+    if (!respuesta || !respuesta.credential) return;
+    mostrarError('');
+    pedir({ accion: 'google', credential: respuesta.credential }).then(function (r) {
+      if (!r.ok) { mostrarError(r.error || 'No se pudo entrar con Google.'); return; }
+      yo = r.cliente || null;
+      pintar();
+    });
   }
 
   function traerPedidos() {
@@ -381,6 +461,7 @@
      ------------------------------------------------------------------ */
   pedir({ accion: 'yo' }).then(function (r) {
     yo = (r && r.ok && r.cliente) || null;
+    googleId = (r && r.googleId) || '';
 
     /* ?crear en la dirección abre directo el formulario de alta. Lo usan los
        enlaces de "creá tu cuenta" que hay en otras páginas: mandar a alguien

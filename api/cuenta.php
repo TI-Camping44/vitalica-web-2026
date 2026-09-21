@@ -23,6 +23,7 @@
 
 declare(strict_types=1);
 require_once __DIR__ . '/clientes.php';
+require_once __DIR__ . '/google.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
@@ -88,7 +89,27 @@ switch ($accion) {
 
     /* Quién está conectado. Lo llama el encabezado de todas las páginas. */
     case 'yo':
-        cuenta_responder(['ok' => true, 'cliente' => cuenta_publico(clientes_actual())]);
+        /* Se manda tambien el client_id de Google. La pagina lo necesita para
+           dibujar el boton, y asi ese valor vive en UN solo lugar
+           -config.php- en vez de estar repetido en el HTML de cada pagina.
+           Vacio significa que Google no esta configurado y el boton no se
+           dibuja: el sitio sigue andando igual. */
+        cuenta_responder([
+            'ok'       => true,
+            'cliente'  => cuenta_publico(clientes_actual()),
+            'googleId' => google_client_id(),
+        ]);
+
+    case 'google': {
+        $v = google_verificar((string)($entra['credential'] ?? ''));
+        if (isset($v['error'])) cuenta_responder(['ok' => false, 'error' => $v['error']], 401);
+
+        $r = clientes_google($v['sub'], $v['email'], $v['nombre']);
+        if (isset($r['error'])) cuenta_responder(['ok' => false, 'error' => $r['error']], 400);
+
+        clientes_sesion_abrir((int)$r['cliente']['id']);
+        cuenta_responder(['ok' => true, 'cliente' => cuenta_publico($r['cliente'])]);
+    }
 
     case 'registro': {
         if (clientes_actual()) {

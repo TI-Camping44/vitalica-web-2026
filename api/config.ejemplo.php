@@ -172,4 +172,25 @@ return [
     'clave'   => '',
   ],
 
+
+  /* --- ENTRAR CON GOOGLE ------------------------------------------------
+     El identificador que da Google Cloud al crear un "ID de cliente de
+     OAuth" de tipo Aplicacion web.
+
+     NO ES UN SECRETO. Viaja en el HTML de la pagina, a la vista de
+     cualquiera, y asi tiene que ser: es como Google sabe de que sitio
+     viene el pedido. El "secreto del cliente" que Google muestra al lado
+     NO se usa en este flujo y no hay que ponerlo en ningun lado.
+
+     Vacio = el boton no aparece y el sitio funciona igual.
+
+     En Google Cloud, en ese mismo cliente, los "Origenes autorizados de
+     JavaScript" tienen que decir exactamente:
+         https://vitalica.com.py
+         https://www.vitalica.com.py
+     Sin barra al final. Google compara el texto exacto. */
+  'google' => [
+    'client_id' => '',
+  ],
+
 ];
