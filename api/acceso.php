@@ -27,7 +27,8 @@ if (isset($_POST['clave'])) {
     if ($error === '') {
         // Si venía de una página puntual, lo devolvemos ahí.
         $destinos = ['panel.php' => 'panel.php', 'admin.php' => '../admin.php',
-                     'equipo.php' => 'equipo.php', 'blog.php' => 'blog.php'];
+                     'equipo.php' => 'equipo.php', 'blog.php' => 'blog.php',
+                     'esquema.php' => 'esquema.php'];
         $ir = $destinos[$volver] ?? 'acceso.php';
         // Si no es administrador, no lo mandamos a una página que va a rechazarlo.
         // Pedidos y noticias los puede usar cualquier usuario del área interna:
