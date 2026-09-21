@@ -144,6 +144,13 @@ foreach ($f in $prohibidos) {
   if (Test-Path $r) { Remove-Item $r -Force }
 }
 
+# assets/js/data-overrides.js lo escribe el servidor cuando marketing publica
+# desde el panel de configuracion. Si un despliegue lo pisara, se perderia todo
+# lo que publicaron y nadie se enteraria: el sitio simplemente volveria a los
+# valores de fabrica. Es el mismo criterio que con config.php y con almacen.
+$ov = Join-Path $destino 'assets\js\data-overrides.js'
+if (Test-Path $ov) { Remove-Item $ov -Force }
+
 # El config.php del servidor tiene las claves reales y los usuarios del área
 # interna. Pisarlo deja a todo el mundo afuera del panel.
 $cfg = Join-Path $destino 'api\config.php'
@@ -247,7 +254,8 @@ foreach ($f in 'assets\css\styles.css','assets\css\tema-2026.css','assets\js\dat
 
 ''
 'NO tiene que estar:'
-foreach ($f in 'odoo-credenciales.ini','api\almacen','htaccess','api\htaccess','api\prueba.php') {
+foreach ($f in 'odoo-credenciales.ini','api\almacen','htaccess','api\htaccess','api\prueba.php',
+               'assets\js\data-overrides.js') {
   $hay = Test-Path (Join-Path $destino $f)
   "  {0} {1}" -f $(if ($hay) {'OJO  '} else {'OK   '}), $f
 }

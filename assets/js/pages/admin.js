@@ -275,27 +275,28 @@
 
     app.innerHTML =
       '<header class="admin-top">' +
-        '<div class="admin-top__brand"><strong>Panel de administrador</strong> · Vitalica <span class="admin-demo">DEMO</span></div>' +
+        '<div class="admin-top__brand"><strong>Panel de administrador</strong> · Vitalica <span class="admin-demo" data-estado>vista previa</span></div>' +
         '<div class="admin-acciones">' +
           '<a class="btn btn--contorno" href="index.html" target="_blank" rel="noopener">Ver el sitio ↗</a>' +
           '<button class="btn btn--contorno" type="button" data-exportar>Exportar</button>' +
           '<label class="btn btn--contorno admin-import">Importar<input type="file" accept="application/json,.json" data-importar hidden></label>' +
           '<button class="btn btn--contorno" type="button" data-reset>Restablecer</button>' +
-          '<button class="btn btn--primario" type="button" data-guardar>Guardar</button>' +
+          '<button class="btn btn--contorno" type="button" data-guardar>Guardar borrador</button>' +
+          '<button class="btn btn--primario" type="button" data-publicar>Publicar</button>' +
         '</div>' +
       '</header>' +
       '<div class="admin-aviso">' +
-        // Este aviso decía "maqueta sin backend" y "la clave es solo
-        // demostrativa". Las dos cosas dejaron de ser ciertas: el ingreso se
-        // verifica en el servidor. Lo que SÍ sigue siendo cierto, y es lo que
-        // más confunde, es que los cambios viven en el navegador de quien los
-        // hizo: nadie más los ve. Eso hay que decirlo sin vueltas.
-        '<strong>Lo que cambies acá se ve solo en este navegador.</strong> Sirve para probar y mostrar cómo quedaría, ' +
-        'pero <strong>el resto de los visitantes sigue viendo el sitio como estaba</strong>. ' +
-        'Para que un cambio salga publicado de verdad hay que pasarlo al archivo de datos del sitio. ' +
-        'Usá <strong>Exportar</strong> para bajar lo que configuraste y pasárselo a quien lo publique, ' +
-        'e <strong>Importar</strong> para recuperarlo en otra computadora. ' +
-        '<strong>Restablecer</strong> borra tus cambios y vuelve a mostrar el sitio real.' +
+        /* Este aviso ya dijo dos cosas que dejaron de ser ciertas: primero que
+           era "una maqueta sin backend", despues que los cambios se veian solo
+           en este navegador. Hoy se puede publicar de verdad, asi que lo que
+           hay que explicar es otra cosa: que son DOS pasos y en que se
+           diferencian. Si alguien toca Guardar y se va creyendo que publico,
+           el sitio no cambia y nadie entiende por que. */
+        '<strong>Guardar borrador</strong> deja tus cambios en esta computadora, para ' +
+        'mirarlos antes de largarlos. Solo los ves vos. ' +
+        '<strong>Publicar</strong> los deja en el sitio para todos los visitantes. ' +
+        '<strong>Restablecer</strong> borra tu borrador y te vuelve a mostrar lo que está ' +
+        'publicado hoy; no despublica nada.' +
       '</div>' +
       '<div class="admin-form">' + secciones + '</div>' +
       '<div class="admin-barra-guardar"><button class="btn btn--primario btn--grande" type="button" data-guardar>Guardar cambios</button></div>';
@@ -346,6 +347,67 @@
     localStorage.setItem('vitalica_overrides', JSON.stringify(ov));
     if (!silencioso) toast('✓ Cambios guardados. Abrí o recargá el sitio para verlos.');
     return ov;
+  }
+
+  /* ------------------------------------------------------------------
+     PUBLICAR
+     El panel guardaba solo en localStorage, o sea en la memoria del navegador
+     de quien lo usaba: los cambios se veian en esa computadora y en ninguna
+     otra. Para publicar de verdad habia que exportar el archivo y pedirle a
+     quien programa que lo suba.
+
+     Ahora se manda al servidor, que lo escribe en assets/js/data-overrides.js
+     y ese archivo lo carga todo el sitio.
+
+     El token sale de una consulta previa a la misma direccion. Sin eso,
+     alcanzaria con que alguien con la sesion abierta visite una pagina
+     preparada para que su navegador publique cambios sin que se entere.
+     ------------------------------------------------------------------ */
+  var cfgToken = '';
+
+  function pedirToken(listo) {
+    fetch('api/config-sitio.php', { credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { cfgToken = (d && d.token) || ''; listo(); })
+      .catch(function () { listo(); });
+  }
+
+  function publicar() {
+    var ov = guardar(true);
+    var boton = app.querySelector('[data-publicar]');
+    if (boton) { boton.disabled = true; boton.textContent = 'Publicando…'; }
+
+    var mandar = function () {
+      fetch('api/config-sitio.php', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: cfgToken, overrides: ov })
+      })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (res.ok && res.d && res.d.ok) {
+          toast('✓ Publicado. Ya lo ven todos los visitantes.');
+          marcarEstado('publicado');
+        } else {
+          toast('✗ ' + ((res.d && res.d.error) || 'No se pudo publicar.'));
+        }
+      })
+      .catch(function () {
+        toast('✗ No se pudo hablar con el servidor. ¿Seguís conectado?');
+      })
+      .then(function () {
+        if (boton) { boton.disabled = false; boton.textContent = 'Publicar'; }
+      });
+    };
+
+    if (cfgToken) mandar(); else pedirToken(mandar);
+  }
+
+  function marcarEstado(estado) {
+    var e = app.querySelector('[data-estado]');
+    if (!e) return;
+    e.textContent = estado === 'publicado' ? 'publicado' : 'vista previa';
   }
 
   function exportar() {
@@ -401,7 +463,8 @@
     });
 
     app.addEventListener('click', function (e) {
-      if (e.target.closest('[data-guardar]')) guardar();
+      if (e.target.closest('[data-publicar]')) publicar();
+      else if (e.target.closest('[data-guardar]')) { guardar(); marcarEstado('borrador'); }
       else if (e.target.closest('[data-exportar]')) exportar();
       else if (e.target.closest('[data-reset]')) restablecer();
       else if (e.target.closest('[data-add-tienda]')) {

@@ -24,7 +24,7 @@ sesion_exigir();
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="assets/css/styles.css?v=3">
+  <link rel="stylesheet" href="assets/css/styles.css?v=59">
 </head>
 <body class="admin-body">
 
@@ -35,8 +35,10 @@ sesion_exigir();
   <script>window.VITALICA_ADMIN_AUTORIZADO = true;</script>
 
   <!-- data.js trae los valores actuales (ya con overrides aplicados). admin.js edita y guarda. -->
-  <script src="assets/js/data.js?v=3"></script>
-  <script src="assets/js/pages/admin.js?v=3"></script>
+  <!-- Lo publicado, para que el panel arranque mostrando el estado real del sitio. -->
+  <script src="assets/js/data-overrides.js?v=59"></script>
+  <script src="assets/js/data.js?v=59"></script>
+  <script src="assets/js/pages/admin.js?v=59"></script>
 
 </body>
 </html>

@@ -2154,10 +2154,7 @@ const Datos = {
        productos:{ <id>:{nombre,precio,imagen,resumen} },
        tiendas:[ {nombre,ciudad,direccion} ] }
    -------------------------------------------------------------------------- */
-(function aplicarOverrides() {
-  var ov;
-  try { ov = JSON.parse(localStorage.getItem('vitalica_overrides')); }
-  catch (e) { ov = null; }
+function aplicarOverrides(ov) {
   if (!ov || typeof ov !== 'object') return;
 
 
@@ -2334,4 +2331,28 @@ const Datos = {
       }
     });
   }
+}
+
+/* LAS DOS CAPAS, EN ESTE ORDEN
+   ---------------------------------------------------------------------------
+   1. LO PUBLICADO. Lo escribe api/config-sitio.php en data-overrides.js cuando
+      alguien toca Publicar en el panel. Lo ve todo el mundo.
+
+   2. EL BORRADOR. Lo guarda el panel en el navegador de quien esta
+      configurando. Lo ve solo esa persona, en esa computadora.
+
+   El orden no es casual: el borrador va ENCIMA de lo publicado, asi quien
+   esta probando ve sus cambios sobre el estado real del sitio. Al reves, lo
+   publicado le pisaria lo que acaba de escribir y pareceria que el panel no
+   guarda.
+
+   "Restablecer" en el panel borra solo la capa 2. Nunca despublica: para eso
+   hay que publicar de nuevo. */
+(function aplicarLasDosCapas() {
+  try { aplicarOverrides(window.VITALICA_OVERRIDES); } catch (e) {}
+
+  var borrador = null;
+  try { borrador = JSON.parse(localStorage.getItem('vitalica_overrides')); }
+  catch (e) { borrador = null; }
+  try { aplicarOverrides(borrador); } catch (e) {}
 })();
