@@ -437,6 +437,52 @@ if (!empty($cfg['odoo']['activo'])) {
 }
 
 // ---------------------------------------------------------------------------
+// 4) Anotarlo en la base, para que aparezca en "Mis pedidos"
+// ---------------------------------------------------------------------------
+//    El pedido sigue guardandose en el .jsonl de arriba, que es el original y
+//    el que abre el equipo. Esto es un indice aparte: lo minimo para poder
+//    listar los pedidos de alguien sin recorrer archivos mes por mes.
+//
+//    POR QUE VA ENVUELTO EN UN try QUE SE TRAGA TODO
+//    Porque el pedido YA ESTA GUARDADO y el correo YA SALIO. Si la base
+//    estuviera caida, dejar que reviente acá significaria devolverle un error
+//    a alguien cuyo pedido si entro, y que probablemente lo vuelva a hacer.
+//    Un pedido duplicado es peor que no verlo en "Mis pedidos".
+//
+//    cliente_id sale de la sesion, NO de lo que mande el navegador. Si viniera
+//    del formulario, cualquiera podria mandar el id de otro y meterle un
+//    pedido en la cuenta.
+$enBase = false;
+try {
+    require_once __DIR__ . '/clientes.php';
+
+    $quien = clientes_actual();
+    $resumen = [];
+    foreach ($items as $it) {
+        $resumen[] = (int)($it['cantidad'] ?? 1) . ' x ' . (string)($it['nombre'] ?? '');
+    }
+
+    db_consulta(
+        'INSERT INTO pedidos (numero, cliente_id, email, total, estado, resumen, creado)
+         VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [
+            $numero,
+            $quien ? (int)$quien['id'] : null,
+            // El correo se guarda igual aunque no haya cuenta: si esa persona
+            // se registra despues con el mismo correo, sus pedidos viejos
+            // aparecen solos.
+            mb_strtolower($cliente['email']),
+            (int)round((float)($pedido['total'] ?? 0)),
+            'nuevo',
+            mb_substr(implode(' · ', $resumen), 0, 2000),
+            db_ahora(),
+        ]);
+    $enBase = true;
+} catch (Throwable $e) {
+    anotarLog($carpeta, 'No se pudo indexar ' . $numero . ' en la base: ' . $e->getMessage());
+}
+
+// ---------------------------------------------------------------------------
 // Respuesta — siempre ok. El cliente sigue a WhatsApp pase lo que pase.
 // ---------------------------------------------------------------------------
 echo json_encode([
@@ -445,4 +491,5 @@ echo json_encode([
     'guardado' => $guardado,
     'avisado'  => $avisoEquipo,
     'odoo'     => $odooOk,
+    'enBase'   => $enBase,
 ], JSON_UNESCAPED_UNICODE);

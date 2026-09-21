@@ -284,6 +284,65 @@
 
   var form       = document.getElementById('form-checkout');
   var camposDir  = form.querySelector('[data-campos-direccion]');
+
+  /* ------------------------------------------------------------------
+     SI HAY SESION, LOS DATOS YA VIENEN CARGADOS
+
+     Es la razon por la que alguien se toma el trabajo de tener cuenta:
+     no volver a escribir su nombre y su telefono cada vez. Sin esto, la
+     cuenta solo sirve para mirar pedidos viejos.
+
+     TRES DECISIONES
+
+     Se pregunta DESPUES de dibujar el formulario. Si esperara la
+     respuesta, el checkout tardaria en aparecer para todo el mundo,
+     incluida la mayoria que compra sin cuenta.
+
+     NO se pisa lo que la persona ya escribio. Entre que se dibuja el
+     formulario y que contesta el servidor pasan milisegundos, pero si
+     alguien llego escribiendo rapido y le borramos lo que puso, eso es
+     mucho peor que no prellenar nada.
+
+     Y si falla, no pasa nada: el formulario esta vacio, como siempre.
+     ------------------------------------------------------------------ */
+  (function prellenarDesdeLaCuenta() {
+    if (typeof fetch !== 'function') return;
+
+    fetch('api/cuenta.php?accion=yo', { credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        var c = d && d.ok && d.cliente;
+        if (!c) return;
+
+        /* El telefono se guarda como 595981123456. Al formulario va en el
+           formato que la persona reconoce como suyo. */
+        var tel = String(c.telefono || '').replace(/\D/g, '');
+        if (/^5959\d{8}$/.test(tel)) {
+          tel = '0' + tel.slice(3, 6) + ' ' + tel.slice(6, 9) + ' ' + tel.slice(9);
+        }
+
+        poner('nombre', c.nombre);
+        poner('telefono', tel);
+        poner('email', c.email);
+
+        var aviso = document.createElement('p');
+        aviso.className = 'checkout__quien';
+        aviso.innerHTML = 'Comprando como <strong>' + textoSeguro(c.nombre) + '</strong>. ' +
+                          '<a href="cuenta.html">No soy yo</a>';
+        form.insertBefore(aviso, form.firstChild);
+      })
+      .catch(function () { /* sin PHP o sin red: el formulario queda vacio */ });
+
+    function poner(nombre, valor) {
+      var campo = form.querySelector('[name="' + nombre + '"]');
+      if (campo && !campo.value.trim() && valor) campo.value = valor;
+    }
+    function textoSeguro(t) {
+      return String(t == null ? '' : t)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+  })();
+
   var campoRef   = form.querySelector('[data-campo-referencia]');
   var selLocal   = form.querySelector('[data-selector-local]');
   var notaPago   = form.querySelector('[data-pago-nota]');
