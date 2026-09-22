@@ -256,7 +256,7 @@
 
         '</div>' +
 
-        '<section class="cuenta__bloque cuenta__bloque--ancho">' +
+        '<section class="cuenta__bloque cuenta__bloque--ancho" id="pedidos">' +
           '<h2>Tus pedidos</h2>' +
           '<div data-pedidos><p class="texto-apagado">Buscando…</p></div>' +
         '</section>' +
@@ -284,6 +284,14 @@
     if (foco && !yo) foco.focus();
 
     dibujarGoogle();
+
+    /* El menu del encabezado tiene "Mis pedidos", que apunta a #pedidos. Como
+       esta pagina se dibuja con JavaScript, cuando el navegador busca ese
+       ancla todavia no existe: hay que llevarlo a mano despues de pintar. */
+    if (location.hash === '#pedidos') {
+      var destino = caja.querySelector('#pedidos');
+      if (destino) destino.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
 

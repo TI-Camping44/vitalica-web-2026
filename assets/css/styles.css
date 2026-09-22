@@ -4369,3 +4369,59 @@ body.con-visor { overflow: hidden; }
 }
 .checkout__quien strong { color: var(--color-tinta); }
 .checkout__quien a { color: var(--color-primario-texto); font-weight: 600; margin-left: 6px; }
+
+/* --------------------------------------------------------------------------
+   EL MENÚ DE LA CUENTA en el encabezado
+   Aparece solo con sesión abierta; main.js lo engancha al icono.
+   -------------------------------------------------------------------------- */
+.cuenta-menu { position: relative; display: inline-flex; }
+
+.cuenta-menu__panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 120;
+  min-width: 210px;
+  padding: 8px;
+  border: 1px solid var(--color-linea);
+  border-radius: var(--radio);
+  background: var(--color-fondo);
+  box-shadow: 0 8px 28px -10px rgba(16, 25, 45, .28);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* El correo, para saber con qué cuenta estás. En una computadora compartida
+   es la diferencia entre mandar el pedido a tu casa o a la de otro. */
+.cuenta-menu__quien {
+  margin: 0;
+  padding: 6px 10px 10px;
+  border-bottom: 1px solid var(--color-linea);
+  color: var(--color-tinta-suave);
+  font-size: var(--fs-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cuenta-menu__panel a,
+.cuenta-menu__panel button {
+  display: block;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: var(--radio-sm, 8px);
+  background: transparent;
+  color: var(--color-tinta);
+  font: inherit;
+  font-size: var(--fs-sm);
+  text-align: left;
+  cursor: pointer;
+}
+.cuenta-menu__panel a:hover,
+.cuenta-menu__panel button:hover { background: var(--color-fondo-suave); }
+.cuenta-menu__panel button { color: var(--color-tinta-suave); }
+
+/* Al abrirse, el icono queda marcado: si no, no se ve de dónde salió el
+   panel. */
+.cuenta-menu.es-abierto .icono-accion--cuenta { color: var(--color-primario); }

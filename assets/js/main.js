@@ -72,8 +72,75 @@
         /* Sin telefono no se puede cerrar un pedido, asi que se marca para
            que la pagina de cuenta lo pida apenas entre. */
         if (!c.completo) enlace.classList.add('icono-accion--incompleto');
+
+        prenderMenuDeCuenta(enlace, c);
       })
       .catch(function () { /* sin PHP o sin red: queda el icono y basta */ });
+  }
+
+
+  /* ---------- 1-quater) El menu de la cuenta ----------
+     Antes el icono era solo un enlace: se tocaba y te sacaba de la pagina
+     donde estabas. Si estabas a mitad del checkout, perdias el hilo para
+     hacer algo que probablemente era mirar tu nombre o salir.
+
+     Ahora, CON SESION, abre un menu ahi mismo. Sin sesion sigue siendo un
+     enlace directo: no hay nada que desplegar y un menu con una sola opcion
+     es un paso de mas.
+
+     El enlace sigue siendo un <a href>: si el JavaScript falla, lleva a
+     cuenta.html igual. Se pierde el menu, no el acceso. */
+  function prenderMenuDeCuenta(enlace, cliente) {
+    var caja  = enlace.closest('[data-cuenta-caja]');
+    var panel = caja && caja.querySelector('[data-cuenta-panel]');
+    if (!panel) return;
+
+    var quien = panel.querySelector('[data-cuenta-quien]');
+    if (quien) quien.textContent = cliente.email || cliente.nombre || '';
+
+    enlace.setAttribute('aria-haspopup', 'true');
+    enlace.setAttribute('aria-expanded', 'false');
+
+    function abrir(si) {
+      panel.hidden = !si;
+      enlace.setAttribute('aria-expanded', si ? 'true' : 'false');
+      caja.classList.toggle('es-abierto', si);
+    }
+
+    enlace.addEventListener('click', function (e) {
+      e.preventDefault();
+      abrir(panel.hidden);
+    });
+
+    /* Cerrar al tocar afuera. Va en el documento y no en el panel porque el
+       click que importa es el que NO cae adentro. */
+    document.addEventListener('click', function (e) {
+      if (!caja.contains(e.target)) abrir(false);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') abrir(false);
+    });
+
+    var salir = panel.querySelector('[data-cuenta-salir]');
+    if (salir) {
+      salir.addEventListener('click', function () {
+        salir.disabled = true;
+        salir.textContent = 'Saliendo…';
+        fetch('api/cuenta.php', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accion: 'salir' })
+        })
+        /* Se recarga en vez de solo esconder el nombre: la pagina puede tener
+           datos de la cuenta en otros lados -el checkout viene con el nombre
+           cargado- y dejarlos ahi despues de cerrar sesion es peor que el
+           parpadeo de recargar. */
+        .then(function () { location.reload(); })
+        .catch(function () { location.href = 'cuenta.html'; });
+      });
+    }
   }
 
 

@@ -378,11 +378,24 @@ const Vitalica = {
                pagina, que sabe resolverse sola. Un boton que aparece recien
                cuando responde un pedido HTTP es un boton que a veces no
                aparece. */
-            '<a class="icono-accion icono-accion--cuenta" href="cuenta.html" ' +
-               'data-cuenta-enlace aria-label="Mi cuenta" title="Mi cuenta">' +
-              this.iconos.cuenta +
-              '<span class="icono-accion__nombre" data-cuenta-nombre hidden></span>' +
-            '</a>' +
+            /* Cuenta. Es un ENLACE de verdad, no un boton, y eso es a
+               proposito: si el JavaScript fallara, sigue llevando a
+               cuenta.html, que sabe resolverse sola. Con sesion abierta,
+               main.js le engancha un menu y le cambia el destino al click.
+               Sin JavaScript se pierde el menu, no el acceso. */
+            '<div class="cuenta-menu" data-cuenta-caja>' +
+              '<a class="icono-accion icono-accion--cuenta" href="cuenta.html" ' +
+                 'data-cuenta-enlace aria-label="Mi cuenta" title="Mi cuenta">' +
+                this.iconos.cuenta +
+                '<span class="icono-accion__nombre" data-cuenta-nombre hidden></span>' +
+              '</a>' +
+              '<div class="cuenta-menu__panel" data-cuenta-panel hidden>' +
+                '<p class="cuenta-menu__quien" data-cuenta-quien></p>' +
+                '<a href="cuenta.html">Mi cuenta</a>' +
+                '<a href="cuenta.html#pedidos">Mis pedidos</a>' +
+                '<button type="button" data-cuenta-salir>Cerrar sesión</button>' +
+              '</div>' +
+            '</div>' +
             '<button class="icono-accion" type="button" data-abrir-busqueda aria-label="Buscar productos">' + this.iconos.buscar + '</button>' +
             '<button class="icono-accion boton-carrito" type="button" data-abrir-carrito aria-label="Ver carrito">' +
               this.iconos.carrito +
