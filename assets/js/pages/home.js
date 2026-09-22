@@ -406,6 +406,21 @@
              '</article>';
     }).join('');
 
+    /* VIDEO VERTICAL DE LA PLANTA
+       ------------------------------------------------------------------
+       Va aca y no en el hero por una razon de formato: la pieza que mando
+       Olimp es 1080x1920, hecha para Instagram. En el hero, que es una
+       banda ancha, se perderia el 72% del cuadro y quedaria una franja sin
+       sentido. Aca se muestra completa, con la forma que le corresponde.
+
+       Y ademas es donde corresponde por contenido: el video es de la planta
+       de Olimp y esta seccion habla justamente de como fabrican.
+
+       Mismas reglas que el hero: no se descarga hasta que se ve, no arranca
+       con "reducir movimiento" ni con datos limitados, y la imagen de
+       respaldo es el poster. */
+    var video = (ci.video || '').trim();
+
     contCiencia.innerHTML =
       '<div class="contenedor">' +
         '<div class="encabezado-seccion centrado">' +
@@ -413,8 +428,44 @@
           '<h2>' + ci.titulo + '</h2>' +
           '<p class="ciencia__intro">' + ci.texto + '</p>' +
         '</div>' +
-        '<div class="pilares-grid">' + pilares + '</div>' +
+        (video
+          ? '<div class="ciencia-con-video">' +
+              '<figure class="ciencia-video">' +
+                '<video data-ciencia-video muted playsinline loop preload="none" ' +
+                       'poster="' + (ci.videoPoster || '') + '" aria-hidden="true" tabindex="-1">' +
+                  '<source src="' + video + '" type="video/mp4">' +
+                '</video>' +
+              '</figure>' +
+              '<div class="pilares-grid pilares-grid--angosta">' + pilares + '</div>' +
+            '</div>'
+          : '<div class="pilares-grid">' + pilares + '</div>') +
       '</div>';
+
+    /* Se enciende cuando entra en pantalla, no antes. Un video que se
+       descarga al abrir la pagina le cuesta megabytes a todo el mundo,
+       incluida la mayoria que nunca baja hasta aca. */
+    var vid = contCiencia.querySelector('[data-ciencia-video]');
+    if (vid) {
+      var permitido = true;
+      try { permitido = !window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+      var con = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      if (con && (con.saveData || /(^|-)(2g|3g)$/.test(String(con.effectiveType || '')))) permitido = false;
+
+      if (permitido && 'IntersectionObserver' in window) {
+        var ojo = new IntersectionObserver(function (entradas) {
+          entradas.forEach(function (e) {
+            if (e.isIntersecting) {
+              if (!vid.dataset.arrancado) { vid.dataset.arrancado = '1'; vid.load(); }
+              var pr = vid.play();
+              if (pr && pr.catch) pr.catch(function () {});
+            } else if (!vid.paused) {
+              vid.pause();
+            }
+          });
+        }, { threshold: 0.35 });
+        ojo.observe(vid);
+      }
+    }
   }
 
   /* ---------- ALIADOS COMERCIALES ----------

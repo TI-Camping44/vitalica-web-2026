@@ -405,6 +405,33 @@ const VITALICA_CONFIG = {
      Poland, and one out of thirty in the world". O sea treinta, no nueve, y
      primero, no único. */
   ciencia: {
+    /* VIDEO VERTICAL DE LA PLANTA.
+       ---------------------------------------------------------------------
+       La pieza que mando Olimp es 1080x1920, hecha para Instagram. En el
+       hero -una banda ancha- se perderia el 72% del cuadro: se veria una
+       nuca y un brazo. Aca se muestra entera, con la forma que le
+       corresponde, y al lado de los tres pilares que hablan justamente de
+       como fabrican.
+
+       EL ARCHIVO NO VIAJA EN LOS PAQUETES. Se sube una sola vez por cPanel a
+       public_html/assets/video/.
+
+       QUE ARCHIVO PONER
+         .mp4 con H.264  ·  menos de 5 MB  ·  vertical 9:16  ·  sin sonido
+
+       El de 98 MB que mandaron NO sirve: es un master de edicion. Se achica
+       con HandBrake en dos minutos (preset Fast 720p30, calidad RF 28, sin
+       pista de audio).
+
+       'videoPoster' es la imagen que se ve mientras carga, si el video falla,
+       si el visitante pidio reducir movimiento o si esta con datos
+       limitados. Vacio = no se muestra nada hasta que cargue, que se ve peor.
+
+       Vacio el video = la seccion queda como estaba, con los tres pilares
+       a lo ancho. */
+    video: 'assets/video/osn-35-anos.mp4',
+    videoPoster: 'assets/img/olimp-laboratorio-web.jpg',
+
     eyebrow: 'Respaldo',
     titulo: 'Ciencia real. Estándares farmacéuticos europeos.',
     texto: 'Laboratorios Olimp es una empresa farmacéutica polaca con más de 35 años de experiencia produciendo suplementos dietéticos y nutrición deportiva de alta calidad. Sus productos cumplen los estándares de calidad europeos más estrictos.',
@@ -564,7 +591,7 @@ const VITALICA_HERO = [
          sin sonido      (igual se reproduce en silencio)
 
        Vacio = no hay video y la diapositiva funciona como siempre. */
-    video: 'assets/video/osn-35-anos.mp4',
+    video: '',
     cta1: { texto: 'Conocé Olimp', href: 'sobre.html' },
     cta2: { texto: 'Ver productos', href: 'productos.html' }
   }

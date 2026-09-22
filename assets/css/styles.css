@@ -4439,3 +4439,51 @@ body.con-visor { overflow: hidden; }
      ver la foto de abajo. */
   background: transparent;
 }
+
+/* --------------------------------------------------------------------------
+   CIENCIA REAL con el video vertical al costado
+   --------------------------------------------------------------------------
+   El video es 9:16 porque viene de Instagram. En vez de recortarlo para que
+   entre en un espacio ancho, se le da el espacio que le corresponde y los
+   pilares se acomodan al lado.
+
+   Debajo de 900px el video pasa arriba y los pilares abajo: en un teléfono
+   dos columnas dejarían el video del ancho de un dedo.
+   -------------------------------------------------------------------------- */
+.ciencia-con-video {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  align-items: center;
+}
+@media (min-width: 900px) {
+  .ciencia-con-video {
+    grid-template-columns: minmax(240px, 300px) 1fr;
+    gap: var(--space-7);
+  }
+}
+
+.ciencia-video {
+  margin: 0;
+  justify-self: center;
+  width: 100%;
+  max-width: 300px;
+}
+.ciencia-video video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  object-fit: cover;
+  border-radius: var(--radio-lg);
+  background: #0A0A0B;
+  /* El mismo peso visual que las tarjetas de la sección, para que se lea
+     como parte del conjunto y no como algo pegado encima. */
+  box-shadow: 0 10px 40px -16px rgba(0, 0, 0, .55);
+}
+
+/* Con el video al lado, los pilares tienen menos ancho: pasan a una columna
+   y se leen como una lista, en vez de apretarse en tres. */
+.pilares-grid--angosta { grid-template-columns: 1fr; }
+@media (min-width: 1180px) {
+  .pilares-grid--angosta { grid-template-columns: repeat(3, 1fr); }
+}
