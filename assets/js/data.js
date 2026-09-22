@@ -350,21 +350,23 @@ const VITALICA_CONFIG = {
       { nombre: 'Astrid Cáceres',          rol: 'embajador', foto: '', disciplina: '', instagram: 'astridcaceres_' },
       { nombre: 'Alexander De los Santos', rol: 'embajador', foto: '', disciplina: '', instagram: 'entrenador_alexander_dls_track' },
 
-      /* ESTAS CUATRO TIENEN FOTO EN EL DRIVE y todavia no en el proyecto.
-         Los archivos van a assets/img/embajadores/ con estos nombres exactos:
+      /* LAS CUATRO QUE TIENEN FOTO.
+         Las originales son verticales, de cuerpo entero o tres cuartos, y el
+         sitio usa avatares cuadrados de 700x700. Se recortaron centrando la
+         cara al 42% de altura -un poco arriba del centro, que es como se ve
+         bien un retrato dentro de un circulo-, con las coordenadas puestas a
+         mano y revisadas mirando el resultado.
 
-             gabriela-azcona.jpg    mara-roman.jpg
-             sol-figueredo.jpg      alana-dacak.jpg
-
-         Apenas esten, se cambia el '' por la ruta y aparecen solas. Se dejan
-         vacias mientras tanto porque una ruta a un archivo que no existe es
-         un cuadrito roto en la pagina; con '' se dibujan las iniciales, que
-         es feo pero prolijo. El armador del paquete ademas se niega a
-         construir si alguna ruta apunta a un archivo que falta. */
-      { nombre: 'Gabriela Azcona',  rol: 'nutricionista', foto: '', disciplina: 'Luque',                instagram: 'nutrigabi_azcona' },
-      { nombre: 'Mara Román',       rol: 'nutricionista', foto: '', disciplina: 'Mariano Roque Alonso', instagram: 'mknutricion_' },
-      { nombre: 'Sol Figueredo',    rol: 'nutricionista', foto: '', disciplina: 'Asunción',             instagram: 'sfnutricion_' },
-      { nombre: 'Alana Dacak',      rol: 'nutricionista', foto: '', disciplina: 'Asunción',             instagram: 'alanadacak' },
+         El primer intento dejo las cuatro caras cerca del borde de abajo:
+         en un avatar redondo se habrian cortado. Se midio donde caia la cara
+         dentro de cada recorte, se despejo donde estaba en la foto original y
+         se volvio a encuadrar. Vale la pena saberlo si algun dia entran
+         fotos nuevas: el recorte al medio no sirve para retratos de cuerpo
+         entero. */
+      { nombre: 'Gabriela Azcona',  rol: 'nutricionista', foto: 'assets/img/embajadores/gabriela-azcona.jpg', disciplina: 'Luque',                instagram: 'nutrigabi_azcona' },
+      { nombre: 'Mara Román',       rol: 'nutricionista', foto: 'assets/img/embajadores/mara-roman.jpg',      disciplina: 'Mariano Roque Alonso', instagram: 'mknutricion_' },
+      { nombre: 'Sol Figueredo',    rol: 'nutricionista', foto: 'assets/img/embajadores/sol-figueredo.jpg',   disciplina: 'Asunción',             instagram: 'sfnutricion_' },
+      { nombre: 'Alana Dacak',      rol: 'nutricionista', foto: 'assets/img/embajadores/alana-dacak.jpg',     disciplina: 'Asunción',             instagram: 'alanadacak' },
 
       { nombre: 'Osvaldo Delvalle', rol: 'nutricionista', foto: '', disciplina: 'Lambaré',  instagram: 'osdelvalle.nutri' },
       { nombre: 'Fernanda Picco',   rol: 'nutricionista', foto: '', disciplina: 'Lambaré',  instagram: 'nutricionpiccopy' },
