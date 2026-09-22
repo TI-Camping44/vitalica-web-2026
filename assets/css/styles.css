@@ -4425,3 +4425,17 @@ body.con-visor { overflow: hidden; }
 /* Al abrirse, el icono queda marcado: si no, no se ve de dónde salió el
    panel. */
 .cuenta-menu.es-abierto .icono-accion--cuenta { color: var(--color-primario); }
+
+/* --------------------------------------------------------------------------
+   VIDEO DE FONDO EN EL HERO
+   Se apoya sobre .hero__cover, que ya sabe cubrir el rectángulo. El video va
+   encima de la foto: la foto queda abajo como respaldo permanente, así que si
+   el video no carga no hay nada que arreglar.
+   -------------------------------------------------------------------------- */
+.hero__video {
+  z-index: 1;
+  /* Un video no se puede "romper" visiblemente como una imagen, pero si el
+     archivo falla el navegador deja un rectángulo negro. Transparente deja
+     ver la foto de abajo. */
+  background: transparent;
+}

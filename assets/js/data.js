@@ -545,6 +545,26 @@ const VITALICA_HERO = [
     titulo: '+35 años de<br>ciencia deportiva.',
     texto: 'Olimp fabrica en Polonia con estándares europeos. Productos originales, con respaldo y resultados.',
     imagen: 'assets/img/hero/portada-3.jpg',
+
+    /* VIDEO DE FONDO de esta diapositiva.
+       ---------------------------------------------------------------------
+       'imagen' sigue siendo obligatoria: es el poster del video. Se ve
+       mientras carga, si el video falla, si el visitante pidio reducir
+       movimiento o si esta con datos limitados. La portada nunca queda
+       vacia esperando megabytes.
+
+       EL ARCHIVO NO VIAJA EN LOS PAQUETES. Se sube una sola vez por cPanel
+       a public_html/assets/video/. Meter varios MB de video en cada
+       despliegue seria absurdo: no cambia nunca y haria lento cada envio.
+
+       QUE ARCHIVO PONER
+         .mp4 con H.264, que es el unico que reproducen todos
+         menos de 5 MB   (mas que eso se nota en el celular)
+         horizontal 16:9 (el hero es una banda ancha)
+         sin sonido      (igual se reproduce en silencio)
+
+       Vacio = no hay video y la diapositiva funciona como siempre. */
+    video: 'assets/video/osn-35-anos.mp4',
     cta1: { texto: 'Conocé Olimp', href: 'sobre.html' },
     cta2: { texto: 'Ver productos', href: 'productos.html' }
   }

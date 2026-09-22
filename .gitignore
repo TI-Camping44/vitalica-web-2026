@@ -107,3 +107,8 @@ vitalica-google.zip
 vitalica-checkout.zip
 vitalica-menu-cuenta.zip
 vitalica-nutricionistas.zip
+
+# Los videos se suben una sola vez por cPanel: no van al repositorio.
+assets/video/*.mp4
+assets/video/*.webm
+vitalica-video-hero.zip

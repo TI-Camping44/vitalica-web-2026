@@ -144,6 +144,12 @@ foreach ($f in $prohibidos) {
   if (Test-Path $r) { Remove-Item $r -Force }
 }
 
+# assets/video/ NO viaja. Los videos pesan megabytes, no cambian nunca y se
+# suben una sola vez por cPanel. Meterlos en cada despliegue haria lento cada
+# envio para no cambiar nada.
+$vid = Join-Path $destino 'assets\video'
+if (Test-Path $vid) { Remove-Item $vid -Recurse -Force }
+
 # assets/js/data-overrides.js lo escribe el servidor cuando marketing publica
 # desde el panel de configuracion. Si un despliegue lo pisara, se perderia todo
 # lo que publicaron y nadie se enteraria: el sitio simplemente volveria a los

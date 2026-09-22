@@ -33,9 +33,35 @@
                   pero no para todas: en la portada del gimnasio la cara está
                   al 63% y con el 78% el recorte caía en el hombro.
                   Cada slide puede pisarlo desde data.js sin tocar el CSS. */
+               /* VIDEO DE FONDO, si el slide trae uno.
+                  ------------------------------------------------------------
+                  La FOTO sigue estando siempre, como poster del video. No es
+                  un detalle: mientras el video carga se ve la foto, si el
+                  video falla se ve la foto, y si el visitante pidio "reducir
+                  movimiento" tambien. La portada nunca queda en blanco
+                  esperando megabytes.
+
+                  muted y playsinline no son opcionales: sin los dos, ningun
+                  navegador de celular arranca un video solo. Y con sonido
+                  seria peor que no ponerlo.
+
+                  preload="none": el video NO se descarga hasta que hace
+                  falta. Lo enciende el carrusel cuando ese slide esta a la
+                  vista. Sin esto, todos los visitantes se bajan el video
+                  aunque nunca lleguen a verlo. */
+               (esBanner && s.video
+                 ? '<video class="hero__cover hero__video" data-hero-video ' +
+                       'muted playsinline loop preload="none" ' +
+                       'poster="' + s.imagen + '" ' +
+                       (s.foco ? 'style="object-position:' + s.foco + '" ' : '') +
+                       'aria-hidden="true" tabindex="-1">' +
+                     '<source src="' + s.video + '" type="video/mp4">' +
+                   '</video>'
+                 : '') +
                (esBanner
                  ? '<img class="hero__cover" src="' + s.imagen + '" alt=""' +
                    (s.foco ? ' style="object-position:' + s.foco + '"' : '') +
+                   (s.video ? ' data-tapado-por-video' : '') +
                    respaldo(s) + '>'
                  : '') +
                '<div class="contenedor hero__inner">' +
@@ -85,11 +111,81 @@
     var actual = 0;
     var timer;
 
+    /* ------------------------------------------------------------------
+       LOS VIDEOS DEL HERO
+
+       Solo toca el del slide que se esta viendo. Los demas quedan quietos y
+       sin descargar: un video detenido pero descargado ya le costo los
+       megabytes al visitante.
+
+       NO SE REPRODUCE NADA si:
+
+         · El sistema pide "reducir movimiento". Hay gente a la que el
+           movimiento en pantalla le da mareo, y el sistema operativo ya
+           tiene una casilla donde lo dijo.
+         · El navegador avisa que la conexion es cara o lenta (saveData,
+           2g, 3g). Bajarle 4 MB a alguien que paga por megabyte para
+           adornar una portada no esta bien.
+
+       En cualquiera de esos casos queda la foto, que es el poster del
+       video, y nadie nota que falta nada.
+       ------------------------------------------------------------------ */
+    var videos = hero.querySelectorAll('[data-hero-video]');
+
+    function videosPermitidos() {
+      try {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+      } catch (e) {}
+      var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      if (c) {
+        if (c.saveData) return false;
+        if (/(^|-)(2g|3g)$/.test(String(c.effectiveType || ''))) return false;
+      }
+      return true;
+    }
+
+    var conVideo = videosPermitidos();
+
+    function acomodarVideos() {
+      if (!conVideo || !videos.length) return;
+
+      for (var i = 0; i < videos.length; i++) {
+        var v = videos[i];
+        var suyo = v.closest('.hero__slide');
+        var esteEsElQueSeVe = suyo && suyo === hero.querySelectorAll('.hero__slide')[actual];
+
+        if (esteEsElQueSeVe) {
+          /* preload="none" en el HTML significa que ni el primer byte se
+             pidio. load() es lo que arranca la descarga, y recien acá. */
+          if (!v.dataset.arrancado) { v.dataset.arrancado = '1'; v.load(); }
+          var promesa = v.play();
+          /* Si el navegador se niega igual -pasa en algunos con ahorro de
+             bateria- no se hace nada: queda el poster. */
+          if (promesa && promesa.catch) promesa.catch(function () {});
+        } else if (!v.paused) {
+          v.pause();
+        }
+      }
+    }
+
     function ir(i) {
       actual = (i + total) % total;
       track.style.transform = 'translateX(-' + (actual * 100) + '%)';
       dots.forEach(function (d, di) { d.classList.toggle('activo', di === actual); });
+      acomodarVideos();
     }
+
+    /* Con la pestaña en segundo plano no tiene sentido seguir decodificando
+       video: gasta bateria para nadie. */
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        for (var i = 0; i < videos.length; i++) videos[i].pause();
+      } else {
+        acomodarVideos();
+      }
+    });
+
+    acomodarVideos();
     function reiniciarAutoplay() {
       clearInterval(timer);
       timer = setInterval(function () { ir(actual + 1); }, 6000);
