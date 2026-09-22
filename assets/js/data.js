@@ -309,22 +309,69 @@ const VITALICA_CONFIG = {
        nutricionistas del otro. Eso lo decide el campo `rol`, que vale
        'embajador' o 'nutricionista'.
 
-       AHORA MISMO ESTÁN LOS CINCO COMO EMBAJADORES, y no es una decisión:
-       es que la planilla de contratos no trae la profesión de nadie. Tiene
-       nombre, apellido, cédula, teléfono, ciudad, fechas, productos
-       entregados e Instagram — ninguna columna dice quién es nutricionista.
+       LAS NUTRICIONISTAS SE CARGARON EL 22/9/2026, de la planilla que mandó
+       Martín Benítez ("Fotos y datos de nutricionistas para la web").
 
-       Mientras no haya nadie en el otro grupo, la sección se dibuja como
-       siempre, en una sola grilla: dos columnas con una vacía se ve como un
-       error de maquetado, no como "todavía no cargamos a los nutricionistas".
-       En cuanto una persona tenga rol 'nutricionista', las dos columnas
-       aparecen solas. */
+       QUÉ SE PUBLICA Y QUÉ NO
+       La planilla trae nombre, apellido, registro profesional, CÉDULA,
+       TELÉFONO, ciudad, fechas de contrato, vouchers entregados e Instagram.
+       Acá entran únicamente NOMBRE, CIUDAD e INSTAGRAM.
+
+       La cédula y el teléfono no entran a este archivo ni a ningún otro del
+       proyecto, y no es una precaución de más: data.js se descarga entero
+       con solo abrir el sitio. Publicar el documento de identidad de diez
+       personas que firmaron un contrato con Vitalica sería un problema para
+       ellas y para la empresa, y no habría forma de retirarlo una vez que
+       Google lo indexe.
+
+       El registro profesional tampoco está, aunque es un dato público que
+       los propios nutricionistas muestran. Se dejó afuera porque nadie lo
+       pidió; si marketing lo quiere, se agrega y suma credibilidad.
+
+       LA CIUDAD VA EN 'disciplina'
+       El campo se llama así porque nació para los atletas. Para un
+       nutricionista, dónde atiende es el dato equivalente: es lo que busca
+       quien mira la lista. No se le cambió el nombre al campo para no tocar
+       el código que lo dibuja.
+
+       DE LAS DIEZ, CUATRO TIENEN FOTO. Las otras seis muestran sus iniciales
+       hasta que lleguen las fotos que faltan; Martín avisó que por ahora solo
+       tiene cuatro profesionales.
+
+       LOS DE LA PLANILLA QUE NO ESTÁN ACÁ
+       Diego Kemper, Andrea Labiste, Martín Benítez, Eduardo Kemper y Sergio
+       Divano figuran en la misma hoja porque también repartieron vouchers,
+       pero son gente de la casa, no nutricionistas. No van en una sección
+       que le dice al visitante quién recomienda la marca desde afuera. */
     gente: [
       { nombre: 'Ricardo Martínez',        rol: 'embajador', foto: '', disciplina: '', instagram: 'rmcoach15' },
       { nombre: 'Isabella Olcese',         rol: 'embajador', foto: '', disciplina: '', instagram: 'isaolcese' },
       { nombre: 'Marcos Ramírez',          rol: 'embajador', foto: '', disciplina: '', instagram: 'marcosreinaldi' },
       { nombre: 'Astrid Cáceres',          rol: 'embajador', foto: '', disciplina: '', instagram: 'astridcaceres_' },
-      { nombre: 'Alexander De los Santos', rol: 'embajador', foto: '', disciplina: '', instagram: 'entrenador_alexander_dls_track' }
+      { nombre: 'Alexander De los Santos', rol: 'embajador', foto: '', disciplina: '', instagram: 'entrenador_alexander_dls_track' },
+
+      /* ESTAS CUATRO TIENEN FOTO EN EL DRIVE y todavia no en el proyecto.
+         Los archivos van a assets/img/embajadores/ con estos nombres exactos:
+
+             gabriela-azcona.jpg    mara-roman.jpg
+             sol-figueredo.jpg      alana-dacak.jpg
+
+         Apenas esten, se cambia el '' por la ruta y aparecen solas. Se dejan
+         vacias mientras tanto porque una ruta a un archivo que no existe es
+         un cuadrito roto en la pagina; con '' se dibujan las iniciales, que
+         es feo pero prolijo. El armador del paquete ademas se niega a
+         construir si alguna ruta apunta a un archivo que falta. */
+      { nombre: 'Gabriela Azcona',  rol: 'nutricionista', foto: '', disciplina: 'Luque',                instagram: 'nutrigabi_azcona' },
+      { nombre: 'Mara Román',       rol: 'nutricionista', foto: '', disciplina: 'Mariano Roque Alonso', instagram: 'mknutricion_' },
+      { nombre: 'Sol Figueredo',    rol: 'nutricionista', foto: '', disciplina: 'Asunción',             instagram: 'sfnutricion_' },
+      { nombre: 'Alana Dacak',      rol: 'nutricionista', foto: '', disciplina: 'Asunción',             instagram: 'alanadacak' },
+
+      { nombre: 'Osvaldo Delvalle', rol: 'nutricionista', foto: '', disciplina: 'Lambaré',  instagram: 'osdelvalle.nutri' },
+      { nombre: 'Fernanda Picco',   rol: 'nutricionista', foto: '', disciplina: 'Lambaré',  instagram: 'nutricionpiccopy' },
+      { nombre: 'Angie Ozorio',     rol: 'nutricionista', foto: '', disciplina: 'Asunción', instagram: 'angieozoriob' },
+      { nombre: 'Tamara Britez',    rol: 'nutricionista', foto: '', disciplina: 'Ñemby',    instagram: 'nutritaami' },
+      { nombre: 'Diana Espínola',   rol: 'nutricionista', foto: '', disciplina: '',         instagram: 'nutridires' },
+      { nombre: 'Jessica Sholan',   rol: 'nutricionista', foto: '', disciplina: 'Luque',    instagram: '' }
     ],
 
     /* Títulos de cada columna. Se editan acá y no en el JS. */
