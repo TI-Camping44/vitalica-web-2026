@@ -300,8 +300,8 @@ const VITALICA_CONFIG = {
      Las fotos siguen en assets/img/embajadores/. */
   embajadores: {
     eyebrow: 'Equipo Vitalica',
-    titulo: 'Nos eligen los que compiten',
-    texto: 'Atletas y creadores paraguayos que entrenan con la línea de Olimp que traemos al país.',
+    titulo: 'Quiénes nos eligen',
+    texto: 'Atletas y nutricionistas que eligen Olimp Sport.',
 
     /* LOS DOS GRUPOS
        ----------------------------------------------------------------------
@@ -378,7 +378,7 @@ const VITALICA_CONFIG = {
 
     /* Títulos de cada columna. Se editan acá y no en el JS. */
     columnas: {
-      embajador:     { titulo: 'Embajadores',    texto: 'Atletas y creadores que entrenan con la línea que traemos al país.' },
+      embajador:     { titulo: 'Atletas',        texto: 'Atletas y creadores que entrenan con la línea que traemos al país.' },
       nutricionista: {
         titulo: 'Nutricionistas',
         texto: 'Profesionales que acompañan y recomiendan la línea de Olimp.',

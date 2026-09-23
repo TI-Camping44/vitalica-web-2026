@@ -1318,12 +1318,30 @@
 [data-tema="2026"] .hero__cover,
 [data-tema="2026"] .card-articulo__foto,
 [data-tema="2026"] .sobre-historia__media img,
-[data-tema="2026"] .tira-marca img,
-/* :not(--falta) porque el avatar de iniciales NO es una foto editorial: es
-   una placa de color de marca. Sin esta excepción el grayscale le apagaba el
-   naranja y el azul y volvían a verse como cinco cuadrados grises. */
-[data-tema="2026"] .embajador__foto:not(.embajador__foto--falta) {
+[data-tema="2026"] .tira-marca img {
   filter: grayscale(1) contrast(1.05) brightness(0.92);
+}
+
+/* CORRECCION DEL 23/9/2026  ·  LAS CARAS VUELVEN A COLOR
+   --------------------------------------------------------------------------
+   Pedido de Martin en el documento de ajustes: "las fotos deben ser a color,
+   asi no parecemos tan dark".
+
+   Tiene razon, y es el mismo argumento que el de los mosaicos pero mas
+   fuerte: una cara en blanco y negro se lee como archivo, como alguien que
+   ya no esta. Estas son personas que trabajan hoy con la marca, y la seccion
+   existe justamente para que se las reconozca.
+
+   Queda un toque de saturacion y contraste nada mas, para que las fotos
+   -que vienen de camaras y luces distintas- sigan leyendose como una fila
+   pareja y no como once postales sueltas.
+
+   El :not(--falta) se mantiene: el avatar de iniciales no es una foto, es
+   una placa de color de marca, y con el filtro de gris volvia a verse como
+   un cuadrado apagado.
+   -------------------------------------------------------------------------- */
+[data-tema="2026"] .embajador__foto:not(.embajador__foto--falta) {
+  filter: saturate(1.04) contrast(1.03);
 }
 
 /* CORRECCIÓN DEL 17/9/2026  ·  LOS MOSAICOS VUELVEN A TENER COLOR
