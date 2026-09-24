@@ -328,11 +328,14 @@ const VITALICA_CONFIG = {
        los propios nutricionistas muestran. Se dejó afuera porque nadie lo
        pidió; si marketing lo quiere, se agrega y suma credibilidad.
 
-       LA CIUDAD VA EN 'disciplina'
-       El campo se llama así porque nació para los atletas. Para un
-       nutricionista, dónde atiende es el dato equivalente: es lo que busca
-       quien mira la lista. No se le cambió el nombre al campo para no tocar
-       el código que lo dibuja.
+       LA CIUDAD SE SACO EL 24/9/2026
+       El campo 'disciplina' -que se llama asi porque nacio para los atletas-
+       llevaba la ciudad donde atiende cada nutricionista. Marketing pidio
+       quitarla y queda vacia.
+
+       El campo se deja en su lugar, vacio, y no se borra: el codigo que
+       dibuja la lista ya sabe no mostrar nada cuando esta vacio, y si un dia
+       la ciudad vuelve, vuelve escribiendola y nada mas.
 
        DE LAS DIEZ, CUATRO TIENEN FOTO. Las otras seis muestran sus iniciales
        hasta que lleguen las fotos que faltan; Martín avisó que por ahora solo
@@ -363,17 +366,17 @@ const VITALICA_CONFIG = {
          se volvio a encuadrar. Vale la pena saberlo si algun dia entran
          fotos nuevas: el recorte al medio no sirve para retratos de cuerpo
          entero. */
-      { nombre: 'Gabriela Azcona',  rol: 'nutricionista', foto: 'assets/img/embajadores/gabriela-azcona.jpg', disciplina: 'Luque',                instagram: 'nutrigabi_azcona' },
-      { nombre: 'Mara Román',       rol: 'nutricionista', foto: 'assets/img/embajadores/mara-roman.jpg',      disciplina: 'Mariano Roque Alonso', instagram: 'mknutricion_' },
-      { nombre: 'Sol Figueredo',    rol: 'nutricionista', foto: 'assets/img/embajadores/sol-figueredo.jpg',   disciplina: 'Asunción',             instagram: 'sfnutricion_' },
-      { nombre: 'Alana Dacak',      rol: 'nutricionista', foto: 'assets/img/embajadores/alana-dacak.jpg',     disciplina: 'Asunción',             instagram: 'alanadacak' },
+      { nombre: 'Gabriela Azcona',  rol: 'nutricionista', foto: 'assets/img/embajadores/gabriela-azcona.jpg', disciplina: '', instagram: 'nutrigabi_azcona' },
+      { nombre: 'Mara Román',       rol: 'nutricionista', foto: 'assets/img/embajadores/mara-roman.jpg',      disciplina: '', instagram: 'mknutricion_' },
+      { nombre: 'Sol Figueredo',    rol: 'nutricionista', foto: 'assets/img/embajadores/sol-figueredo.jpg',   disciplina: '', instagram: 'sfnutricion_' },
+      { nombre: 'Alana Dacak',      rol: 'nutricionista', foto: 'assets/img/embajadores/alana-dacak.jpg',     disciplina: '', instagram: 'alanadacak' },
 
-      { nombre: 'Osvaldo Delvalle', rol: 'nutricionista', foto: '', disciplina: 'Lambaré',  instagram: 'osdelvalle.nutri' },
-      { nombre: 'Fernanda Picco',   rol: 'nutricionista', foto: '', disciplina: 'Lambaré',  instagram: 'nutricionpiccopy' },
-      { nombre: 'Angie Ozorio',     rol: 'nutricionista', foto: '', disciplina: 'Asunción', instagram: 'angieozoriob' },
-      { nombre: 'Tamara Britez',    rol: 'nutricionista', foto: '', disciplina: 'Ñemby',    instagram: 'nutritaami' },
-      { nombre: 'Diana Espínola',   rol: 'nutricionista', foto: '', disciplina: '',         instagram: 'nutridires' },
-      { nombre: 'Jessica Sholan',   rol: 'nutricionista', foto: '', disciplina: 'Luque',    instagram: '' }
+      { nombre: 'Osvaldo Delvalle', rol: 'nutricionista', foto: '', disciplina: '', instagram: 'osdelvalle.nutri' },
+      { nombre: 'Fernanda Picco',   rol: 'nutricionista', foto: '', disciplina: '', instagram: 'nutricionpiccopy' },
+      { nombre: 'Angie Ozorio',     rol: 'nutricionista', foto: '', disciplina: '', instagram: 'angieozoriob' },
+      { nombre: 'Tamara Britez',    rol: 'nutricionista', foto: '', disciplina: '', instagram: 'nutritaami' },
+      { nombre: 'Diana Espínola',   rol: 'nutricionista', foto: '', disciplina: '', instagram: 'nutridires' },
+      { nombre: 'Jessica Sholan',   rol: 'nutricionista', foto: '', disciplina: '', instagram: '' }
     ],
 
     /* Títulos de cada columna. Se editan acá y no en el JS. */
