@@ -315,7 +315,8 @@ const VITALICA_CONFIG = {
        QUÉ SE PUBLICA Y QUÉ NO
        La planilla trae nombre, apellido, registro profesional, CÉDULA,
        TELÉFONO, ciudad, fechas de contrato, vouchers entregados e Instagram.
-       Acá entran únicamente NOMBRE, CIUDAD e INSTAGRAM.
+       Acá entran únicamente NOMBRE e INSTAGRAM. La ciudad entró en su
+       momento y se sacó el 24/9 a pedido de marketing.
 
        La cédula y el teléfono no entran a este archivo ni a ningún otro del
        proyecto, y no es una precaución de más: data.js se descarga entero
@@ -348,7 +349,6 @@ const VITALICA_CONFIG = {
        que le dice al visitante quién recomienda la marca desde afuera. */
     gente: [
       { nombre: 'Ricardo Martínez',        rol: 'embajador', foto: '', disciplina: '', instagram: 'rmcoach15' },
-      { nombre: 'Isabella Olcese',         rol: 'embajador', foto: '', disciplina: '', instagram: 'isaolcese' },
       { nombre: 'Marcos Ramírez',          rol: 'embajador', foto: '', disciplina: '', instagram: 'marcosreinaldi' },
       { nombre: 'Astrid Cáceres',          rol: 'embajador', foto: '', disciplina: '', instagram: 'astridcaceres_' },
       { nombre: 'Alexander De los Santos', rol: 'embajador', foto: '', disciplina: '', instagram: 'entrenador_alexander_dls_track' },
