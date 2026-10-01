@@ -2000,10 +2000,41 @@
    divisoria y los títulos en mayúscula.
    ========================================================================== */
 
+/* LA RAYITA DEL MEDIO  ·  corregida el 1/10/2026
+   --------------------------------------------------------------------------
+   Estaba puesta como borde derecho de la primera columna, y eso traia dos
+   problemas que se notaban juntos:
+
+     1. No quedaba en el medio. El borde se dibuja donde TERMINA la columna
+        de la izquierda, y entre las dos columnas hay una separacion de 48px.
+        Asi que la linea caia 24px a la izquierda del centro real, que es
+        justo donde estan centrados "Quienes nos eligen" y el texto de
+        abajo. Martin lo vio enseguida.
+
+     2. El padding-right que la acompanaba le sacaba 48px de ancho SOLO a la
+        columna izquierda. Como los avatares se reparten el ancho disponible
+        y tienen un tope de 130px, los de Atletas quedaban en 122px y los de
+        Nutricionistas en 130: la fila de la izquierda se veia mas chica sin
+        que nadie entendiera por que.
+
+   Ahora la linea se dibuja sobre el contenedor, en left: 50%, que es el
+   centro de verdad. Las dos columnas quedan del mismo ancho y los avatares
+   del mismo tamano a los dos lados. La separacion de 48px alcanza para que
+   el texto no toque la linea: le quedan 24px por lado.
+
+   Va absoluta a proposito: el contenedor es un grid de dos columnas y un
+   ::before en flujo entraria como una tercera celda. Fuera del flujo, no.
+   -------------------------------------------------------------------------- */
 @media (min-width: 761px) {
-  [data-tema="2026"] .embajadores__columna:first-child {
-    padding-right: var(--space-7);
-    border-right: 1px solid var(--color-linea);
+  [data-tema="2026"] .embajadores__columnas { position: relative; }
+  [data-tema="2026"] .embajadores__columnas::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: var(--color-linea);
   }
 }
 [data-tema="2026"] .embajadores__columna-titulo {
