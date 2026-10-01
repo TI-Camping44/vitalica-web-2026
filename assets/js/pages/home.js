@@ -282,92 +282,117 @@
       linkEl.textContent = 'Seguir a ' + (com.handle || '@vitalica.py');
     }
   }
-
   /* ---------- EMBAJADORES Y NUTRICIONISTAS ----------
      Sin biografías a propósito: ver el comentario en data.js.
 
-     DOS COLUMNAS, PERO SOLO SI HAY DOS GRUPOS
-     -----------------------------------------
-     Marketing pidió la sección partida en dos: embajadores de un lado,
-     nutricionistas del otro. El reparto lo decide el campo `rol` de cada
-     persona en data.js.
+     DE DOS COLUMNAS A DOS GRUPOS APILADOS  (1/10/2026)
+     --------------------------------------------------
+     Estaban uno al lado del otro. El problema no era el diseño sino la
+     aritmética: son 4 atletas contra 10 nutricionistas, y dos columnas de
+     alturas tan distintas siempre dejan la derecha colgando tres filas más
+     abajo. Ninguna cantidad de retoques arregla eso.
 
-     Si uno de los dos grupos está vacío —que es la situación de hoy, porque
-     la planilla de contratos no trae la profesión de nadie— se dibuja la
-     grilla de siempre, entera. Una columna vacía al lado de otra llena se
-     lee como un error de maquetado, no como "esto todavía no está cargado".
-     En cuanto alguien tenga rol 'nutricionista', las dos columnas salen
-     solas sin tocar una línea de acá. */
+     Apilados, cada grupo usa el ancho entero y entran 5 por fila: los
+     atletas llenan una fila justa y las nutricionistas dos. No queda ni un
+     borde dentado.
+
+     Y la ficha dejó de ser un círculo de 130px. Ahora es una tarjeta
+     vertical 3:4 con la foto a sangre y el nombre encima. El motivo es
+     concreto: las fotos de atletas son de competencia, de cuerpo entero.
+     Metidas en un círculo quedaba la cara recortada y se perdía justo lo
+     que hacía buena a la foto -Astrid corriendo, Ricardo entrenando-. */
   var contEmb = document.querySelector('[data-embajadores]');
   if (contEmb && VITALICA_CONFIG.embajadores) {
     var em = VITALICA_CONFIG.embajadores;
     var todos = em.gente || [];
 
-    function figuraEmbajador(g) {
+    function fichaEmbajador(g, i) {
       /* Sin foto se dibuja una placa con las iniciales en vez de un <img>
          roto. No es un adorno: es el aviso de que falta esa foto, y se va
          solo en cuanto se carga la ruta en data.js. */
       var medio = g.foto
         ? '<img class="embajador__foto" src="' + g.foto + '" alt="' + g.nombre + '" ' +
-               'width="700" height="700" loading="lazy">'
+               'width="600" height="800" loading="lazy">'
         : '<span class="embajador__foto embajador__foto--falta" aria-hidden="true">' +
             g.nombre.split(' ').map(function (p) { return p.charAt(0); })
                     .join('').slice(0, 2).toUpperCase() +
           '</span>';
 
-      return '<figure class="embajador">' +
+      var cuenta = (g.instagram || '').replace('@', '');
+
+      /* Con Instagram la tarjeta entera es el enlace: el objetivo táctil
+         pasa de un renglón de texto chico a los 230x300 de la ficha. Sin
+         Instagram no hay a dónde ir, así que va un <div> y no un <a>
+         vacío, que para un lector de pantalla es un enlace roto. */
+      var abre = cuenta
+        ? '<a class="embajador" href="https://instagram.com/' + cuenta + '" ' +
+          'target="_blank" rel="noopener">'
+        : '<div class="embajador">';
+      var cierra = cuenta ? '</a>' : '</div>';
+
+      return abre +
                medio +
-               '<figcaption class="embajador__nombre">' + g.nombre + '</figcaption>' +
-               (g.disciplina
-                 ? '<p class="embajador__disciplina">' + g.disciplina + '</p>' : '') +
-               (g.instagram
-                 ? '<a class="embajador__ig" href="https://instagram.com/' +
-                   g.instagram.replace('@', '') + '" target="_blank" rel="noopener">@' +
-                   g.instagram.replace('@', '') + '</a>' : '') +
-             '</figure>';
+               '<span class="embajador__velo" aria-hidden="true"></span>' +
+               '<span class="embajador__pie">' +
+                 '<span class="embajador__nombre">' + g.nombre + '</span>' +
+                 (cuenta ? '<span class="embajador__ig">@' + cuenta + '</span>' : '') +
+               '</span>' +
+             cierra;
     }
 
     function grupo(rol) {
-      return todos.filter(function (g) {
+      var lista = todos.filter(function (g) {
         // Quien no tenga rol cargado cuenta como embajador: es lo que era
         // antes de que existiera el campo.
         return (g.rol || 'embajador') === rol;
       });
+
+      /* Primero quienes tienen foto, después las placas de iniciales.
+         Mezcladas quedaban tres rectángulos naranjas repartidos al azar
+         entre las caras y parecía un error de carga. Juntas al final se
+         leen como "estas faltan", que es la verdad.
+
+         El orden entre quienes sí tienen foto no se toca: sort() es
+         estable en todos los navegadores desde 2019, así que se respeta
+         el orden de data.js. Y esto se arregla solo: en cuanto llega una
+         foto, esa persona sube con el resto sin tocar nada acá. */
+      return lista.slice().sort(function (a, b) {
+        return (b.foto ? 1 : 0) - (a.foto ? 1 : 0);
+      });
     }
 
-    var embajadores   = grupo('embajador');
-    var nutricionistas = grupo('nutricionista');
     var cols = em.columnas || {};
-    var cuerpo;
 
-    /* LAS DOS COLUMNAS SE DIBUJAN SIEMPRE.
+    /* LOS DOS GRUPOS SE DIBUJAN SIEMPRE, aunque uno esté vacío.
        -----------------------------------------------------------------
-       El primer intento las mostraba solo si los dos grupos tenían gente,
-       para no dejar un hueco. El resultado fue que la sección quedó
-       exactamente igual que antes y el cambio pedido no se veía por
-       ninguna parte.
-
-       Un hueco vacío se lee como un error; un hueco CON UNA LÍNEA QUE
-       EXPLICA se lee como una sección en construcción, que es la verdad.
-       Así que la columna vacía muestra su texto de espera y listo. */
-    cuerpo =
-      '<div class="embajadores__columnas">' +
-        [['embajador', embajadores], ['nutricionista', nutricionistas]].map(function (par) {
+       Un hueco pelado se lee como un error de maquetado; un hueco CON UNA
+       LÍNEA QUE EXPLICA se lee como una sección en construcción, que es la
+       verdad. Así que el grupo vacío muestra su texto de espera y listo. */
+    var cuerpo =
+      '<div class="embajadores__grupos">' +
+        [['embajador', grupo('embajador')],
+         ['nutricionista', grupo('nutricionista')]].map(function (par) {
           var meta = cols[par[0]] || {};
           var gente = par[1];
-          return '<div class="embajadores__columna">' +
-                   '<h3 class="embajadores__columna-titulo">' +
-                     (meta.titulo || par[0]) + '</h3>' +
-                   (meta.texto
-                     ? '<p class="embajadores__columna-texto">' + meta.texto + '</p>' : '') +
+          return '<section class="embajadores__grupo">' +
+                   '<div class="embajadores__cabecera">' +
+                     '<h3 class="embajadores__columna-titulo">' +
+                       (meta.titulo || par[0]) + '</h3>' +
+                     (meta.texto
+                       ? '<p class="embajadores__columna-texto">' + meta.texto + '</p>'
+                       : '') +
+                     (gente.length
+                       ? '<span class="embajadores__cuenta">' + gente.length + '</span>'
+                       : '') +
+                   '</div>' +
                    (gente.length
                      ? '<div class="embajadores__grid">' +
-                         gente.map(figuraEmbajador).join('') +
+                         gente.map(fichaEmbajador).join('') +
                        '</div>'
                      : '<p class="embajadores__vacio">' +
                          (meta.vacio || 'Todavía no hay nadie cargado en este grupo.') +
                        '</p>') +
-                 '</div>';
+                 '</section>';
         }).join('') +
       '</div>';
 

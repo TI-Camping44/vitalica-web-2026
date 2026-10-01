@@ -487,7 +487,6 @@
    ========================================================================== */
 [data-tema="2026"] .blog-card,
 [data-tema="2026"] .ig-tile,
-[data-tema="2026"] .embajador__foto,
 [data-tema="2026"] .banner-coleccion { border-radius: var(--radio-lg); }
 
 [data-tema="2026"] .embajador__nombre {
@@ -882,18 +881,15 @@
 
 [data-tema="2026"] .producto__nota-foto { text-align: left; }
 
-
 /* ==========================================================================
    21. EMBAJADORES SIN FOTO
+   --------------------------------------------------------------------------
+   Vacia desde el 1/10/2026. Lo que habia aca -placa gris oscura con borde-
+   quedo completamente pisado por la seccion 41, que define el degradado
+   naranja y azul de la placa de iniciales. Se saca en vez de dejarla
+   muerta: una regla que no pinta nada pero parece que si es peor que no
+   tener regla.
    ========================================================================== */
-[data-tema="2026"] .embajador__foto--falta {
-  border-radius: var(--radio-lg);
-  background: #141416;
-  border-color: #33302E;
-  color: #6E6E73;
-  font-stretch: 88%;
-  font-weight: 900;
-}
 [data-tema="2026"] .embajador__disciplina {
   font-size: var(--fs-xs);
   text-transform: uppercase;
@@ -1996,47 +1992,18 @@
    40. EMBAJADORES Y NUTRICIONISTAS  ·  lo que cambia en este diseño
    --------------------------------------------------------------------------
    La maqueta de las dos columnas vive en styles.css, porque home.js emite
-   ese HTML en los dos diseños. Acá solo va lo propio del 2026: la línea
-   divisoria y los títulos en mayúscula.
+   ese HTML en los dos diseños. Acá solo van los títulos en mayúscula.
    ========================================================================== */
 
-/* LA RAYITA DEL MEDIO  ·  corregida el 1/10/2026
-   --------------------------------------------------------------------------
-   Estaba puesta como borde derecho de la primera columna, y eso traia dos
-   problemas que se notaban juntos:
+/* La raya vertical que separaba las dos columnas se fue el 1/10/2026 junto
+   con las columnas. Estuvo mal puesta casi todo su tiempo de vida -se
+   dibujaba como borde de la columna izquierda, o sea 24px corrida del
+   centro real, y de paso le robaba ancho a esa columna, que por eso tenia
+   los avatares mas chicos-. Se corrigio, y a las pocas horas la seccion
+   paso a dos grupos apilados y ya no hizo falta.
 
-     1. No quedaba en el medio. El borde se dibuja donde TERMINA la columna
-        de la izquierda, y entre las dos columnas hay una separacion de 48px.
-        Asi que la linea caia 24px a la izquierda del centro real, que es
-        justo donde estan centrados "Quienes nos eligen" y el texto de
-        abajo. Martin lo vio enseguida.
-
-     2. El padding-right que la acompanaba le sacaba 48px de ancho SOLO a la
-        columna izquierda. Como los avatares se reparten el ancho disponible
-        y tienen un tope de 130px, los de Atletas quedaban en 122px y los de
-        Nutricionistas en 130: la fila de la izquierda se veia mas chica sin
-        que nadie entendiera por que.
-
-   Ahora la linea se dibuja sobre el contenedor, en left: 50%, que es el
-   centro de verdad. Las dos columnas quedan del mismo ancho y los avatares
-   del mismo tamano a los dos lados. La separacion de 48px alcanza para que
-   el texto no toque la linea: le quedan 24px por lado.
-
-   Va absoluta a proposito: el contenedor es un grid de dos columnas y un
-   ::before en flujo entraria como una tercera celda. Fuera del flujo, no.
-   -------------------------------------------------------------------------- */
-@media (min-width: 761px) {
-  [data-tema="2026"] .embajadores__columnas { position: relative; }
-  [data-tema="2026"] .embajadores__columnas::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 1px;
-    background: var(--color-linea);
-  }
-}
+   Hoy la separacion entre grupos la hace la linea bajo cada titulo, en
+   styles.css. Cumple el mismo papel y no tiene como quedar descentrada. */
 [data-tema="2026"] .embajadores__columna-titulo {
   text-transform: uppercase;
   font-weight: 900;
@@ -2044,69 +2011,59 @@
   letter-spacing: -0.01em;
 }
 
-
 /* ==========================================================================
-   41. EMBAJADORES  ·  QUE NO PAREZCA ROTO MIENTRAS FALTAN LAS FOTOS
+   41. EMBAJADORES  ·  LA FICHA VERTICAL
    --------------------------------------------------------------------------
-   Lo que se veía hasta recién: cinco cuadrados negros con dos letras. Se leía
-   como un error de carga, no como "falta esta foto". Y como ninguno de los
-   cinco tiene foto, la sección entera parecía rota.
+   La maqueta -grilla de cinco, tarjeta 3:4, velo y pie- vive en styles.css,
+   porque home.js emite el mismo HTML en los dos disenos y los dos la
+   necesitan. Aca va solo lo propio del 2026.
 
-   No hay fotos de los embajadores en ninguna parte: las busqué en el Drive
-   (17/9/2026) y no están. Así que la sección tiene que verse bien SIN ellas,
-   no "esperando" a que lleguen.
+   HISTORIA, QUE EXPLICA POR QUE ESTO ES ASI
+   Entre el 17/9 y el 1/10 la ficha fue un circulo de 130px. Tenia sentido
+   mientras NADIE tenia foto: el circulo con las iniciales sobre el naranja
+   de marca se lee como un avatar hecho a proposito -lo que hacen WhatsApp o
+   Gmail- y no como un hueco.
 
-   QUÉ CAMBIA
-     · El retrato pasa a ser un círculo, que es el lenguaje del resto del
-       diseño y además es como se muestra a una persona.
-     · Sin foto, el círculo lleva las iniciales sobre el naranja de marca, en
-       degradado. Se ve como un avatar hecho a propósito —el mismo recurso
-       que usan WhatsApp o Gmail cuando no hay foto— y no como un hueco.
-     · Cuando llegue la foto, entra en el mismo círculo y no hay que tocar
-       nada más: las dos reglas comparten medidas.
+   Cuando llegaron las fotos de Paula el circulo paso a estorbar: las de
+   atletas son de competencia, de cuerpo entero, y el recorte redondo se
+   quedaba con la cara y tiraba el resto. Astrid corriendo dejaba de verse
+   corriendo. Por eso ahora la foto va entera, vertical y a sangre.
+
+   Lo que sobrevivio del circulo son las iniciales en degradado, que siguen
+   resolviendo bien a las tres que todavia no mandaron foto.
    ========================================================================== */
-[data-tema="2026"] .embajador__foto {
-  border-radius: 50%;
-  aspect-ratio: 1;
-  max-width: 130px;
-  margin-inline: auto;
-}
-/* Dentro de una columna la grilla se aprieta: son la mitad del ancho. */
-[data-tema="2026"] .embajadores__columna .embajadores__grid {
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: var(--space-4);
-}
 
-/* El avatar con iniciales. Deja de ser un cuadrado negro con borde cortado. */
-[data-tema="2026"] .embajador__foto--falta {
-  background: linear-gradient(145deg, var(--color-primario), var(--color-primario-oscuro));
-  border: 0;
-  color: #0A0A0B;
-  font-weight: 900;
-  font-stretch: 88%;
-  font-size: clamp(1.8rem, 4vw, 2.6rem);
-  letter-spacing: 0.02em;
-  box-shadow: var(--sombra);
-}
-
-/* Una de cada dos en azul, para que la fila no sea una hilera de naranjas
-   iguales. El azul es el del manual de marca. */
-[data-tema="2026"] .embajador:nth-child(even) .embajador__foto--falta {
-  background: linear-gradient(145deg, #0B55A3, #083F7A);
-  color: #fff;
-}
-
+/* El velo tapa el 62% de abajo, asi que el nombre va en blanco siempre y no
+   depende de si la foto es clara u oscura. Sin esto, las cuatro fotos con
+   fondo blanco de estudio dejaban el nombre ilegible. */
 [data-tema="2026"] .embajador__nombre {
   font-size: var(--fs-sm);
   text-transform: uppercase;
   font-weight: 900;
   font-stretch: 90%;
+  letter-spacing: -0.01em;
 }
-[data-tema="2026"] .embajador__ig {
-  color: var(--color-tinta-suave);
-  font-weight: 600;
+[data-tema="2026"] .embajador__ig { font-weight: 600; }
+
+/* La placa de iniciales, para quien todavia no tiene foto. Ocupa la ficha
+   entera: a este tamano tiene que leerse como una decision y no como una
+   imagen que no cargo. */
+[data-tema="2026"] .embajador__foto--falta {
+  background: linear-gradient(145deg, var(--color-primario), var(--color-primario-oscuro));
+  border: 0;
+  border-radius: 0;
+  color: #0A0A0B;
+  font-weight: 900;
+  font-stretch: 88%;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  letter-spacing: 0.02em;
 }
-[data-tema="2026"] .embajador__ig:hover { color: var(--color-primario-texto); }
+/* Una de cada dos en azul, para que no quede una hilera de naranjas
+   iguales. El azul es el del manual de marca. */
+[data-tema="2026"] .embajador:nth-child(even) .embajador__foto--falta {
+  background: linear-gradient(145deg, #0B55A3, #083F7A);
+  color: #fff;
+}
 
 
 /* ==========================================================================
