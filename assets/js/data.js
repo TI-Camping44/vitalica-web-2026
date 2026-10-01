@@ -338,9 +338,24 @@ const VITALICA_CONFIG = {
        dibuja la lista ya sabe no mostrar nada cuando esta vacio, y si un dia
        la ciudad vuelve, vuelve escribiendola y nada mas.
 
-       DE LAS DIEZ, CUATRO TIENEN FOTO. Las otras seis muestran sus iniciales
-       hasta que lleguen las fotos que faltan; Martín avisó que por ahora solo
-       tiene cuatro profesionales.
+       LAS FOTOS (actualizado el 1/10/2026)
+       Paula mando dos carpetas de Drive, una por persona. Quedaron con foto
+       los cuatro atletas y siete de las diez nutricionistas. Siguen sin
+       foto Angie Ozorio, Diana Espinola y Jessica Sholan: sus carpetas
+       estan creadas pero vacias. Hasta que lleguen muestran sus iniciales.
+
+       En esa carpeta aparecio ademas MAISA GHANEM, que no esta en la lista
+       de abajo. No se agrego: la carpeta esta vacia y no hay Instagram ni
+       confirmacion de que sea nutricionista del programa. Preguntar antes
+       de meterla.
+
+       LAS FOTOS DE ATLETAS SON DE ACCION, NO RETRATOS
+       Las cuatro son de competencia o entrenamiento, de cuerpo entero y con
+       la cara chica dentro del cuadro. Para el avatar redondo hubo que
+       recortar fuerte: en Ricardo y Marcos el recorte se amplia poco mas de
+       dos veces, asi que se ven algo blandas de cerca. A 130px, que es el
+       tamano real en la pagina, no se nota. Si alguna vez mandan retratos,
+       conviene cambiarlas.
 
        LOS DE LA PLANILLA QUE NO ESTÁN ACÁ
        Diego Kemper, Andrea Labiste, Martín Benítez, Eduardo Kemper y Sergio
@@ -348,19 +363,19 @@ const VITALICA_CONFIG = {
        pero son gente de la casa, no nutricionistas. No van en una sección
        que le dice al visitante quién recomienda la marca desde afuera. */
     gente: [
-      { nombre: 'Ricardo Martínez',        rol: 'embajador', foto: '', disciplina: '', instagram: 'rmcoach15' },
-      { nombre: 'Marcos Ramírez',          rol: 'embajador', foto: '', disciplina: '', instagram: 'marcosreinaldi' },
-      { nombre: 'Astrid Cáceres',          rol: 'embajador', foto: '', disciplina: '', instagram: 'astridcaceres_' },
-      { nombre: 'Alexander De los Santos', rol: 'embajador', foto: '', disciplina: '', instagram: 'entrenador_alexander_dls_track' },
+      { nombre: 'Ricardo Martínez',        rol: 'embajador', foto: 'assets/img/embajadores/ricardo-martinez.jpg', disciplina: '', instagram: 'rmcoach15' },
+      { nombre: 'Marcos Ramírez',          rol: 'embajador', foto: 'assets/img/embajadores/marcos-ramirez.jpg', disciplina: '', instagram: 'marcosreinaldi' },
+      { nombre: 'Astrid Cáceres',          rol: 'embajador', foto: 'assets/img/embajadores/astrid-caceres.jpg', disciplina: '', instagram: 'astridcaceres_' },
+      { nombre: 'Alexander De los Santos', rol: 'embajador', foto: 'assets/img/embajadores/alexander-de-los-santos.jpg', disciplina: '', instagram: 'entrenador_alexander_dls_track' },
 
-      /* LAS CUATRO QUE TIENEN FOTO.
+      /* EL RECORTE, QUE ES LO UNICO DELICADO DE ESTA LISTA.
          Las originales son verticales, de cuerpo entero o tres cuartos, y el
          sitio usa avatares cuadrados de 700x700. Se recortaron centrando la
          cara al 42% de altura -un poco arriba del centro, que es como se ve
          bien un retrato dentro de un circulo-, con las coordenadas puestas a
          mano y revisadas mirando el resultado.
 
-         El primer intento dejo las cuatro caras cerca del borde de abajo:
+         El primer intento dejo las caras cerca del borde de abajo:
          en un avatar redondo se habrian cortado. Se midio donde caia la cara
          dentro de cada recorte, se despejo donde estaba en la foto original y
          se volvio a encuadrar. Vale la pena saberlo si algun dia entran
@@ -371,10 +386,10 @@ const VITALICA_CONFIG = {
       { nombre: 'Sol Figueredo',    rol: 'nutricionista', foto: 'assets/img/embajadores/sol-figueredo.jpg',   disciplina: '', instagram: 'sfnutricion_' },
       { nombre: 'Alana Dacak',      rol: 'nutricionista', foto: 'assets/img/embajadores/alana-dacak.jpg',     disciplina: '', instagram: 'alanadacak' },
 
-      { nombre: 'Osvaldo Delvalle', rol: 'nutricionista', foto: '', disciplina: '', instagram: 'osdelvalle.nutri' },
-      { nombre: 'Fernanda Picco',   rol: 'nutricionista', foto: '', disciplina: '', instagram: 'nutricionpiccopy' },
+      { nombre: 'Osvaldo Delvalle', rol: 'nutricionista', foto: 'assets/img/embajadores/osvaldo-delvalle.jpg', disciplina: '', instagram: 'osdelvalle.nutri' },
+      { nombre: 'Fernanda Picco',   rol: 'nutricionista', foto: 'assets/img/embajadores/fernanda-picco.jpg', disciplina: '', instagram: 'nutricionpiccopy' },
       { nombre: 'Angie Ozorio',     rol: 'nutricionista', foto: '', disciplina: '', instagram: 'angieozoriob' },
-      { nombre: 'Tamara Britez',    rol: 'nutricionista', foto: '', disciplina: '', instagram: 'nutritaami' },
+      { nombre: 'Tamara Britez',    rol: 'nutricionista', foto: 'assets/img/embajadores/tamara-britez.jpg', disciplina: '', instagram: 'nutritaami' },
       { nombre: 'Diana Espínola',   rol: 'nutricionista', foto: '', disciplina: '', instagram: 'nutridires' },
       { nombre: 'Jessica Sholan',   rol: 'nutricionista', foto: '', disciplina: '', instagram: '' }
     ],

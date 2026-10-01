@@ -1440,12 +1440,41 @@
   padding: 0;
   overflow: hidden;
 }
+/* Las fotos arrancan en gris y toman color cuando el mouse pasa por la
+   tarjeta. Es el pedido de Sergio del 1/10/2026: con el video de al lado
+   ya en color, las tres fotos en gris quedaban como el pariente apagado
+   de la fila, y el cambio al pasar por encima invita a recorrerlas.
+
+   Se escucha el hover de la TARJETA entera, no el de la foto: el blanco
+   de abajo tiene el titulo y el texto, y pedirle al visitante que acierte
+   justo en la imagen es pedirle punteria sin motivo.
+
+   En pantallas tactiles no hay mouse, y si se dejara solo el hover las
+   tres fotos se quedarian en gris para siempre, que es justo lo que
+   queremos evitar. Ahi arrancan a medio camino, como los mosaicos de la
+   portada. */
 [data-tema="2026"] .pilar__foto {
   display: block;
   width: 100%;
   height: 190px;
   object-fit: cover;
   filter: grayscale(1) contrast(1.05) brightness(0.8);
+  transition: filter 320ms ease, transform 400ms ease;
+}
+[data-tema="2026"] .pilar:hover .pilar__foto,
+[data-tema="2026"] .pilar:focus-within .pilar__foto {
+  filter: grayscale(0) saturate(1.08) contrast(1.03) brightness(0.95);
+  transform: scale(1.03);
+}
+@media (hover: none) {
+  [data-tema="2026"] .pilar__foto {
+    filter: grayscale(0.5) saturate(1.1) contrast(1.03) brightness(0.9);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-tema="2026"] .pilar__foto { transition: filter 320ms ease; }
+  [data-tema="2026"] .pilar:hover .pilar__foto,
+  [data-tema="2026"] .pilar:focus-within .pilar__foto { transform: none; }
 }
 /* El ícono pasa a ser una marca chica sobre la foto */
 [data-tema="2026"] .pilar__icono {
