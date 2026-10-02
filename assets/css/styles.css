@@ -2031,16 +2031,35 @@ p { color: var(--color-tinta); }
      en pantalla ancha el recorte pasa a ser vertical. */
   object-position: 78% 42%;
 }
-/* Velo oscuro de izquierda a derecha para legibilidad del texto */
+/* VELO DE IZQUIERDA A DERECHA, PARA QUE EL TEXTO SE LEA
+   --------------------------------------------------------------------------
+   Aflojado el 2/10/2026, junto con el gris de la foto. Martín pidió que la
+   portada tuviera vida y color, y el gris era solo la mitad del problema:
+   encima iba este velo, que arrancaba en 0.82 y todavía tapaba el 18% de la
+   foto en el borde derecho. Entre los dos no quedaba imagen que mirar.
+
+   Dos cambios y el porqué de cada uno:
+
+     · Es NAVY (12,28,56) y ya no casi negro (7,13,24). Las portadas tienen
+       el azul quemado adentro del .jpg; un velo negro encima las ensuciaba
+       y las volvía grises de nuevo por la ventana de atrás. Un velo del
+       mismo azul se funde con la foto en vez de apagarla.
+
+     · Llega a cero en el 82% en vez de quedarse en 0.05 hasta el final. El
+       lado derecho es justo donde está el sujeto de las tres portadas: ahí
+       no hay texto que proteger y no había razón para taparlo.
+
+   Lo de la izquierda casi no se tocó (0.82 → 0.78) a propósito: ahí va el
+   titular en blanco, y es lo único que el velo tiene que garantizar. */
 .hero__slide--banner::after {
   content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg,
-    rgba(7, 13, 24, 0.82) 0%,
-    rgba(7, 13, 24, 0.55) 42%,
-    rgba(7, 13, 24, 0.18) 75%,
-    rgba(7, 13, 24, 0.05) 100%);
+    rgba(12, 28, 56, 0.78) 0%,
+    rgba(12, 28, 56, 0.46) 42%,
+    rgba(12, 28, 56, 0.10) 70%,
+    rgba(12, 28, 56, 0.00) 82%);
 }
 .hero__slide--banner .hero__inner {
   position: relative;
@@ -2056,7 +2075,11 @@ p { color: var(--color-tinta); }
 @media (max-width: 760px) {
   .hero__slide--banner .hero__inner { min-height: 380px; }
   .hero__slide--banner::after {
-    background: linear-gradient(180deg, rgba(7,13,24,0.72) 0%, rgba(7,13,24,0.45) 100%);
+    /* En celular el velo va de arriba abajo, no de izquierda a derecha: el
+       texto queda encima de la foto, no al costado. Mismo navy y mismo
+       aflojada que en pantalla grande, pero no puede llegar a cero —acá sí
+       hay texto sobre la parte de abajo—. */
+    background: linear-gradient(180deg, rgba(12,28,56,0.70) 0%, rgba(12,28,56,0.38) 100%);
   }
 }
 

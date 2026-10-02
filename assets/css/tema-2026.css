@@ -317,13 +317,29 @@
    morir del todo. */
 [data-tema="2026"] .hero__slide--banner .hero__inner::before { content: none; }
 
+/* AFLOJADO Y PASADO A NAVY  ·  2/10/2026
+   --------------------------------------------------------------------------
+   Pedido de Martín: "no quiere que sea todo tan negro, necesita que tenga
+   vivez y un poco de color el carrusel".
+
+   Este velo era el verdadero culpable, más que el gris de la foto. Arrancaba
+   en 0,94 y en la mitad del ancho todavía iba en 0,52: de la portada se veía
+   la mitad de la mitad. Ahora empieza en 0,80 —que sigue siendo de sobra
+   para un titular blanco en peso 900— y se va a cero bastante antes, en el
+   86%, así que el sujeto de la foto queda limpio.
+
+   Y es NAVY (8,20,40) en vez de casi negro (5,5,6). Las tres portadas tienen
+   el azul quemado adentro del .jpg; un velo negro encima las volvía grises
+   por la ventana de atrás, justo lo que acabábamos de sacar al quitar el
+   grayscale. Del mismo azul, el velo se funde con la foto en lugar de
+   apagarla. */
 [data-tema="2026"] .hero__slide--banner::after {
   background: linear-gradient(90deg,
-    rgba(5, 5, 6, 0.94) 0%,
-    rgba(5, 5, 6, 0.82) 28%,
-    rgba(5, 5, 6, 0.52) 52%,
-    rgba(5, 5, 6, 0.18) 76%,
-    rgba(5, 5, 6, 0.00) 100%);
+    rgba(8, 20, 40, 0.80) 0%,
+    rgba(8, 20, 40, 0.66) 28%,
+    rgba(8, 20, 40, 0.34) 52%,
+    rgba(8, 20, 40, 0.08) 74%,
+    rgba(8, 20, 40, 0.00) 86%);
 }
 
 /* En celular el recorte es horizontal y el texto queda sobre el medio de la
@@ -332,9 +348,9 @@
 @media (max-width: 760px) {
   [data-tema="2026"] .hero__slide--banner::after {
     background: linear-gradient(180deg,
-      rgba(5, 5, 6, 0.80) 0%,
-      rgba(5, 5, 6, 0.62) 45%,
-      rgba(5, 5, 6, 0.78) 100%);
+      rgba(8, 20, 40, 0.70) 0%,
+      rgba(8, 20, 40, 0.48) 45%,
+      rgba(8, 20, 40, 0.70) 100%);
   }
 }
 [data-tema="2026"] .hero__slide--banner .hero__inner > * { position: relative; z-index: 1; }
@@ -1071,20 +1087,29 @@
    brillante y un cartel de cookies NAVY, todo en la misma pantalla.
    ========================================================================== */
 
-/* --- 1) Las fotos de portada son azules -----------------------------------
-   No es un filtro del sitio: el tinte azul está QUEMADO adentro del .jpg.
-   Las generó herramientas/generar-portadas.ps1 para el diseño anterior, que
-   era navy, y ahí funcionaban bien.
+/* --- 1) LA PORTADA VUELVE A TENER COLOR  ·  2/10/2026 ---------------------
+   Pedido de Martin: "no quiere que sea todo tan negro, necesita que tenga
+   vivez y un poco de color el carrusel".
 
-   Se desaturan por CSS en vez de volver a generarlas: así el diseño actual
-   las sigue viendo azules —que es lo que le corresponde— y no hay que
-   mantener dos juegos de imágenes. Además es justo el tratamiento de BPN:
-   foto oscura y sin color, y el color lo pone solo la marca.
+   Hasta hoy la foto iba con grayscale(1) y oscurecida. La razon escrita aca
+   era buena para su momento -el tinte azul esta QUEMADO adentro del .jpg,
+   vienen de generar-portadas.ps1 hecho para el diseno navy anterior- y el
+   gris las emparejaba con el resto.
 
-   SI ESTO SE APRUEBA: conviene regenerar los .jpg en gris y sacar el filtro,
-   que sale más barato que desaturar tres fotos grandes en cada carga. */
+   El costo no se habia mirado: portada-2.jpg NO es azul, es una foto a todo
+   color -una chica tomando, un tipo con el producto, el envase amarillo de
+   Whey sobre la pista-, y el grayscale la estaba tirando a la basura. Las
+   otras dos si son azules, y en azul se leen como el navy de la marca, no
+   como un error.
+
+   Asi que ahora: nada de gris, un toque de saturacion, y un poco mas de luz
+   porque portada-3 -la planta de Olimp- es oscura de origen y sobre el velo
+   quedaba casi negra.
+
+   SI ALGUNA VEZ SE REGENERAN LAS PORTADAS: que salgan sin el tinte azul
+   quemado, y entonces este filtro se puede sacar entero. */
 [data-tema="2026"] .hero__cover {
-  filter: grayscale(1) contrast(1.06) brightness(0.95);
+  filter: saturate(1.14) contrast(1.03) brightness(1.07);
 }
 
 /* --- 2) El botón de WhatsApp -----------------------------------------------
@@ -1311,7 +1336,8 @@
    desaturar todas las imágenes: un `img { filter: grayscale(1) }` general
    apagaría también los envases.
    ========================================================================== */
-[data-tema="2026"] .hero__cover,
+/* .hero__cover salió de esta lista el 2/10/2026: la portada va a color.
+   Ver la sección 1 de este archivo, donde está el porqué. */
 [data-tema="2026"] .card-articulo__foto,
 [data-tema="2026"] .sobre-historia__media img,
 [data-tema="2026"] .tira-marca img {
