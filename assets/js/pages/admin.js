@@ -153,6 +153,7 @@
 
   function barraFila(titulo, accionBorrar) {
     return '<div class="admin-fila__barra">' +
+      agarre() +
       '<h3 class="admin-grupo__t">' + titulo + '</h3>' +
       '<button type="button" class="admin-quitar" ' + accionBorrar + '>Quitar</button>' +
     '</div>';
@@ -201,6 +202,7 @@
   function filaAnuncio(a) {
     a = (typeof a === 'string') ? { texto: a } : (a || {});
     return '<div class="admin-anuncio">' +
+      agarre() +
       '<input type="text" class="a-texto" value="' + escAttr(a.texto) + '" placeholder="Mensaje que rota en la barra de arriba">' +
       '<label class="admin-mini">Desde<input type="date" class="a-desde" value="' + escAttr(a.desde) + '"></label>' +
       '<label class="admin-mini">Hasta<input type="date" class="a-hasta" value="' + escAttr(a.hasta) + '"></label>' +
@@ -240,6 +242,7 @@
   function filaVariante(v) {
     v = v || {};
     return '<div class="admin-variante">' +
+      agarre() +
       '<input type="text" class="v-codigo" value="' + escAttr(v.codigo) + '" placeholder="Código de barras">' +
       '<input type="text" class="v-sabor"  value="' + escAttr(v.sabor) + '" placeholder="Sabor">' +
       '<input type="text" class="v-icono"  value="' + escAttr(v.icono) + '" placeholder="🍫" maxlength="4">' +
@@ -404,6 +407,7 @@
     t = t || {};
     var id = 'tl_' + (++contadorImg);
     return '<div class="admin-tienda">' +
+      agarre() +
       '<div class="admin-tienda__datos">' +
         '<input type="text" class="t-nombre" value="' + escAttr(t.nombre) + '" placeholder="Nombre del comercio">' +
         '<input type="text" class="t-ciudad" value="' + escAttr(t.ciudad) + '" placeholder="Ciudad (opcional)">' +
@@ -1202,17 +1206,23 @@
     if (vistaActiva) vistaRefrescar();
   }
 
-  function wirePanel() {
-    // Subir imagen → base64 → preview + input oculto
-    app.addEventListener('change', function (e) {
-      var f = e.target.closest('.admin-file');
-      if (f && f.files && f.files[0]) {
-        var id = f.getAttribute('data-file');
-        var reader = new FileReader();
-        reader.onload = function () {
-          var hidden = document.getElementById(id);
-          var prev = app.querySelector('[data-prev="' + id + '"]');
-
+  /* ======================================================================
+     UNA SOLA PUERTA PARA LAS IMAGENES
+     ----------------------------------------------------------------------
+     Esto vivia adentro del evento 'change' del input de archivo. Al agregar
+     "soltar la foto encima" hacian falta los mismos veinte pasos -leer,
+     achicar, elegir formato, medir el logo- en dos lugares distintos, y dos
+     copias de esto se desincronizan en la primera correccion.
+     ====================================================================== */
+  function procesarImagen(archivo, id) {
+    if (!archivo || !/^image\//.test(archivo.type || '')) {
+      toast('✗ Eso no es una imagen. Se aceptan JPG, PNG o WEBP.');
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function () {
+      var hidden = document.getElementById(id);
+      var prev = app.querySelector('[data-prev="' + id + '"]');
           /* LA IMAGEN SE ACHICA ACÁ, ANTES DE GUARDARLA.
              ----------------------------------------------------------------
              Todas las imágenes del panel viajan adentro de la configuración
@@ -1333,12 +1343,130 @@
             };
             m.src = campo.value;
           }
-        };
-        reader.readAsDataURL(f.files[0]);
+    };
+    reader.readAsDataURL(archivo);
+  }
+
+  /* ======================================================================
+     ARRASTRAR PARA ORDENAR
+     ----------------------------------------------------------------------
+     El orden de las listas es el orden en que se ven en el sitio, y hasta
+     ahora era el orden en que se habían cargado, sin forma de cambiarlo:
+     para subir un slide había que copiar los textos de uno al otro.
+
+     No hay que tocar nada de los datos. recolectar() lee las filas por su
+     posición en la pantalla, así que mover el nodo YA cambia el orden.
+
+     Va con teclado además de con el mouse: el agarre se puede enfocar con
+     Tab y mover con las flechas. Una función que solo existe arrastrando
+     deja afuera a quien no puede hacerlo, y acá no cuesta nada.
+     ====================================================================== */
+  var LISTAS = '.admin-slide, .admin-persona, .admin-pilar, .admin-popup, ' +
+               '.admin-producto, .admin-anuncio, .admin-variante, .admin-tienda';
+  var filaArrastrada = null;
+
+  function agarre() {
+    return '<button type="button" class="admin-agarre" draggable="true" ' +
+           'title="Arrastrá para cambiar el orden (o usá las flechas del teclado)" ' +
+           'aria-label="Cambiar el orden">⠿</button>';
+  }
+
+  /** La fila sobre la que está el cursor, y si hay que ponerse antes o después. */
+  function vecinaBajoElCursor(contenedor, y) {
+    var filas = Array.prototype.slice.call(contenedor.children)
+      .filter(function (f) { return f !== filaArrastrada && f.matches(LISTAS); });
+    for (var i = 0; i < filas.length; i++) {
+      var r = filas[i].getBoundingClientRect();
+      if (y < r.top + r.height / 2) return filas[i];
+    }
+    return null;   // más abajo que todas: va al final
+  }
+
+
+  function wirePanel() {
+    /* Elegir un archivo con el botón, o soltarlo encima: las dos cosas
+       terminan en procesarImagen(). */
+    app.addEventListener('change', function (e) {
+      var f = e.target.closest('.admin-file');
+      if (f && f.files && f.files[0]) {
+        procesarImagen(f.files[0], f.getAttribute('data-file'));
         return;
       }
       var imp = e.target.closest('[data-importar]');
       if (imp && imp.files && imp.files[0]) importar(imp.files[0]);
+    });
+
+    /* ---- SOLTAR LA FOTO ENCIMA ------------------------------------------
+       El botón "Seleccionar archivo" sigue estando: arrastrar es más rápido
+       cuando ya tenés la carpeta abierta al lado, y peor cuando la foto está
+       en un correo o en Drive. Las dos formas conviven.
+
+       dragover necesita su preventDefault o el navegador abre la imagen en
+       una pestaña y se pierde todo lo que no estaba publicado. */
+    app.addEventListener('dragover', function (e) {
+      var z = e.target.closest('.admin-img, .admin-tienda__logo');
+      if (!z || !e.dataTransfer || filaArrastrada) return;
+      e.preventDefault();
+      z.classList.add('admin-img--encima');
+    });
+    app.addEventListener('dragleave', function (e) {
+      var z = e.target.closest('.admin-img, .admin-tienda__logo');
+      if (z) z.classList.remove('admin-img--encima');
+    });
+    app.addEventListener('drop', function (e) {
+      var z = e.target.closest('.admin-img, .admin-tienda__logo');
+      if (!z || filaArrastrada) return;
+      e.preventDefault();
+      z.classList.remove('admin-img--encima');
+      var campo = z.querySelector('.admin-file');
+      var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (campo && f) procesarImagen(f, campo.getAttribute('data-file'));
+    });
+
+    /* ---- ARRASTRAR PARA ORDENAR ---------------------------------------- */
+    app.addEventListener('dragstart', function (e) {
+      var a = e.target.closest('.admin-agarre');
+      if (!a) return;
+      filaArrastrada = a.closest(LISTAS);
+      if (!filaArrastrada) return;
+      filaArrastrada.classList.add('admin-moviendo');
+      e.dataTransfer.effectAllowed = 'move';
+      // Firefox no arranca el arrastre si no se le pone algo adentro.
+      try { e.dataTransfer.setData('text/plain', ''); } catch (err) {}
+    });
+
+    app.addEventListener('dragover', function (e) {
+      if (!filaArrastrada) return;
+      var cont = filaArrastrada.parentNode;
+      if (!cont.contains(e.target)) return;   // no se salta de lista
+      e.preventDefault();
+      var vecina = vecinaBajoElCursor(cont, e.clientY);
+      if (vecina) cont.insertBefore(filaArrastrada, vecina);
+      else cont.appendChild(filaArrastrada);
+    });
+
+    app.addEventListener('dragend', function () {
+      if (!filaArrastrada) return;
+      filaArrastrada.classList.remove('admin-moviendo');
+      filaArrastrada = null;
+      vistaPedirRefresco();
+    });
+
+    /* Mismo movimiento, con el teclado. El agarre se enfoca con Tab. */
+    app.addEventListener('keydown', function (e) {
+      var a = e.target.closest('.admin-agarre');
+      if (!a) return;
+      if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+      var fila = a.closest(LISTAS);
+      if (!fila) return;
+      e.preventDefault();
+      if (e.key === 'ArrowUp' && fila.previousElementSibling) {
+        fila.parentNode.insertBefore(fila, fila.previousElementSibling);
+      } else if (e.key === 'ArrowDown' && fila.nextElementSibling) {
+        fila.parentNode.insertBefore(fila.nextElementSibling, fila);
+      }
+      a.focus();   // el foco se va con el nodo; se lo devuelve para seguir
+      vistaPedirRefresco();
     });
 
     /* Cualquier cambio en el formulario pide refrescar la vista. Va con
