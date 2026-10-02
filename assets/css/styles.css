@@ -1958,6 +1958,7 @@ p { color: var(--color-tinta); }
 .admin-acciones .btn { font-size: var(--fs-sm); padding: 0.6em 1em; }
 .admin-import { cursor: pointer; }
 
+.admin-aviso--borrador { background: #FBECEB; border-color: #E8B4B0; color: #7a2b25; }
 .admin-aviso {
   max-width: 920px; margin: var(--space-5) auto 0;
   background: #FEF6E9; border: 1px solid #F3D9A9; color: #6b4e16;

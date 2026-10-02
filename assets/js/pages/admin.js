@@ -645,6 +645,25 @@
         '<strong>Restablecer</strong> borra tu borrador y te vuelve a mostrar lo que está ' +
         'publicado hoy; no despublica nada.' +
       '</div>' +
+      /* AVISO DE BORRADOR SIN PUBLICAR.
+         ------------------------------------------------------------------
+         Un borrador guardado reemplaza listas enteras —pop-ups, slides,
+         productos— y lo hace en silencio, solo en esta computadora. El
+         efecto es desconcertante: alguien agrega algo, lo guarda, lo ve en
+         el sitio... y nadie más lo ve. O al revés: queda un borrador viejo
+         de hace semanas tapando lo que sí está publicado, y cada cambio
+         nuevo parece no tomar.
+
+         Pasó. Por eso, si hay borrador, el panel lo dice arriba de todo en
+         vez de dejarlo como un estado invisible. */
+      (localStorage.getItem('vitalica_overrides')
+        ? '<div class="admin-aviso admin-aviso--borrador">' +
+            '<strong>Tenés un borrador sin publicar.</strong> Lo que ves en el sitio desde ' +
+            'esta computadora incluye esos cambios, pero <strong>nadie más los ve</strong>. ' +
+            'Tocá <strong>Publicar</strong> para que salgan, o <strong>Restablecer</strong> ' +
+            'para descartarlos y volver a ver lo que está publicado.' +
+          '</div>'
+        : '') +
       '<div class="admin-form">' + secciones + '</div>' +
       '<div class="admin-barra-guardar"><button class="btn btn--primario btn--grande" type="button" data-guardar>Guardar cambios</button></div>';
 

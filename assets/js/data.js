@@ -928,6 +928,42 @@ const VITALICA_ARTICULOS = [
    la lista. Es a propósito: dos pop-ups encima del otro espantan al cliente.
    -------------------------------------------------------------------------- */
 const VITALICA_POPUPS = [
+
+  /* SORTEO BIGG UNDER ARMOUR RUNNING FESTIVAL  ·  cargado el 2/10/2026
+     ------------------------------------------------------------------------
+     Lo pidió marketing: llevar al sitio el sorteo que publicaron en
+     Instagram (vitalica.py + olimpsportpy). Se carga acá y no desde el panel
+     porque hacía falta hoy; cuando marketing lo edite desde Configuración,
+     esta entrada se reemplaza sola por la que publiquen.
+
+     'hasta' es lo importante. El sorteo se define el miércoles 7, y sin esa
+     fecha el aviso seguiría invitando a participar de algo ya sorteado hasta
+     que alguien se acordara de apagarlo. No se acuerda nadie.
+
+     Sin imagen a propósito: la placa de la campaña está en Instagram y
+     todavía no la tenemos como archivo. Se agrega desde el panel cuando
+     llegue, en el campo "Imagen" de esta misma campaña.
+
+     Va solo en la portada. Participar es una acción de Instagram, no de
+     compra: ponerlo en el catálogo o en una ficha sería interrumpir a
+     alguien que ya está mirando qué llevar. */
+  {
+    id: 'sorteo-bigg-ua-2026-10',
+    activo: true,
+    etiqueta: 'Sorteo',
+    titulo: 'Sorteamos 1 pase para el BIGG Under Armour Running Festival',
+    texto: 'Inscripción + kit + remera oficial. Para participar seguinos en Instagram, dale like al posteo y etiquetá a dos amigos con quienes correrías. Sorteamos el miércoles 7 de octubre.',
+    imagen: '',
+    cta:  { texto: 'Cómo participar', href: 'https://www.instagram.com/p/Dd_hEytNc9v/' },
+    cta2: null,
+    paginas: ['index.html'],
+    segundos: 7,
+    repetirDias: 2,
+    soloUnaVez: false,
+    desde: '',
+    hasta: '2026-10-07'
+  },
+
   {
     id: 'envio-gratis-lanzamiento',
     activo: false,

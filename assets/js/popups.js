@@ -110,16 +110,23 @@
     caja.setAttribute('aria-modal', 'true');
     caja.setAttribute('aria-labelledby', 'popup-titulo');
 
+    /* Todo lo que se va del sitio abre en pestaña nueva. Antes eso valía solo
+       para 'whatsapp', y desde que el panel deja escribir el destino a mano
+       aparecieron enlaces a Instagram: mandar a alguien afuera de la tienda,
+       en la misma pestaña, por tocar un aviso que no pidió, es la forma más
+       segura de no verlo volver. */
+    function fuera(href) {
+      return href === 'whatsapp' || /^https?:\/\//i.test(href || '');
+    }
+    function enlace(clase, cta) {
+      return '<a class="btn ' + clase + ' btn--grande" href="' + escapar(destino(cta.href)) + '"' +
+             (fuera(cta.href) ? ' target="_blank" rel="noopener"' : '') +
+             ' data-popup-cta>' + escapar(cta.texto) + '</a>';
+    }
+
     var botones = '';
-    if (pop.cta && pop.cta.texto) {
-      botones += '<a class="btn btn--primario btn--grande" href="' + escapar(destino(pop.cta.href)) + '"' +
-                 (pop.cta.href === 'whatsapp' ? ' target="_blank" rel="noopener"' : '') +
-                 ' data-popup-cta>' + escapar(pop.cta.texto) + '</a>';
-    }
-    if (pop.cta2 && pop.cta2.texto) {
-      botones += '<a class="btn btn--contorno btn--grande" href="' + escapar(destino(pop.cta2.href)) + '"' +
-                 ' data-popup-cta>' + escapar(pop.cta2.texto) + '</a>';
-    }
+    if (pop.cta  && pop.cta.texto)  botones += enlace('btn--primario', pop.cta);
+    if (pop.cta2 && pop.cta2.texto) botones += enlace('btn--contorno', pop.cta2);
 
     caja.innerHTML =
       '<div class="popup__velo" data-popup-cerrar></div>' +
