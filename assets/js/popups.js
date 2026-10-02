@@ -50,6 +50,22 @@
   function corresponde(pop) {
     if (!pop || !pop.activo) return false;
 
+    /* VENTANA DE FECHAS. Agregada el 2/10/2026, con el sorteo del BIGG
+       Under Armour Running Festival como caso: se define el 7 de octubre y
+       el aviso tiene que dejar de aparecer solo.
+
+       Sin esto, apagar una campaña dependía de que alguien se acordara. No
+       se acuerda nadie: lo mismo ya había pasado con la barra de anuncios.
+       Un pop-up que invita a un sorteo que ya se sorteó es peor que no
+       tener pop-up.
+
+       Vacías = sin límite, que es lo cómodo para algo que no termina. */
+    var hoy = (typeof Datos !== 'undefined' && Datos.hoyISO) ? Datos.hoyISO() : '';
+    if (hoy) {
+      if (pop.desde && pop.desde > hoy) return false;
+      if (pop.hasta && pop.hasta < hoy) return false;
+    }
+
     // Nunca sobre alguien que está comprando.
     var pag = paginaActual();
     if (pag === 'checkout.html' || pag === 'carrito.html') return false;

@@ -348,6 +348,14 @@
         '<label class="admin-campo"><span class="admin-campo__label">No repetir durante… (días)</span>' +
           '<input type="number" class="o-dias" min="0" max="365" value="' + escAttr(p.repetirDias == null ? 7 : p.repetirDias) + '"></label>' +
       '</div>' +
+      '<div class="admin-dos">' +
+        '<label class="admin-campo"><span class="admin-campo__label">Se muestra desde</span>' +
+          '<input type="date" class="o-desde" value="' + escAttr(p.desde) + '"></label>' +
+        '<label class="admin-campo"><span class="admin-campo__label">Se apaga el</span>' +
+          '<input type="date" class="o-hasta" value="' + escAttr(p.hasta) + '"></label>' +
+      '</div>' +
+      '<span class="admin-hint">Vacías = sin límite. <b>Poner «Se apaga el» es lo que evita que un sorteo ' +
+      'siga invitando a participar después de sorteado</b>, sin depender de que alguien se acuerde de apagarlo.</span>' +
       '<label class="admin-campo"><span class="admin-campo__label">¿En qué páginas?</span>' +
         '<input type="text" class="o-paginas" value="' + escAttr(pags) + '" placeholder="index.html, productos.html">' +
         '<span class="admin-hint">Separadas por coma. <b>Vacío = en todas.</b> Nunca se muestra en el carrito ' +
@@ -817,6 +825,8 @@
                    .map(function (s) { return s.trim(); }).filter(Boolean),
         segundos: Number(leer(row, '.o-segundos') || 6),
         repetirDias: Number(leer(row, '.o-dias') || 7),
+        desde: leer(row, '.o-desde'),
+        hasta: leer(row, '.o-hasta'),
         soloUnaVez: !!(row.querySelector('.o-unavez') || {}).checked
       });
     });
