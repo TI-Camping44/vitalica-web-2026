@@ -100,7 +100,7 @@
       '<span class="admin-hint">Texto = lo que se ve · Destino = página interna (ej. <code>productos.html</code>) o URL externa (https://…)</span>' +
     '</div>';
   }
-  function fImg(label, path, val, hint) {
+  function fImg(label, path, val, hint, recorte) {
     var id = 'im_' + path.replace(/[^a-z0-9]/gi, '_');
     return '<div class="admin-campo admin-img"><span class="admin-campo__label">' + label + '</span>' +
       '<div class="admin-img__row">' +
@@ -110,7 +110,9 @@
           '<span class="admin-hint">' + hint + '</span>' +
         '</div>' +
       '</div>' +
-      '<input type="hidden" id="' + id + '" data-ov="' + path + '" value="' + escAttr(val) + '">' +
+      '<input type="hidden" id="' + id + '" data-ov="' + path + '"' +
+        (recorte ? ' data-recorte="' + recorte + '"' : '') +
+        ' value="' + escAttr(val) + '">' +
     '</div>';
   }
   function seccion(titulo, contenido, abierta) {
@@ -137,7 +139,7 @@
 
   /* Campo de imagen para una fila dinámica: igual que fImg pero sin ruta,
      con un id único para que el lector de archivos sepa a cuál escribirle. */
-  function fImgLibre(label, clase, val, hint) {
+  function fImgLibre(label, clase, val, hint, recorte) {
     var id = 'imx_' + (++contadorImg);
     return '<div class="admin-campo admin-img"><span class="admin-campo__label">' + label + '</span>' +
       '<div class="admin-img__row">' +
@@ -147,7 +149,9 @@
           '<span class="admin-hint">' + hint + '</span>' +
         '</div>' +
       '</div>' +
-      '<input type="hidden" id="' + id + '" class="' + clase + '" value="' + escAttr(val) + '">' +
+      '<input type="hidden" id="' + id + '" class="' + clase + '"' +
+        (recorte ? ' data-recorte="' + recorte + '"' : '') +
+        ' value="' + escAttr(val) + '">' +
     '</div>';
   }
 
@@ -181,7 +185,7 @@
           '<option value="banner"' + (esBanner ? ' selected' : '') + '>Banner completo (la imagen cubre todo el rectángulo)</option>' +
         '</select></label>' +
       fImgLibre('Imagen del slide', 's-imagen', s.imagen,
-        'Banner completo: ~1920×760 px, JPG/WebP &lt;500 KB · Producto flotante: ~800×800 px con fondo transparente') +
+        'Banner a lo ancho. Al elegirla vas a poder recortarla.', '1920x660') +
       '<div class="admin-dos">' +
         '<label class="admin-campo"><span class="admin-campo__label">Botón 1 — texto</span>' +
           '<input type="text" class="s-c1t" value="' + escAttr(c1.texto) + '"></label>' +
@@ -229,8 +233,8 @@
         '<input type="text" class="g-ig" value="' + escAttr(g.instagram) + '" placeholder="nutrigabi_azcona">' +
         '<span class="admin-hint">Dejalo vacío y la tarjeta no lleva enlace.</span></label>' +
       fImgLibre('Foto', 'g-foto', g.foto,
-        'Vertical 3:4 · 600×800 px · la cara en el tercio de arriba · JPG &lt;120 KB. ' +
-        'Sin foto se muestran las iniciales sobre el naranja de marca, que también se ve bien.') +
+        'Vertical 3:4 · la cara en el tercio de arriba. Al elegirla vas a poder recortarla.',
+        '600x800') +
     '</div>';
   }
 
@@ -292,7 +296,7 @@
       '<label class="admin-campo"><span class="admin-campo__label">Modo de uso</span>' +
         '<textarea class="d-modo" rows="2">' + escTxt(p.modoDeUso) + '</textarea></label>' +
       fImgLibre('Foto', 'd-imagen', p.imagen,
-        'Cuadrada 1000×1000 px · fondo blanco o transparente · &lt;300 KB') +
+        'Cuadrada. Al elegirla vas a poder recortarla.', '1000x1000') +
       '<div class="admin-sublista">' +
         '<h4 class="admin-sublista__t">Sabores y tamaños</h4>' +
         '<p class="admin-hint">El <b>código de barras</b> es con lo que Odoo manda el precio y el stock de ' +
@@ -329,7 +333,7 @@
         '<input type="text" class="o-titulo" value="' + escAttr(p.titulo) + '"></label>' +
       '<label class="admin-campo"><span class="admin-campo__label">Texto</span>' +
         '<textarea class="o-texto" rows="3">' + escTxt(p.texto) + '</textarea></label>' +
-      fImgLibre('Imagen (opcional)', 'o-imagen', p.imagen, 'Apaisada ~800×450 px · JPG/WebP &lt;150 KB. Sin imagen queda solo el texto, que también funciona.') +
+      fImgLibre('Imagen (opcional)', 'o-imagen', p.imagen, 'Apaisada. Al elegirla vas a poder recortarla. Sin imagen queda solo el texto, que también funciona.', '800x450') +
       '<div class="admin-dos">' +
         '<label class="admin-campo"><span class="admin-campo__label">Botón — texto</span>' +
           '<input type="text" class="o-c1t" value="' + escAttr(c1.texto) + '"></label>' +
@@ -384,7 +388,7 @@
         '<input type="text" class="p-titulo" value="' + escAttr(p.titulo) + '"></label>' +
       '<label class="admin-campo"><span class="admin-campo__label">Texto</span>' +
         '<textarea class="p-texto" rows="4">' + escTxt(p.texto) + '</textarea></label>' +
-      fImgLibre('Foto', 'p-foto', p.foto, 'Apaisada ~700×500 px · JPG/WebP &lt;200 KB') +
+      fImgLibre('Foto', 'p-foto', p.foto, 'Apaisada. Al elegirla vas a poder recortarla.', '700x500') +
       '<input type="hidden" class="p-icono" value="' + escAttr(p.icono) + '">' +
     '</div>';
   }
@@ -460,7 +464,7 @@
     for (var ci = 0; ci < 6; ci++) {
       comuHTML += fImg('Post ' + (ci + 1), 'config.comunidad.posts.' + ci,
         (comu.posts && comu.posts[ci]) || '',
-        'Cuadrada · 1080×1080 px (como un post de Instagram) · JPG/WebP &lt;300 KB');
+        'Cuadrada, como un post de Instagram. Al elegirla vas a poder recortarla.', '1080x1080');
     }
     secciones += seccion('📸 Comunidad / Instagram (home)', comuHTML);
 
@@ -1214,6 +1218,132 @@
      achicar, elegir formato, medir el logo- en dos lugares distintos, y dos
      copias de esto se desincronizan en la primera correccion.
      ====================================================================== */
+  /* ======================================================================
+     RECORTAR LA FOTO, ACÁ MISMO
+     ----------------------------------------------------------------------
+     Es MOVER Y ACERCAR dentro de un marco fijo, no estirar esquinas. La
+     diferencia importa: con esquinas libres se puede elegir una proporción
+     equivocada y la foto sale deformada o con bandas. Con el marco fijo en
+     la medida que el sitio necesita, cualquier cosa que se elija entra bien.
+     Lo único que se decide es QUÉ parte de la foto se ve, que es la única
+     pregunta que el panel no puede contestar solo.
+
+     El marco muestra además la línea del tercio de arriba: es donde tiene
+     que caer la cara en un retrato, y decirlo en pantalla ahorra explicarlo
+     cada vez.
+     ====================================================================== */
+  function abrirRecortador(dataUrl, anchoFinal, altoFinal, listo) {
+    var img = new Image();
+    img.onload = function () {
+      var prop = anchoFinal / altoFinal;
+      // El visor se adapta a la pantalla, sin pasarse de alto.
+      var vw = Math.min(520, Math.round(window.innerWidth * 0.7));
+      var vh = Math.round(vw / prop);
+      var maxAlto = Math.round(window.innerHeight * 0.55);
+      if (vh > maxAlto) { vh = maxAlto; vw = Math.round(vh * prop); }
+
+      var capa = document.createElement('div');
+      capa.className = 'recorte';
+      capa.innerHTML =
+        '<div class="recorte__caja" role="dialog" aria-modal="true" aria-label="Recortar la foto">' +
+          '<h2 class="recorte__t">Elegí qué parte se ve</h2>' +
+          '<p class="recorte__ayuda">Arrastrá la foto para moverla y usá la barra para acercarla. ' +
+            'En un retrato, la cara va cerca de la línea de arriba.</p>' +
+          '<div class="recorte__visor" style="width:' + vw + 'px;height:' + vh + 'px">' +
+            '<img class="recorte__img" alt="" draggable="false">' +
+            '<div class="recorte__guias"></div>' +
+          '</div>' +
+          '<label class="recorte__zoom">Acercar' +
+            '<input type="range" min="100" max="300" value="100">' +
+          '</label>' +
+          '<div class="recorte__pie">' +
+            '<button type="button" class="btn btn--contorno" data-rec-cancelar>Cancelar</button>' +
+            '<button type="button" class="btn btn--contorno" data-rec-centrar>Centrar</button>' +
+            '<button type="button" class="btn btn--primario" data-rec-ok>Usar este recorte</button>' +
+          '</div>' +
+        '</div>';
+      document.body.appendChild(capa);
+
+      var vista = capa.querySelector('.recorte__img');
+      var zoom  = capa.querySelector('input[type=range]');
+      var escBase = Math.max(vw / img.width, vh / img.height);  // siempre cubre el marco
+      var z = 1, x = 0, y = 0;
+
+      function pintar() {
+        var w = img.width * escBase * z, h = img.height * escBase * z;
+        // No se deja hueco: la foto siempre tapa el marco entero.
+        x = Math.min(0, Math.max(vw - w, x));
+        y = Math.min(0, Math.max(vh - h, y));
+        vista.style.width = w + 'px';
+        vista.style.height = h + 'px';
+        vista.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+      }
+      function centrar() {
+        z = Number(zoom.value) / 100;
+        var w = img.width * escBase * z, h = img.height * escBase * z;
+        x = (vw - w) / 2;
+        /* En vertical no se centra: se deja arriba. Las fotos de persona
+           traen la cara en el tercio superior, y centrar la mandaba al medio
+           del pecho. Encuadrar desde arriba acierta casi siempre. */
+        y = (vh - h) * 0.25;
+        pintar();
+      }
+
+      vista.src = dataUrl;
+      zoom.value = 100;
+      centrar();
+
+      // Arrastrar con mouse o dedo, con los mismos tres eventos.
+      var arrastrando = false, px = 0, py = 0;
+      vista.addEventListener('pointerdown', function (e) {
+        arrastrando = true; px = e.clientX; py = e.clientY;
+        vista.setPointerCapture(e.pointerId);
+      });
+      vista.addEventListener('pointermove', function (e) {
+        if (!arrastrando) return;
+        x += e.clientX - px; y += e.clientY - py;
+        px = e.clientX; py = e.clientY;
+        pintar();
+      });
+      vista.addEventListener('pointerup', function () { arrastrando = false; });
+
+      zoom.addEventListener('input', function () {
+        var antes = z;
+        z = Number(zoom.value) / 100;
+        // Se acerca hacia el centro del marco, no hacia la esquina.
+        var f = z / antes;
+        x = vw / 2 - (vw / 2 - x) * f;
+        y = vh / 2 - (vh / 2 - y) * f;
+        pintar();
+      });
+
+      function cerrar() { capa.remove(); document.removeEventListener('keydown', alTeclado); }
+      function alTeclado(e) { if (e.key === 'Escape') cerrar(); }
+      document.addEventListener('keydown', alTeclado);
+
+      capa.addEventListener('click', function (e) {
+        if (e.target.closest('[data-rec-cancelar]')) { cerrar(); return; }
+        if (e.target.closest('[data-rec-centrar]')) { zoom.value = 100; centrar(); return; }
+        if (!e.target.closest('[data-rec-ok]')) return;
+
+        /* Se dibuja el trozo visible al tamaño final. Las cuentas van sobre
+           la foto ORIGINAL, no sobre lo que se ve en pantalla: el visor está
+           escalado y copiar de ahí perdería resolución. */
+        var esc = escBase * z;
+        var lienzo = document.createElement('canvas');
+        lienzo.width = anchoFinal; lienzo.height = altoFinal;
+        var cx = lienzo.getContext('2d');
+        cx.drawImage(img, -x / esc, -y / esc, vw / esc, vh / esc, 0, 0, anchoFinal, altoFinal);
+        cerrar();
+        listo(lienzo.toDataURL('image/jpeg', 0.86));
+      });
+    };
+    img.onerror = function () {
+      toast('✗ No pude abrir esa imagen.');
+    };
+    img.src = dataUrl;
+  }
+
   function procesarImagen(archivo, id) {
     if (!archivo || !/^image\//.test(archivo.type || '')) {
       toast('✗ Eso no es una imagen. Se aceptan JPG, PNG o WEBP.');
@@ -1221,6 +1351,35 @@
     }
     var reader = new FileReader();
     reader.onload = function () {
+      /* ¿Este campo tiene una forma obligada?
+         ----------------------------------------------------------------
+         Las fotos de personas son 3:4 con la cara en el tercio de arriba,
+         las de producto son cuadradas, el hero es una banda ancha. Hasta
+         ahora el panel encuadraba solo, desde el centro, y en un retrato eso
+         corta la cabeza o deja media frente: es el mismo problema que me
+         costó tres intentos cuando recorté a mano las once fotos del equipo.
+
+         Con medida declarada se abre el recortador y lo decide la persona,
+         que es la única que sabe qué parte de la foto importa. Sin medida
+         -un logo, una imagen suelta- se guarda como venía. */
+      var campo = document.getElementById(id);
+      var medida = campo && campo.getAttribute('data-recorte');
+      if (medida && /^\d+x\d+$/.test(medida)) {
+        var p = medida.split('x');
+        abrirRecortador(reader.result, Number(p[0]), Number(p[1]), function (recortada) {
+          guardarImagen(recortada, id);
+        });
+        return;
+      }
+      guardarImagen(reader.result, id);
+    };
+    reader.readAsDataURL(archivo);
+  }
+
+  /** Achica, elige formato y deja la imagen en su campo. */
+  function guardarImagen(dataUrl, id) {
+    (function () {
+      var reader = { result: dataUrl };
       var hidden = document.getElementById(id);
       var prev = app.querySelector('[data-prev="' + id + '"]');
           /* LA IMAGEN SE ACHICA ACÁ, ANTES DE GUARDARLA.
@@ -1343,8 +1502,7 @@
             };
             m.src = campo.value;
           }
-    };
-    reader.readAsDataURL(archivo);
+    })();
   }
 
   /* ======================================================================

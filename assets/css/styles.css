@@ -2102,6 +2102,53 @@ p { color: var(--color-tinta); }
   box-shadow: 0 0 0 2px var(--color-primario);
   background: var(--color-fondo-suave);
 }
+
+/* ==========================================================================
+   PANEL · RECORTAR LA FOTO
+   --------------------------------------------------------------------------
+   Mover y acercar dentro de un marco fijo, no estirar esquinas: el marco ya
+   tiene la medida que el sitio necesita, así que lo único que se elige es
+   qué parte de la foto se ve.
+   ========================================================================== */
+.recorte {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(10, 10, 12, .72);
+  display: grid; place-items: center; padding: var(--space-5);
+}
+.recorte__caja {
+  background: #fff; border-radius: var(--radio-lg); padding: var(--space-5);
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+  display: flex; flex-direction: column; gap: var(--space-3);
+  max-width: 100%;
+}
+.recorte__t { font-size: var(--fs-lg); margin: 0; }
+.recorte__ayuda { font-size: var(--fs-sm); color: var(--color-tinta-suave); margin: 0; max-width: 46ch; }
+
+.recorte__visor {
+  position: relative; overflow: hidden; margin-inline: auto;
+  background: #0A0A0B; border-radius: var(--radio);
+  cursor: grab; touch-action: none;
+}
+.recorte__visor:active { cursor: grabbing; }
+.recorte__img {
+  position: absolute; top: 0; left: 0;
+  transform-origin: 0 0; user-select: none; max-width: none;
+}
+/* La línea del tercio de arriba: en un retrato, ahí va la cara. Decirlo en
+   pantalla ahorra explicarlo cada vez. */
+.recorte__guias {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(to bottom, transparent calc(33% - 1px), rgba(255,255,255,.45) 33%, transparent calc(33% + 1px)),
+    linear-gradient(to right, transparent calc(50% - 1px), rgba(255,255,255,.2) 50%, transparent calc(50% + 1px));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.35);
+}
+.recorte__zoom {
+  display: flex; align-items: center; gap: var(--space-3);
+  font-size: var(--fs-sm); font-weight: 600;
+}
+.recorte__zoom input { flex: 1; }
+.recorte__pie { display: flex; gap: var(--space-2); justify-content: flex-end; flex-wrap: wrap; }
 .admin-agregar {
   align-self: flex-start;
   background: #fff; border: 1px dashed var(--color-primario);
