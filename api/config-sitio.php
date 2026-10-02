@@ -39,7 +39,44 @@
 
 declare(strict_types=1);
 require_once __DIR__ . '/sesion.php';
-sesion_exigir_admin();
+
+/* --- EL PORTERO CONTESTA JSON, NO HTML ------------------------------------
+   sesion_exigir_admin() está pensado para una página: si no hay sesión manda
+   un Location al login, y si no sos administrador imprime una pantalla de
+   "sin permiso". Las dos cosas son correctas para un navegador y venenosas
+   para este archivo, que lo llama el panel con fetch() esperando JSON.
+
+   Qué pasaba (2/10/2026): a quien se le vencía la sesión con el panel
+   abierto, al tocar Publicar le llegaba HTML, r.json() reventaba, caía en el
+   catch genérico y leía "No se pudo hablar con el servidor. ¿Seguís
+   conectado?". El servidor contestaba perfecto; el problema era que contestaba
+   en otro idioma. Dos personas perdieron cambios creyendo que se habían
+   publicado.
+
+   Ahora el error dice qué pasó y el panel lo puede mostrar tal cual.
+   -------------------------------------------------------------------------- */
+header('Content-Type: application/json; charset=utf-8');
+
+if (!sesion_activa()) {
+    http_response_code(401);
+    echo json_encode([
+        'ok'    => false,
+        'error' => 'Se cerró tu sesión por inactividad. Entrá de nuevo y volvé a publicar; '
+                 . 'lo que editaste sigue guardado en esta computadora.',
+        'motivo' => 'sin-sesion',
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+if (!sesion_es_admin()) {
+    http_response_code(403);
+    echo json_encode([
+        'ok'    => false,
+        'error' => 'Tu usuario no es administrador, así que no puede publicar cambios del sitio. '
+                 . 'Pedile a un administrador que lo haga o que te cambie el permiso.',
+        'motivo' => 'sin-permiso',
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 
 const CFG_MAX = 3 * 1024 * 1024;   // 3 MB: los logos viajan adentro como data:
 
@@ -50,8 +87,16 @@ $PUBLICADO = $RAIZ . '/assets/js/data-overrides.js';
 /* Solo estas claves de primer nivel. No es paranoia: lo que entra acá se
    escribe en un .js que ejecutan TODAS las páginas del sitio. Si un día el
    panel manda una clave de más por un error, mejor que se pierda a que
-   termine publicada. */
-const CFG_CLAVES = ['config', 'hero', 'productos', 'tiendas'];
+   termine publicada.
+
+   ⚠️ SI AGREGÁS UNA SECCIÓN AL PANEL, AGREGALA TAMBIÉN ACÁ.
+   'campanas' faltaba desde que existe la sección "Etiquetas y promociones".
+   El efecto: marketing elegía la etiqueta, tocaba Publicar, el panel decía
+   "✓ Publicado"... y el servidor tiraba esos datos a la basura sin avisar,
+   porque la clave no estaba en esta lista. Nadie podía darse cuenta: la
+   respuesta era un éxito. Corregido el 2/10/2026, junto con el aviso de
+   abajo para que no vuelva a pasar en silencio. */
+const CFG_CLAVES = ['config', 'hero', 'productos', 'tiendas', 'campanas'];
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -112,6 +157,13 @@ foreach (CFG_CLAVES as $k) {
     if (isset($ov[$k])) $limpio[$k] = $ov[$k];
 }
 
+/* Lo que llegó y no está en la lista blanca se descarta —esa es la idea—,
+   pero descartarlo EN SILENCIO fue el bug de 'campanas': el panel festejaba
+   un "Publicado" que no había publicado nada. Si sobra una clave, la
+   respuesta lo dice y el panel lo muestra. Mejor un aviso raro que una
+   mentira prolija. */
+$ignoradas = array_values(array_diff(array_keys($ov), CFG_CLAVES));
+
 $dir = dirname($ARCHIVO);
 if (!is_dir($dir) && !@mkdir($dir, 0775, true)) {
     cfg_responder(['ok' => false, 'error' => 'No pude crear la carpeta de guardado.'], 500);
@@ -152,4 +204,5 @@ cfg_responder([
     'publicado' => gmdate('c'),
     'por'       => $quien['nombre'] ?? '',
     'peso'      => strlen($json),
+    'ignoradas' => $ignoradas,
 ]);

@@ -10,7 +10,17 @@
    acá y ni siquiera manda el HTML de abajo.
    ============================================================================ */
 require_once __DIR__ . '/api/sesion.php';
-sesion_exigir();
+
+/* ADMIN, no solo con sesión.  Corregido el 2/10/2026.
+   Antes alcanzaba con sesion_exigir(), así que alguien con permiso "Pedidos"
+   podía abrir esta pantalla, editar media hora y recién enterarse al tocar
+   Publicar, cuando api/config-sitio.php lo rechazaba. Media hora de trabajo
+   tirada y ninguna explicación en pantalla.
+
+   La puerta va acá: si no puede publicar, no debería poder entrar a editar.
+   El menú ya le muestra Configuración solo a los administradores; esto es lo
+   que lo hace cumplir, porque esconder un enlace no protege nada. */
+sesion_exigir_admin();
 ?>
 <!DOCTYPE html>
 <html lang="es">

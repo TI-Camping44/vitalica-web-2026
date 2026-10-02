@@ -49,6 +49,17 @@ const Vitalica = {
       };
     }
 
+    /* "ninguna" quiere decir SIN CHAPITA, y corta acá.
+
+       Hace falta un valor explícito porque vacío no alcanza: vacío significa
+       "nadie dijo nada todavía" y deja pasar las dos fuentes viejas de abajo
+       —p.tags y p.destacado—. Esa diferencia costó un bug el 2/10/2026:
+       marketing ponía "— Sin etiqueta —" en el panel, guardaba, y en el sitio
+       la chapita seguía ahí porque el producto tenía `destacado: true`. Desde
+       el panel no había forma de apagarla, y nada en pantalla explicaba por
+       qué. Ver assets/js/pages/admin.js. */
+    if (c.etiqueta === 'ninguna') return null;
+
     var txt = c.etiqueta || ((p.tags && p.tags.length) ? p.tags[0] : '');
 
     /* Sin etiqueta propia, los productos marcados con `destacado` en data.js
@@ -68,6 +79,7 @@ const Vitalica = {
     var bajo = txt.toLowerCase();
     if (bajo === 'lanzamiento') clase = 'tag--lanzamiento';
     if (bajo === 'oferta' || bajo === 'promo') clase = 'tag--oferta';
+    if (bajo === 'destacado') clase = 'tag--destacado';
     return { texto: txt, clase: clase };
   },
 

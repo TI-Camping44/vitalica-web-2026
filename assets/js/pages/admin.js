@@ -225,12 +225,29 @@
        único dueño. Si se pudieran pisar desde el panel, en dos semanas nadie
        sabría cuál de los dos manda. */
     var hoyISO = (typeof Datos !== 'undefined' && Datos.hoyISO) ? Datos.hoyISO() : '';
+    /* "ninguna" y no cadena vacía: ver el comentario largo en
+       components.js → Comp.etiquetaDe(). Vacío significa "nadie decidió" y
+       deja que el sitio caiga en p.tags o en p.destacado; "ninguna" es una
+       decisión y apaga la chapita de verdad. */
     var opcEtiqueta = [
-      { valor: '',            texto: '— Sin etiqueta —' },
+      { valor: 'ninguna',     texto: '— Sin etiqueta —' },
       { valor: 'Nuevo',       texto: 'Nuevo' },
       { valor: 'Lanzamiento', texto: 'Lanzamiento' },
-      { valor: 'Oferta',      texto: 'Oferta' }
+      { valor: 'Oferta',      texto: 'Oferta' },
+      { valor: 'Destacado',   texto: 'Destacado' }
     ];
+
+    /* Lo que el SITIO muestra hoy para este producto, que no es lo mismo que
+       lo que hay cargado en campanas. Si acá se mostrara solo c.etiqueta, el
+       panel diría "— Sin etiqueta —" para un producto que en el catálogo
+       tiene un "DESTACADO" bien grande, y nadie entendería de dónde sale.
+       Pasó. */
+    function etiquetaEfectiva(p, c) {
+      if (c.etiqueta) return c.etiqueta;
+      if (p.tags && p.tags.length) return p.tags[0];
+      if (p.destacado) return 'Destacado';
+      return 'ninguna';
+    }
 
     var campHTML = VITALICA_PRODUCTOS.map(function (p) {
       var c = (typeof VITALICA_CAMPANAS !== 'undefined' && VITALICA_CAMPANAS[p.id]) || {};
@@ -240,7 +257,7 @@
       return '<div class="admin-grupo"><h3 class="admin-grupo__t">' + escTxt(p.nombre) +
           (vencida ? ' <span class="admin-vencida">etiqueta vencida</span>' : '') +
         '</h3>' +
-        fSelect('Etiqueta', 'campanas.' + p.id + '.etiqueta', c.etiqueta, opcEtiqueta,
+        fSelect('Etiqueta', 'campanas.' + p.id + '.etiqueta', etiquetaEfectiva(p, c), opcEtiqueta,
                 'Se muestra sobre la foto, en el catálogo y en la ficha.') +
         fFecha('La etiqueta se apaga el', 'campanas.' + p.id + '.etiquetaHasta', c.etiquetaHasta,
                'Dejalo vacío y no vence nunca — pero entonces alguien se tiene que acordar de sacarla.') +
@@ -384,17 +401,42 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: cfgToken, overrides: ov })
       })
-      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      /* El .json() va con su propio catch a propósito. Si el servidor
+         contestara algo que no es JSON -una pantalla de error de PHP, una
+         página del hosting- sin esto el fallo se mezclaba con el de red y
+         los dos terminaban diciendo "¿Seguís conectado?", que era mentira
+         la mitad de las veces. Acá se distingue y se muestra el código. */
+      .then(function (r) {
+        return r.json()
+          .then(function (d) { return { ok: r.ok, estado: r.status, d: d }; })
+          .catch(function () { return { ok: false, estado: r.status, d: null }; });
+      })
       .then(function (res) {
         if (res.ok && res.d && res.d.ok) {
-          toast('✓ Publicado. Ya lo ven todos los visitantes.');
+          /* El servidor avisa si tiró alguna sección por no estar en su
+             lista blanca. Antes se perdían sin decir nada y el panel
+             festejaba igual; así se perdieron las etiquetas durante semanas
+             sin que nadie pudiera darse cuenta. */
+          var fuera = res.d.ignoradas || [];
+          if (fuera.length) {
+            toast('⚠ Publicado, PERO el servidor no aceptó: ' + fuera.join(', ') +
+                  '. Avisá que falta agregarlas en api/config-sitio.php.');
+          } else {
+            toast('✓ Publicado. Ya lo ven todos los visitantes.');
+          }
           marcarEstado('publicado');
-        } else {
-          toast('✗ ' + ((res.d && res.d.error) || 'No se pudo publicar.'));
+          return;
         }
+        if (res.d && res.d.error) { toast('✗ ' + res.d.error); return; }
+        if (res.estado === 401 || res.estado === 403) {
+          toast('✗ Se cerró tu sesión. Entrá de nuevo y volvé a publicar: lo que editaste no se perdió.');
+          return;
+        }
+        toast('✗ El servidor contestó algo que no entiendo (código ' + res.estado + '). '
+            + 'Tus cambios siguen guardados acá.');
       })
       .catch(function () {
-        toast('✗ No se pudo hablar con el servidor. ¿Seguís conectado?');
+        toast('✗ No llegué al servidor. Revisá tu conexión; lo que editaste no se perdió.');
       })
       .then(function () {
         if (boton) { boton.disabled = false; boton.textContent = 'Publicar'; }

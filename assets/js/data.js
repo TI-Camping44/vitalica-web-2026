@@ -2343,6 +2343,41 @@ function aplicarOverrides(ov) {
     });
   }
 
+  /* ETIQUETAS Y PROMOCIONES
+
+     Faltaba. Y faltaba en los tres lugares a la vez, que es lo que lo hacía
+     invisible: el panel editaba 'campanas', api/config-sitio.php la tiraba
+     por no estar en su lista blanca, y acá tampoco se aplicaba. Marketing
+     cambiaba una etiqueta, leía "✓ Publicado" y en el sitio no pasaba nada.
+     Corregido el 2/10/2026.
+
+     Se fusiona por producto en vez de reemplazar el objeto entero: así, tocar
+     la etiqueta de un producto no borra la promo que alguien cargó en otro.
+     Un producto que no estaba en la lista de fábrica se agrega. */
+  if (ov.campanas && typeof ov.campanas === 'object') {
+    Object.keys(ov.campanas).forEach(function (id) {
+      var o = ov.campanas[id];
+      if (!o || typeof o !== 'object') return;
+      var base = VITALICA_CAMPANAS[id] || { etiqueta: '', etiquetaHasta: '', promo: null };
+
+      if (o.etiqueta != null)      base.etiqueta = o.etiqueta;
+      if (o.etiquetaHasta != null) base.etiquetaHasta = o.etiquetaHasta;
+
+      if (o.promo && typeof o.promo === 'object') {
+        base.promo = Object.assign(
+          { activa: false, descuento: 0, texto: '', desde: '', hasta: '' },
+          base.promo || {}, o.promo);
+        // El descuento llega como texto del formulario: "15", "15%", " 15 ".
+        var d = String(base.promo.descuento == null ? '' : base.promo.descuento)
+                  .replace(/[^\d]/g, '');
+        base.promo.descuento = d === '' ? 0 : Number(d);
+        base.promo.activa = base.promo.activa === true ||
+                            base.promo.activa === 'si' || base.promo.activa === 'Sí';
+      }
+      VITALICA_CAMPANAS[id] = base;
+    });
+  }
+
   /* Comercios aliados.
 
      El panel admin guarda solo nombre y ciudad: el logo es un archivo, no un
