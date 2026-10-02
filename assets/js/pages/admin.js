@@ -346,7 +346,8 @@
         '<label class="admin-campo"><span class="admin-campo__label">Aparece a los… (segundos)</span>' +
           '<input type="number" class="o-segundos" min="0" max="60" value="' + escAttr(p.segundos == null ? 6 : p.segundos) + '"></label>' +
         '<label class="admin-campo"><span class="admin-campo__label">No repetir durante… (días)</span>' +
-          '<input type="number" class="o-dias" min="0" max="365" value="' + escAttr(p.repetirDias == null ? 7 : p.repetirDias) + '"></label>' +
+          '<input type="number" class="o-dias" min="0" max="365" value="' + escAttr(p.repetirDias == null ? 7 : p.repetirDias) + '">' +
+          '<span class="admin-hint"><b>0 = aparece en cada visita.</b> 7 = a quien lo cerró no se le muestra por una semana.</span></label>' +
       '</div>' +
       '<div class="admin-dos">' +
         '<label class="admin-campo"><span class="admin-campo__label">Se muestra desde</span>' +
@@ -362,6 +363,12 @@
         'ni en el checkout: interrumpir a alguien que ya está comprando es la forma más cara de ganar un clic.</span></label>' +
       '<label class="admin-campo admin-check"><input type="checkbox" class="o-unavez"' + (p.soloUnaVez ? ' checked' : '') + '>' +
         ' Mostrarlo una sola vez por persona</label>' +
+      '<label class="admin-campo admin-check"><input type="checkbox" class="o-notoco"' + (p.noRepetirSiToco ? ' checked' : '') + '>' +
+        ' A quien ya tocó el botón, no mostrárselo más</label>' +
+      '<span class="admin-hint">Esta última es la combinación útil para un sorteo: poné ' +
+      '<b>0 días</b> arriba para que aparezca siempre, y tildá esto para que ' +
+      'desaparezca apenas la persona participa. Seguir mostrándoselo a quien ya ' +
+      'hizo lo que pedías es la forma de que lo empiece a cerrar sin leer.</span>' +
     '</div>';
   }
 
@@ -846,7 +853,8 @@
         repetirDias: Number(leer(row, '.o-dias') || 7),
         desde: leer(row, '.o-desde'),
         hasta: leer(row, '.o-hasta'),
-        soloUnaVez: !!(row.querySelector('.o-unavez') || {}).checked
+        soloUnaVez: !!(row.querySelector('.o-unavez') || {}).checked,
+        noRepetirSiToco: !!(row.querySelector('.o-notoco') || {}).checked
       });
     });
     ov.popups = popups;
@@ -1044,28 +1052,84 @@
         var reader = new FileReader();
         reader.onload = function () {
           var hidden = document.getElementById(id);
-          if (hidden) hidden.value = reader.result;
           var prev = app.querySelector('[data-prev="' + id + '"]');
-          if (prev) prev.src = reader.result;
 
-          /* Logo de comercio aliado: se miden ancho y alto reales y se
-             guardan. Los logos vienen con proporciones muy distintas —hay
-             uno de 190×27 y otro de 111×61— así que sin medida propia
-             todos saldrían con la misma y los anchos se deformarían.
+          /* LA IMAGEN SE ACHICA ACÁ, ANTES DE GUARDARLA.
+             ----------------------------------------------------------------
+             Todas las imágenes del panel viajan adentro de la configuración
+             como texto (data:), y el servidor acepta 3 MB en total. Una foto
+             de celular sola se come eso.
 
-             Se encajan en una caja de 190×52 conservando la proporción,
-             que es el rango en el que están los que ya había. */
-          if (hidden && hidden.classList.contains('t-logo')) {
-            var fila = hidden.closest('.admin-tienda');
-            var medidor = new Image();
-            medidor.onload = function () {
-              if (!medidor.width || !medidor.height) return;
-              var esc = Math.min(190 / medidor.width, 52 / medidor.height);
+             Pasó: marketing subió la placa del sorteo, toco Publicar, y la
+             imagen no cambió. El servidor la rechazaba entera por tamaño y
+             el aviso pasaba desapercibido. Pedirle a alguien que achique un
+             archivo antes de subirlo es pedirle que haga el trabajo de la
+             herramienta.
+
+             Se achica al lado largo de 1200 px, que sobra para cualquier
+             lugar del sitio. Un PNG se guarda como PNG para no perder la
+             transparencia -los logos la necesitan-; el resto sale JPG, que
+             para una foto pesa una fracción. */
+          var original = reader.result;
+          var esPng = /^data:image\/png/i.test(original);
+
+          var medidor = new Image();
+          medidor.onload = function () {
+            var w = medidor.width, h = medidor.height;
+            var dato = original;
+
+            if (w && h) {
+              var esc = Math.min(1, 1200 / Math.max(w, h));
+              var cw = Math.round(w * esc), ch = Math.round(h * esc);
+              // Se reescribe aunque no haya que achicar: una foto de celular
+              // de 1000 px puede pesar 4 MB igual, y el re-encode la baja.
+              try {
+                var lienzo = document.createElement('canvas');
+                lienzo.width = cw; lienzo.height = ch;
+                var cx = lienzo.getContext('2d');
+                cx.drawImage(medidor, 0, 0, cw, ch);
+                var reducida = esPng ? lienzo.toDataURL('image/png')
+                                     : lienzo.toDataURL('image/jpeg', 0.85);
+                // Solo se usa si realmente quedó más liviana.
+                if (reducida && reducida.length < original.length) dato = reducida;
+              } catch (e) { /* si el navegador no deja, va la original */ }
+            }
+
+            if (hidden) hidden.value = dato;
+            if (prev) prev.src = dato;
+
+            var kb = Math.round(dato.length * 0.75 / 1024);
+            if (kb > 900) {
+              toast('⚠ Esa imagen pesa ' + kb + ' KB aun achicada. Si al publicar da error ' +
+                    'de tamaño, probá con una más chica.');
+            }
+            medir(hidden, prev);
+          };
+          medidor.onerror = function () {
+            if (hidden) hidden.value = original;
+            if (prev) prev.src = original;
+            medir(hidden, prev);
+          };
+          medidor.src = original;
+
+          /* Medidas del logo de comercio aliado. Se mide la imagen YA
+             achicada, no la original: los logos vienen con proporciones muy
+             distintas -hay uno de 190x27 y otro de 111x61- y sin medida
+             propia saldrian todos con la misma. Se encajan en una caja de
+             190x52 conservando la proporcion. */
+          function medir(campo, vista) {
+            if (!campo || !campo.classList.contains('t-logo')) return;
+            var fila = campo.closest('.admin-tienda');
+            if (!fila) return;
+            var m = new Image();
+            m.onload = function () {
+              if (!m.width || !m.height) return;
+              var e2 = Math.min(190 / m.width, 52 / m.height);
               var a = fila.querySelector('.t-ancho'), al = fila.querySelector('.t-altura');
-              if (a)  a.value  = Math.round(medidor.width * esc);
-              if (al) al.value = Math.round(medidor.height * esc);
+              if (a)  a.value  = Math.round(m.width * e2);
+              if (al) al.value = Math.round(m.height * e2);
             };
-            medidor.src = reader.result;
+            m.src = campo.value;
           }
         };
         reader.readAsDataURL(f.files[0]);

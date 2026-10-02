@@ -33,12 +33,30 @@
     try { return JSON.parse(localStorage.getItem(CLAVE)) || {}; }
     catch (e) { return {}; }
   }
-  function marcarVisto(id) {
+  /* CERRAR NO ES LO MISMO QUE PARTICIPAR.
+     --------------------------------------------------------------------
+     Antes las dos cosas se guardaban igual: una fecha. Entonces no había
+     forma de pedir lo que pidió marketing con el sorteo —"que aparezca
+     siempre, pero a quien ya tocó 'Cómo participar' no se lo muestres
+     más"—, porque el aviso no sabía cuál de las dos había pasado.
+
+     Ahora se guarda { t: cuándo, hizo: si tocó el botón }. Los registros
+     viejos son un número suelto y se siguen entendiendo: valen como
+     "cerrado". */
+  function marcarVisto(id, hizo) {
     try {
       var v = leerVistos();
-      v[id] = Date.now();
+      v[id] = { t: Date.now(), hizo: !!hizo };
       localStorage.setItem(CLAVE, JSON.stringify(v));
     } catch (e) { /* sin almacenamiento: no pasa nada */ }
+  }
+
+  /** Normaliza el registro viejo (un número) y el nuevo (un objeto). */
+  function leerVisto(id) {
+    var v = leerVistos()[id];
+    if (v == null) return null;
+    if (typeof v === 'number') return { t: v, hizo: false };
+    return { t: v.t || 0, hizo: !!v.hizo };
   }
 
   function paginaActual() {
@@ -75,13 +93,20 @@
       if (pop.paginas.indexOf(pag) === -1) return false;
     }
 
-    var visto = leerVistos()[pop.id];
+    var visto = leerVisto(pop.id);
     if (!visto) return true;
+
+    /* Ya participó: no se le vuelve a pedir. Esto gana sobre todo lo demás,
+       incluido "repetir cada visita": alguien que ya hizo lo que el aviso
+       pedía no tiene por qué seguir viéndolo, y seguir mostrándoselo es la
+       forma de que lo empiece a cerrar sin leer. */
+    if (visto.hizo && pop.noRepetirSiToco) return false;
+
     if (pop.soloUnaVez) return false;
 
     var dias = pop.repetirDias == null ? 7 : pop.repetirDias;
-    if (dias <= 0) return true;
-    return (Date.now() - visto) > dias * 24 * 60 * 60 * 1000;
+    if (dias <= 0) return true;          // 0 = en cada visita
+    return (Date.now() - visto.t) > dias * 24 * 60 * 60 * 1000;
   }
 
   /* ---- Resuelve el destino de un botón ----
@@ -146,7 +171,7 @@
     requestAnimationFrame(function () { caja.classList.add('popup--visible'); });
 
     function cerrar() {
-      marcarVisto(pop.id);
+      marcarVisto(pop.id, false);
       caja.classList.remove('popup--visible');
       document.removeEventListener('keydown', alTeclado);
       setTimeout(function () {
@@ -170,9 +195,10 @@
     caja.querySelectorAll('[data-popup-cerrar]').forEach(function (b) {
       b.addEventListener('click', cerrar);
     });
-    // Tocar un botón de acción también cuenta como visto: ya cumplió su función.
+    /* Tocar un botón de acción cuenta como visto Y como hecho. Esa segunda
+       marca es la que permite no volver a mostrárselo a quien ya participó. */
     caja.querySelectorAll('[data-popup-cta]').forEach(function (b) {
-      b.addEventListener('click', function () { marcarVisto(pop.id); });
+      b.addEventListener('click', function () { marcarVisto(pop.id, true); });
     });
     document.addEventListener('keydown', alTeclado);
 

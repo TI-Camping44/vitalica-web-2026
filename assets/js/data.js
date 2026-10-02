@@ -965,8 +965,13 @@ const VITALICA_POPUPS = [
     cta2: null,
     paginas: ['index.html'],
     segundos: 7,
-    repetirDias: 2,
+    repetirDias: 0,            // 0 = en cada visita
     soloUnaVez: false,
+    /* Si ya toco "Como participar", no se le muestra mas: ya hizo lo que el
+       aviso pedia, y seguir mostrandoselo es la forma de que lo cierre sin
+       leer. Combinado con repetirDias: 0 da lo que pidio marketing -que
+       aparezca siempre, hasta que la persona participe-. */
+    noRepetirSiToco: true,
     desde: '',
     hasta: '2026-10-07'
   },
