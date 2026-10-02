@@ -2149,6 +2149,26 @@ p { color: var(--color-tinta); }
 }
 .recorte__zoom input { flex: 1; }
 .recorte__pie { display: flex; gap: var(--space-2); justify-content: flex-end; flex-wrap: wrap; }
+
+/* El campo al que acaba de saltar la vista. Dura poco a propósito: es para
+   encontrarlo con el ojo, no para quedarse pintado. */
+.admin-resaltado {
+  animation: admin-destello 1.8s ease;
+  border-radius: var(--radio);
+}
+@keyframes admin-destello {
+  0%, 60% { box-shadow: 0 0 0 3px rgba(239, 125, 42, .55); background: #FFF6EF; }
+  100%    { box-shadow: 0 0 0 0 rgba(239, 125, 42, 0); background: transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-resaltado { animation: none; box-shadow: 0 0 0 3px rgba(239, 125, 42, .55); }
+}
+
+/* Avisa en la barra de la vista que se puede tocar para saltar al campo. */
+.admin-vista__truco {
+  font-size: var(--fs-xs); color: var(--color-tinta-suave);
+  white-space: nowrap;
+}
 .admin-agregar {
   align-self: flex-start;
   background: #fff; border: 1px dashed var(--color-primario);

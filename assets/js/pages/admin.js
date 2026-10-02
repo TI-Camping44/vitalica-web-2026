@@ -115,8 +115,12 @@
         ' value="' + escAttr(val) + '">' +
     '</div>';
   }
-  function seccion(titulo, contenido, abierta) {
-    return '<details class="admin-sec"' + (abierta ? ' open' : '') + '>' +
+  /* La 'clave' permite saltar a una seccion desde la vista en vivo: ver
+     conectarVista(). Sin ella habria que buscarla por el texto del titulo,
+     que cambia cada vez que marketing pide otra palabra. */
+  function seccion(titulo, contenido, abierta, clave) {
+    return '<details class="admin-sec"' + (abierta ? ' open' : '') +
+      (clave ? ' data-sec="' + clave + '"' : '') + '>' +
       '<summary>' + titulo + '</summary><div class="admin-sec__body">' + contenido + '</div></details>';
   }
 
@@ -438,7 +442,7 @@
     secciones += seccion('🖼️ Marca / Logos',
       fImg('Logo Vitalica', 'config.marca.logoVitalica', marca.logoVitalica, 'PNG con fondo transparente · ~600×160 px') +
       fImg('Logo Olimp (va en el footer oscuro)', 'config.marca.logoOlimp', marca.logoOlimp, 'PNG blanco con fondo transparente · ~400×120 px'),
-      true);
+      true, 'marca');
 
     // Menú
     var navHTML = (C.nav || []).map(function (it, i) {
@@ -447,7 +451,7 @@
         (it.megamenu ? '<input type="hidden" data-ov="config.nav.' + i + '.megamenu" value="true">' : '') +
       '</div>';
     }).join('');
-    secciones += seccion('🧭 Menú (navegación)', navHTML);
+    secciones += seccion('🧭 Menú (navegación)', navHTML, false, 'menu');
 
     // Hero — ahora se pueden agregar y quitar slides
     var slides = (typeof VITALICA_HERO !== 'undefined' ? VITALICA_HERO : []);
@@ -455,7 +459,7 @@
       '<p class="admin-nota">Los slides se muestran en este orden y rotan solos. ' +
       'Con uno solo, el carrusel deja de rotar y queda una portada fija.</p>' +
       '<div data-slides>' + slides.map(filaSlide).join('') + '</div>' +
-      botonAgregar('data-add-slide', 'Agregar slide'));
+      botonAgregar('data-add-slide', 'Agregar slide'), false, 'hero');
 
     // Comunidad / Instagram (sección "Sumate a la comunidad" del home)
     var comu = C.comunidad || { handle: '@vitalica.py', posts: [] };
@@ -466,7 +470,7 @@
         (comu.posts && comu.posts[ci]) || '',
         'Cuadrada, como un post de Instagram. Al elegirla vas a poder recortarla.', '1080x1080');
     }
-    secciones += seccion('📸 Comunidad / Instagram (home)', comuHTML);
+    secciones += seccion('📸 Comunidad / Instagram (home)', comuHTML, false, 'comunidad');
 
     // Anuncios — con fecha de inicio y fin
     secciones += seccion('📢 Barra de anuncios',
@@ -475,19 +479,19 @@
       'Poner «Hasta» es la forma de que una promo se apague sola y no quede ' +
       'anunciando en enero algo que terminó en noviembre.</p>' +
       '<div data-anuncios>' + (C.anuncios || []).map(filaAnuncio).join('') + '</div>' +
-      botonAgregar('data-add-anuncio', 'Agregar mensaje'));
+      botonAgregar('data-add-anuncio', 'Agregar mensaje'), false, 'anuncios');
 
     // WhatsApp
     secciones += seccion('💬 WhatsApp',
       fTexto('Número (solo dígitos, formato internacional)', 'config.whatsapp.numero', wa.numero, 'Ej: 595976383922 (sin + ni espacios)') +
       fTexto('Número visible', 'config.whatsapp.numeroVisible', wa.numeroVisible) +
-      fArea('Mensaje pre-cargado', 'config.whatsapp.mensaje', wa.mensaje));
+      fArea('Mensaje pre-cargado', 'config.whatsapp.mensaje', wa.mensaje), false, 'whatsapp');
 
     // Redes
     secciones += seccion('🔗 Redes sociales',
       fTexto('Instagram (URL)', 'config.redes.instagram', redes.instagram, 'URL completa de tu perfil') +
       fTexto('TikTok (URL)', 'config.redes.tiktok', redes.tiktok) +
-      fTexto('Facebook (URL)', 'config.redes.facebook', redes.facebook));
+      fTexto('Facebook (URL)', 'config.redes.facebook', redes.facebook), false, 'redes');
 
     // Envíos
     secciones += seccion('🚚 Costos de envío (Gs.)',
@@ -518,7 +522,7 @@
                (cols.nutricionista || {}).titulo) +
       '</div>' +
       '<div data-gente>' + gente.map(filaPersona).join('') + '</div>' +
-      botonAgregar('data-add-persona', 'Agregar persona'));
+      botonAgregar('data-add-persona', 'Agregar persona'), false, 'equipo');
 
     // Ciencia real
     var ci = C.ciencia || {};
@@ -529,7 +533,7 @@
       '<p class="admin-nota">El video vertical de la planta no se edita acá: es un archivo ' +
       'que se sube una sola vez por cPanel a <code>assets/video/</code>. Si querés cambiarlo, avisá.</p>' +
       '<div data-pilares>' + (ci.pilares || []).map(filaPilar).join('') + '</div>' +
-      botonAgregar('data-add-pilar', 'Agregar pilar'));
+      botonAgregar('data-add-pilar', 'Agregar pilar'), false, 'ciencia');
 
     /* ---- Pop-ups de campaña -------------------------------------------
        El motor vive en popups.js y ya existía; lo que faltaba era cargarlos
@@ -541,7 +545,7 @@
       'prendidos para la misma página gana el primero de la lista. Dos pop-ups encima del otro ' +
       'no venden más, venden menos.</p>' +
       '<div data-popups>' + pops.map(filaPopup).join('') + '</div>' +
-      botonAgregar('data-add-popup', 'Agregar pop-up'));
+      botonAgregar('data-add-popup', 'Agregar pop-up'), false, 'popups');
 
     // Datos de la empresa (pie de página y documentos legales)
     var em = C.empresa || {};
@@ -562,7 +566,7 @@
       'La dirección de cada ficha se arma con el nombre la primera vez y después ' +
       'ya no cambia, porque es el enlace que circula.</p>' +
       '<div data-productos>' + VITALICA_PRODUCTOS.map(filaProducto).join('') + '</div>' +
-      botonAgregar('data-add-producto', 'Agregar producto'));
+      botonAgregar('data-add-producto', 'Agregar producto'), false, 'productos');
 
     /* ---- Etiquetas y promociones ----------------------------------------
        Todo lo que es decisión de marketing, junto y con fechas. El precio y
@@ -633,7 +637,7 @@
       (typeof VITALICA_TIENDAS !== 'undefined' ? VITALICA_TIENDAS : []).map(filaTienda).join('') +
       '</div>' +
       '<button type="button" class="btn btn--contorno" data-add-tienda>+ Agregar tienda</button>';
-    secciones += seccion('📍 Comercios aliados (dónde comprar)', tiendasHTML);
+    secciones += seccion('📍 Comercios aliados (dónde comprar)', tiendasHTML, false, 'aliados');
 
     app.innerHTML =
       '<header class="admin-top">' +
@@ -704,6 +708,7 @@
               '<button type="button" data-ancho="suelto" class="on" title="Pantalla de computadora">🖥</button>' +
               '<button type="button" data-ancho="390" title="Celular">📱</button>' +
             '</div>' +
+            '<span class="admin-vista__truco">Tocá algo de la página para ir a su campo</span>' +
             '<span class="admin-vista__estado" data-vista-estado></span>' +
             '<button type="button" class="admin-vista__cerrar" data-vista-cerrar title="Ocultar la vista">✕</button>' +
           '</div>' +
@@ -1222,9 +1227,159 @@
       oculto.hidden = false;
       visible.hidden = true;
       vistaEstado('al día');
+      conectarVista(oculto);
     };
     // El sello de tiempo evita que el navegador sirva la página de su cache.
     oculto.src = pagina + (pagina.indexOf('?') === -1 ? '?' : '&') + 'vp=' + Date.now();
+  }
+
+  /* ======================================================================
+     TOCAR EN LA VISTA Y CAER EN EL CAMPO
+     ----------------------------------------------------------------------
+     Es el paso intermedio hacia el editor visual: no se escribe sobre la
+     página, pero se deja de buscar. Tocás el titular del hero y el panel
+     abre esa sección, se desplaza hasta el campo y le pone el cursor.
+
+     Por qué así y no editando encima: para escribir sobre la página haría
+     falta marcar cada pieza del sitio con el campo que le corresponde, o
+     sea tocar los archivos que dibujan el sitio público. Acá, en cambio, se
+     reconoce lo que se tocó desde afuera, mirando el HTML que ya existe.
+     El sitio no se entera de que hay un panel, que es como tiene que ser.
+     ====================================================================== */
+
+  /** Resalta un campo y le deja el cursor. */
+  function irACampo(clave, buscarCampo) {
+    var sec = app.querySelector('[data-sec="' + clave + '"]');
+    if (!sec) return false;
+    sec.open = true;
+
+    // El <details> recién abierto necesita un respiro para tener medidas.
+    setTimeout(function () {
+      var campo = null;
+      try { campo = buscarCampo ? buscarCampo(sec) : null; } catch (e) {}
+      var destino = campo || sec;
+      destino.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      if (campo) {
+        if (campo.focus) campo.focus({ preventScroll: true });
+        if (campo.select && campo.tagName === 'INPUT') { try { campo.select(); } catch (e) {} }
+      }
+      var caja = (campo && campo.closest('.admin-grupo, .admin-campo, .admin-tienda, .admin-anuncio')) || sec;
+      caja.classList.add('admin-resaltado');
+      setTimeout(function () { caja.classList.remove('admin-resaltado'); }, 1800);
+    }, 60);
+    return true;
+  }
+
+  function porValor(sec, selector, valor) {
+    var campos = sec.querySelectorAll(selector);
+    for (var i = 0; i < campos.length; i++) {
+      if ((campos[i].value || '').trim() === valor) return campos[i];
+    }
+    return campos[0] || null;
+  }
+
+  /** De lo que se tocó en el sitio, a qué campo del panel corresponde. */
+  function campoDeLoTocado(doc, el) {
+    function sube(sel) { return el.closest(sel); }
+
+    var slide = sube('.hero__slide');
+    if (slide) {
+      var i = Array.prototype.indexOf.call(slide.parentNode.children, slide);
+      return ['hero', function (s) {
+        var fila = s.querySelectorAll('.admin-slide')[i];
+        return fila ? fila.querySelector('.s-titulo') : null;
+      }];
+    }
+
+    var persona = sube('.embajador');
+    if (persona) {
+      var nom = (persona.querySelector('.embajador__nombre') || {}).textContent || '';
+      return ['equipo', function (s) { return porValor(s, '.g-nombre', nom.trim()); }];
+    }
+
+    var pilar = sube('.pilar');
+    if (pilar) {
+      var j = Array.prototype.indexOf.call(pilar.parentNode.children, pilar);
+      return ['ciencia', function (s) {
+        var fila = s.querySelectorAll('.admin-pilar')[j];
+        return fila ? fila.querySelector('.p-titulo') : null;
+      }];
+    }
+
+    // Tarjeta de producto: el id viaja en el enlace de la ficha.
+    var enlace = sube('a[href*="producto.html?id="]');
+    if (enlace) {
+      var id = (enlace.getAttribute('href').split('id=')[1] || '').split('&')[0];
+      return ['productos', function (s) { return porValor(s, '.d-id', id) &&
+        porValor(s, '.d-id', id).closest('.admin-producto').querySelector('.d-nombre'); }];
+    }
+
+    if (sube('.barra-anuncios')) {
+      return ['anuncios', function (s) { return s.querySelector('.a-texto'); }];
+    }
+    if (sube('.popup')) {
+      return ['popups', function (s) { return s.querySelector('.o-titulo'); }];
+    }
+    if (sube('.whatsapp-flotante')) {
+      return ['whatsapp', function (s) { return s.querySelector('input'); }];
+    }
+    var aliado = sube('.aliados__logo, .aliados__nombre');
+    if (aliado) {
+      var nombreAliado = aliado.getAttribute('alt') || aliado.textContent || '';
+      return ['aliados', function (s) { return porValor(s, '.t-nombre', nombreAliado.trim()); }];
+    }
+    if (sube('.ig-tile, [data-comunidad]')) {
+      return ['comunidad', function (s) { return s.querySelector('input'); }];
+    }
+    if (sube('.footer, footer')) {
+      return ['empresa', function (s) { return s.querySelector('input'); }];
+    }
+    // El logo del encabezado, que es lo primero que todos tocan.
+    if (sube('.logo, .header__logo, header a[href="index.html"]')) {
+      return ['marca', null];
+    }
+    if (sube('header nav, .nav, .menu')) {
+      return ['menu', function (s) { return s.querySelector('input'); }];
+    }
+    return null;
+  }
+
+  /** Engancha la vista: resalta lo que se puede tocar y escucha los clics. */
+  function conectarVista(marco) {
+    var doc;
+    try { doc = marco.contentDocument; } catch (e) { return; }
+    if (!doc || doc.__vitalicaEnganchada) return;
+    doc.__vitalicaEnganchada = true;
+
+    var estilo = doc.createElement('style');
+    estilo.textContent =
+      '.hero__slide,.embajador,.pilar,.barra-anuncios,.whatsapp-flotante,' +
+      '.aliados__logo,.aliados__nombre,.ig-tile,a[href*="producto.html?id="]' +
+      '{cursor:pointer}' +
+      '.vp-sobre{outline:2px solid #EF7D2A !important;outline-offset:2px;' +
+      'border-radius:4px}';
+    doc.head.appendChild(estilo);
+
+    var marcado = null;
+    doc.addEventListener('mousemove', function (e) {
+      var m = campoDeLoTocado(doc, e.target);
+      var caja = m && (e.target.closest('.hero__slide,.embajador,.pilar,.barra-anuncios,' +
+        '.whatsapp-flotante,.aliados__logo,.aliados__nombre,.ig-tile,' +
+        'a[href*="producto.html?id="],.popup,footer,.logo,header nav'));
+      if (marcado && marcado !== caja) marcado.classList.remove('vp-sobre');
+      if (caja) caja.classList.add('vp-sobre');
+      marcado = caja || null;
+    });
+
+    doc.addEventListener('click', function (e) {
+      var m = campoDeLoTocado(doc, e.target);
+      if (!m) return;
+      /* Se corta la navegación: en la vista, tocar una tarjeta de producto
+         tiene que llevar al campo, no abrir la ficha adentro del panel. */
+      e.preventDefault();
+      e.stopPropagation();
+      irACampo(m[0], m[1]);
+    }, true);
   }
 
   /** Se llama en cada tecleo; espera a que la persona pare de escribir. */
