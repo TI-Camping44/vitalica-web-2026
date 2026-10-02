@@ -2367,6 +2367,65 @@ function aplicarOverrides(ov) {
     }
   }
 
+  /* CATÁLOGO DE PRODUCTOS.
+     ------------------------------------------------------------------------
+     'productos' (más abajo) edita los que ya existen, uno por uno. 'catalogo'
+     es la lista ENTERA y manda: con ella el panel puede agregar y quitar.
+
+     Lo que NO se pisa de un producto que ya existía: todo lo que el panel no
+     muestra —beneficios, ingredientes, bandaBeneficio, rating, tags—. Esos
+     textos son largos y están escritos con cuidado; si se reemplazara el
+     objeto entero se perderían sin que nadie lo note hasta entrar a la ficha.
+     Por eso se parte del producto de fábrica y encima se pone lo editado.
+
+     Un producto nuevo arranca con lo mínimo para que la ficha no se rompa.
+     Va a verse más pobre que los diez originales, y está bien: lo que falta
+     es contenido que alguien tiene que escribir, no código. */
+  if (Array.isArray(ov.catalogo) && ov.catalogo.length) {
+    var porId = {};
+    VITALICA_PRODUCTOS.forEach(function (p) { porId[p.id] = p; });
+
+    var nuevos = ov.catalogo.map(function (o) {
+      var base = porId[o.id] || {
+        categoriasExtra: [], rating: null, reviews: 0, tags: [],
+        beneficios: [], ingredientes: [], bandaBeneficio: ''
+      };
+      var p = Object.assign({}, base);
+      ['nombre', 'categoria', 'resumen', 'descripcion', 'modoDeUso'].forEach(function (k) {
+        if (o[k] != null) p[k] = o[k];
+      });
+      p.id = o.id;
+      p.destacado = !!o.destacado;
+      // Imagen vacía = se queda la de fábrica. Un producto sin foto en el
+      // catálogo se lee como un error de carga.
+      if (o.imagen) p.imagen = o.imagen;
+      // Precio vacío = el que mandó Odoo, que ya se aplicó más arriba.
+      if (o.precio != null && o.precio !== '') p.precio = Number(o.precio);
+      return p;
+    });
+
+    VITALICA_PRODUCTOS.length = 0;
+    nuevos.forEach(function (p) { VITALICA_PRODUCTOS.push(p); });
+  }
+
+  /* VARIANTES (sabores y tamaños). Por producto, reemplazando la lista. */
+  if (ov.variantes && typeof ov.variantes === 'object') {
+    Object.keys(ov.variantes).forEach(function (id) {
+      var lista = ov.variantes[id];
+      if (!Array.isArray(lista)) return;
+      /* La imagen de cada variante no se edita en el panel: son archivos en
+         assets/img/products/variantes/ nombrados por código de barras. Se
+         recupera de la lista de fábrica buscando por código, para no
+         perderlas al guardar. */
+      var viejas = VITALICA_VARIANTES[id] || [];
+      VITALICA_VARIANTES[id] = lista.map(function (v) {
+        if (v.imagen) return v;
+        var vieja = viejas.filter(function (x) { return x.codigo && x.codigo === v.codigo; })[0];
+        return vieja && vieja.imagen ? Object.assign({}, v, { imagen: vieja.imagen }) : v;
+      });
+    });
+  }
+
   /* POP-UPS DE CAMPAÑA. Lista entera, igual que el hero: desde el panel se
      agregan y se quitan. popups.js se encarga del resto. */
   if (Array.isArray(ov.popups)) {

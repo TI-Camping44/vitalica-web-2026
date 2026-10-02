@@ -232,6 +232,74 @@
     '</div>';
   }
 
+  /* --- Una variante: un sabor y tamaño concreto de un producto ---
+     El 'codigo' es el código de barras del envase, y es la llave con la que
+     Odoo manda precio y stock. Sin código la variante se muestra en el sitio
+     pero nunca va a tener precio propio: por eso el campo va primero y con
+     el aviso puesto. */
+  function filaVariante(v) {
+    v = v || {};
+    return '<div class="admin-variante">' +
+      '<input type="text" class="v-codigo" value="' + escAttr(v.codigo) + '" placeholder="Código de barras">' +
+      '<input type="text" class="v-sabor"  value="' + escAttr(v.sabor) + '" placeholder="Sabor">' +
+      '<input type="text" class="v-icono"  value="' + escAttr(v.icono) + '" placeholder="🍫" maxlength="4">' +
+      '<input type="text" class="v-tamano" value="' + escAttr(v.tamano) + '" placeholder="700 g">' +
+      '<input type="hidden" class="v-imagen" value="' + escAttr(v.imagen) + '">' +
+      '<button type="button" class="admin-quitar" data-del-variante aria-label="Quitar variante">✕</button>' +
+    '</div>';
+  }
+
+  /* --- Un producto del catálogo --- */
+  function filaProducto(p) {
+    p = p || {};
+    var cats = (typeof VITALICA_CATEGORIAS !== 'undefined' ? VITALICA_CATEGORIAS : []);
+    var vars = (typeof VITALICA_VARIANTES !== 'undefined' && p.id ? (VITALICA_VARIANTES[p.id] || []) : []);
+    var esNuevo = !p.id;
+
+    return '<div class="admin-grupo admin-producto">' +
+      barraFila(escTxt(p.nombre) || 'Producto nuevo', 'data-del-producto') +
+      /* El id NO se edita. Es la dirección de la ficha
+         (producto.html?id=...), la llave de las variantes y la de las
+         etiquetas, y está escrito en los pedidos que ya se hicieron.
+         Cambiarlo rompe enlaces que ya circulan. En un producto nuevo se
+         arma solo con el nombre. */
+      '<input type="hidden" class="d-id" value="' + escAttr(p.id) + '">' +
+      (esNuevo ? '' : '<p class="admin-hint">Dirección fija: <code>producto.html?id=' + escTxt(p.id) + '</code></p>') +
+      '<label class="admin-campo"><span class="admin-campo__label">Nombre</span>' +
+        '<input type="text" class="d-nombre" value="' + escAttr(p.nombre) + '"></label>' +
+      '<div class="admin-dos">' +
+        '<label class="admin-campo"><span class="admin-campo__label">Categoría</span>' +
+          '<select class="d-categoria">' +
+            cats.map(function (c) {
+              return '<option value="' + escAttr(c.id) + '"' +
+                     (p.categoria === c.id ? ' selected' : '') + '>' + escTxt(c.nombre) + '</option>';
+            }).join('') +
+          '</select></label>' +
+        '<label class="admin-campo"><span class="admin-campo__label">Precio (Gs.)</span>' +
+          '<input type="text" class="d-precio" value="' + escAttr(gsMostrar(p.precio)) + '" placeholder="vacío = el de Odoo">' +
+          '<span class="admin-hint">Vacío usa el precio que manda Odoo, que es lo normal. ' +
+          'Escribir uno acá lo pisa: sirve para una promo puntual, pero después hay que acordarse de borrarlo.</span></label>' +
+      '</div>' +
+      '<label class="admin-campo admin-check"><input type="checkbox" class="d-destacado"' +
+        (p.destacado ? ' checked' : '') + '> Destacado (aparece primero en el catálogo)</label>' +
+      '<label class="admin-campo"><span class="admin-campo__label">Resumen (la frase de la tarjeta)</span>' +
+        '<textarea class="d-resumen" rows="2">' + escTxt(p.resumen) + '</textarea></label>' +
+      '<label class="admin-campo"><span class="admin-campo__label">Descripción (va en la ficha)</span>' +
+        '<textarea class="d-descripcion" rows="4">' + escTxt(p.descripcion) + '</textarea></label>' +
+      '<label class="admin-campo"><span class="admin-campo__label">Modo de uso</span>' +
+        '<textarea class="d-modo" rows="2">' + escTxt(p.modoDeUso) + '</textarea></label>' +
+      fImgLibre('Foto', 'd-imagen', p.imagen,
+        'Cuadrada 1000×1000 px · fondo blanco o transparente · &lt;300 KB') +
+      '<div class="admin-sublista">' +
+        '<h4 class="admin-sublista__t">Sabores y tamaños</h4>' +
+        '<p class="admin-hint">El <b>código de barras</b> es con lo que Odoo manda el precio y el stock de ' +
+        'cada envase. Sin código la variante se ve en el sitio pero nunca va a tener precio propio.</p>' +
+        '<div class="admin-variantes">' + vars.map(filaVariante).join('') + '</div>' +
+        '<button type="button" class="admin-agregar admin-agregar--mini" data-add-variante>+ Agregar sabor o tamaño</button>' +
+      '</div>' +
+    '</div>';
+  }
+
   /* --- Un pop-up de campaña ---
      El motor ya existía en popups.js desde siempre; lo único que faltaba era
      poder cargarlos sin tocar data.js. Las reglas duras del motor —uno solo
@@ -444,16 +512,14 @@
       fTexto('Email para temas de privacidad', 'config.empresa.emailPrivacidad', em.emailPrivacidad,
              'Si queda vacío se usa el correo general de contacto.'));
 
-    // Productos
-    var prodHTML = VITALICA_PRODUCTOS.map(function (p) {
-      return '<div class="admin-grupo"><h3 class="admin-grupo__t">' + escTxt(p.nombre) + '</h3>' +
-        fTexto('Nombre', 'productos.' + p.id + '.nombre', p.nombre) +
-        fNum('Precio (Gs.) — vacío = "a confirmar"', 'productos.' + p.id + '.precio', p.precio, 'Escribí solo el monto: 375000 o 375.000.') +
-        fArea('Resumen (frase corta de la tarjeta)', 'productos.' + p.id + '.resumen', p.resumen) +
-        fImg('Foto', 'productos.' + p.id + '.imagen', p.imagen, 'Cuadrada 1000×1000 px · fondo blanco o transparente · .webp/.png · &lt;300 KB') +
-      '</div>';
-    }).join('');
-    secciones += seccion('📦 Productos (' + VITALICA_PRODUCTOS.length + ')', prodHTML);
+    // Productos — con alta, baja y variantes
+    secciones += seccion('📦 Productos (' + VITALICA_PRODUCTOS.length + ')',
+      '<p class="admin-nota">El catálogo completo. El <b>precio y el stock los manda Odoo</b>: ' +
+      'dejá el precio vacío salvo que quieras pisarlo para una promo. ' +
+      'La dirección de cada ficha se arma con el nombre la primera vez y después ' +
+      'ya no cambia, porque es el enlace que circula.</p>' +
+      '<div data-productos>' + VITALICA_PRODUCTOS.map(filaProducto).join('') + '</div>' +
+      botonAgregar('data-add-producto', 'Agregar producto'));
 
     /* ---- Etiquetas y promociones ----------------------------------------
        Todo lo que es decisión de marketing, junto y con fechas. El precio y
@@ -645,6 +711,66 @@
     });
     ov.ciencia = ov.ciencia || {};
     ov.ciencia.pilares = pilares;
+
+    /* Catálogo de productos.
+       --------------------------------------------------------------------
+       El id es sagrado: es la dirección de la ficha (producto.html?id=...),
+       la llave de las variantes y de las etiquetas, y está escrito en los
+       pedidos que ya se hicieron. Para un producto que ya existe se
+       respeta el que tiene; para uno nuevo se arma con el nombre, una sola
+       vez, y después queda fijo porque viaja en un campo oculto. */
+    function aSlug(s) {
+      return (s || '').toString().toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')  // saca las tildes
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 48);
+    }
+    var catalogo = [], variantes = {}, usados = {};
+    app.querySelectorAll('.admin-producto').forEach(function (row) {
+      var nombre = leer(row, '.d-nombre');
+      if (!nombre) return;
+      var id = leer(row, '.d-id') || aSlug(nombre);
+      if (!id) return;
+      // Dos productos con el mismo nombre darían el mismo id y uno pisaría
+      // al otro en silencio. Al segundo se le agrega un sufijo.
+      if (usados[id]) { id = id + '-' + (usados[id] + 1); }
+      usados[id] = (usados[id] || 0) + 1;
+
+      var campoId = row.querySelector('.d-id');
+      if (campoId) campoId.value = id;   // queda fijo de acá en más
+
+      var precioTxt = leer(row, '.d-precio').replace(/[^\d]/g, '');
+      catalogo.push({
+        id: id,
+        nombre: nombre,
+        categoria: leer(row, '.d-categoria'),
+        precio: precioTxt === '' ? null : Number(precioTxt),
+        imagen: leer(row, '.d-imagen'),
+        resumen: leer(row, '.d-resumen'),
+        descripcion: leer(row, '.d-descripcion'),
+        modoDeUso: leer(row, '.d-modo'),
+        destacado: !!(row.querySelector('.d-destacado') || {}).checked
+      });
+
+      var lista = [];
+      row.querySelectorAll('.admin-variante').forEach(function (vr) {
+        var sab = leer(vr, '.v-sabor'), tam = leer(vr, '.v-tamano'), cod = leer(vr, '.v-codigo');
+        if (!sab && !tam && !cod) return;
+        lista.push({
+          codigo: cod,
+          sabor: sab,
+          icono: leer(vr, '.v-icono'),
+          tamano: tam,
+          imagen: leer(vr, '.v-imagen')
+        });
+      });
+      if (lista.length) variantes[id] = lista;
+    });
+    if (catalogo.length) {
+      ov.catalogo = catalogo;
+      ov.variantes = variantes;
+    }
 
     // Pop-ups de campaña
     var popups = [];
@@ -898,6 +1024,13 @@
       else if (e.target.closest('[data-add-popup]')) {
         app.querySelector('[data-popups]').insertAdjacentHTML('beforeend', filaPopup(null));
       }
+      else if (e.target.closest('[data-add-producto]')) {
+        app.querySelector('[data-productos]').insertAdjacentHTML('beforeend', filaProducto(null));
+      }
+      else if (e.target.closest('[data-add-variante]')) {
+        var prod = e.target.closest('.admin-producto');
+        if (prod) prod.querySelector('.admin-variantes').insertAdjacentHTML('beforeend', filaVariante(null));
+      }
       else {
         /* Quitar. Una sola rama para todas las listas: cada botón dice de
            qué fila cuelga y acá se busca ese ancestro. Agregar una lista
@@ -912,7 +1045,9 @@
           ['[data-del-anuncio]', '.admin-anuncio', 'este mensaje'],
           ['[data-del-persona]', '.admin-persona', 'a esta persona'],
           ['[data-del-pilar]',   '.admin-pilar',   'este pilar'],
-          ['[data-del-popup]',   '.admin-popup',   'este pop-up']
+          ['[data-del-popup]',   '.admin-popup',   'este pop-up'],
+          ['[data-del-producto]','.admin-producto','este producto del catalogo'],
+          ['[data-del-variante]','.admin-variante','este sabor o tamano']
         ];
         for (var i = 0; i < quitar.length; i++) {
           if (e.target.closest(quitar[i][0])) {

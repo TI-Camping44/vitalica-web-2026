@@ -34,7 +34,7 @@ sesion_exigir_admin();
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="assets/css/styles.css?v=78">
+  <link rel="stylesheet" href="assets/css/styles.css?v=79">
 </head>
 <body class="admin-body">
 
@@ -110,9 +110,9 @@ sesion_exigir_admin();
 
   <!-- data.js trae los valores actuales (ya con overrides aplicados). admin.js edita y guarda. -->
   <!-- Lo publicado, para que el panel arranque mostrando el estado real del sitio. -->
-  <script src="assets/js/data-overrides.js?v=78"></script>
-  <script src="assets/js/data.js?v=78"></script>
-  <script src="assets/js/pages/admin.js?v=78"></script>
+  <script src="assets/js/data-overrides.js?v=79"></script>
+  <script src="assets/js/data.js?v=79"></script>
+  <script src="assets/js/pages/admin.js?v=79"></script>
 
 </body>
 </html>

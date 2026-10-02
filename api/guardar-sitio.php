@@ -128,7 +128,7 @@ $PUBLICADO = $RAIZ . '/assets/js/data-overrides.js';
    respuesta era un éxito. Corregido el 2/10/2026, junto con el aviso de
    abajo para que no vuelva a pasar en silencio. */
 const CFG_CLAVES = ['config', 'hero', 'productos', 'tiendas', 'campanas',
-                    'embajadores', 'ciencia', 'popups'];
+                    'embajadores', 'ciencia', 'popups', 'catalogo', 'variantes'];
 
 header('Content-Type: application/json; charset=utf-8');
 
