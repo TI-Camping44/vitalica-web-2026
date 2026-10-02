@@ -345,6 +345,12 @@ const VITALICA_CONFIG = {
        estan creadas pero vacias. Hasta que lleguen muestran sus iniciales.
        La de Angie Ozorio llego el 2/10 y ya esta puesta.
 
+       UN APELLIDO QUE ESTUVO MAL DOS SEMANAS
+       Marcos Reinaldi figuraba como "Marcos Ramirez" desde la primera carga,
+       el 17/9. La pista estaba en la misma linea desde el principio: su
+       instagram es @marcosreinaldi. Un nombre y un usuario que no coinciden
+       es una contradiccion escrita, no un detalle. Lo vio Facundo, no yo.
+
        En esa carpeta aparecio ademas MAISA GHANEM, que no esta en la lista
        de abajo. No se agrego: la carpeta esta vacia y no hay Instagram ni
        confirmacion de que sea nutricionista del programa. Preguntar antes
@@ -365,7 +371,7 @@ const VITALICA_CONFIG = {
        que le dice al visitante quién recomienda la marca desde afuera. */
     gente: [
       { nombre: 'Ricardo Martínez',        rol: 'embajador', foto: 'assets/img/embajadores/ricardo-martinez.jpg', disciplina: '', instagram: 'rmcoach15' },
-      { nombre: 'Marcos Ramírez',          rol: 'embajador', foto: 'assets/img/embajadores/marcos-ramirez.jpg', disciplina: '', instagram: 'marcosreinaldi' },
+      { nombre: 'Marcos Reinaldi',         rol: 'embajador', foto: 'assets/img/embajadores/marcos-reinaldi.jpg', disciplina: '', instagram: 'marcosreinaldi' },
       { nombre: 'Astrid Cáceres',          rol: 'embajador', foto: 'assets/img/embajadores/astrid-caceres.jpg', disciplina: '', instagram: 'astridcaceres_' },
       { nombre: 'Alexander De los Santos', rol: 'embajador', foto: 'assets/img/embajadores/alexander-de-los-santos.jpg', disciplina: '', instagram: 'entrenador_alexander_dls_track' },
 
