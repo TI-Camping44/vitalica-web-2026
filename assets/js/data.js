@@ -2304,27 +2304,93 @@ function aplicarOverrides(ov) {
   }
 
   // Hero (por índice)
-  if (Array.isArray(ov.hero)) {
-    ov.hero.forEach(function (o, i) {
-      var s = VITALICA_HERO[i];
-      if (!o || !s) return;
-      // Guardamos la imagen original ANTES de pisarla. Si el override apunta a
-      // un archivo que ya no existe (pasó: quedó un .webp guardado de una
-      // versión anterior de las portadas), el hero se rompía en silencio y no
-      // había forma de darse cuenta desde la web. home.js usa esto para
-      // volver a la de fábrica cuando la del override no carga.
-      s.imagenPorDefecto = s.imagen;
-      ['eyebrow', 'titulo', 'texto', 'imagen', 'modo'].forEach(function (k) {
-        if (o[k] != null && o[k] !== '') s[k] = o[k];
+  /* HERO: la lista guardada MANDA, incluida su longitud.
+
+     Antes esto recorría el override y lo fusionaba sobre los slides de
+     fábrica por índice, así que la cantidad nunca cambiaba: siempre tres.
+     Desde que el panel deja agregar y quitar slides, lo guardado es la
+     lista entera y acá se reemplaza entera. */
+  if (Array.isArray(ov.hero) && ov.hero.length) {
+    var fabrica = VITALICA_HERO.slice();
+    var armados = ov.hero.map(function (o, i) {
+      var base = fabrica[i];
+      var s = base ? Object.assign({}, base) : { modo: 'banner' };
+
+      /* La imagen de fábrica se guarda ANTES de pisarla. Si el override
+         apunta a un archivo que ya no existe —pasó: quedó un .webp de una
+         versión anterior de las portadas— el hero se rompía en silencio.
+         home.js usa esto para volver a la de fábrica cuando la guardada no
+         carga. Un slide agregado desde el panel no tiene a qué volver, y
+         ahí queda vacío, que es lo correcto. */
+      s.imagenPorDefecto = base ? base.imagen : '';
+
+      /* Los textos se asignan tal cual vienen, también vacíos: si alguien
+         borra el eyebrow en el panel es porque quiere que no esté. La
+         imagen es la excepción —vacía deja el slide sin fondo— así que ahí
+         se conserva la de fábrica. */
+      ['eyebrow', 'titulo', 'texto', 'modo'].forEach(function (k) {
+        if (o[k] != null) s[k] = o[k];
       });
+      if (o.imagen) s.imagen = o.imagen;
+
       ['cta1', 'cta2'].forEach(function (c) {
-        if (o[c]) {
-          s[c] = s[c] || {};
-          if (o[c].texto != null) s[c].texto = o[c].texto;
-          if (o[c].href != null)  s[c].href = o[c].href;
-        }
+        if (!o[c]) return;
+        var t = (o[c].texto || '').trim(), h = (o[c].href || '').trim();
+        // Botón sin texto = botón que no va. Dejarlo daba una pastilla
+        // vacía flotando sobre la portada.
+        s[c] = t ? { texto: t, href: h } : null;
       });
+      return s;
     });
+    VITALICA_HERO.length = 0;
+    armados.forEach(function (s) { VITALICA_HERO.push(s); });
+  }
+
+  /* QUIÉNES NOS ELIGEN. La lista de gente se reemplaza entera, por lo mismo
+     que el hero: desde el panel se agrega y se quita. */
+  if (ov.embajadores) {
+    VITALICA_CONFIG.embajadores = VITALICA_CONFIG.embajadores || {};
+    var E = VITALICA_CONFIG.embajadores;
+    ['titulo', 'texto', 'eyebrow'].forEach(function (k) {
+      if (ov.embajadores[k] != null) E[k] = ov.embajadores[k];
+    });
+    if (ov.embajadores.columnas) {
+      E.columnas = E.columnas || {};
+      ['embajador', 'nutricionista'].forEach(function (r) {
+        var c = ov.embajadores.columnas[r];
+        if (!c) return;
+        E.columnas[r] = Object.assign({}, E.columnas[r] || {}, c);
+      });
+    }
+    if (Array.isArray(ov.embajadores.gente) && ov.embajadores.gente.length) {
+      E.gente = ov.embajadores.gente;
+    }
+  }
+
+  /* POP-UPS DE CAMPAÑA. Lista entera, igual que el hero: desde el panel se
+     agregan y se quitan. popups.js se encarga del resto. */
+  if (Array.isArray(ov.popups)) {
+    VITALICA_POPUPS.length = 0;
+    ov.popups.forEach(function (p) {
+      if (p && p.id && p.titulo) VITALICA_POPUPS.push(p);
+    });
+  }
+
+  /* CIENCIA REAL. El video no se toca desde el panel —es un archivo que se
+     sube por cPanel— así que acá solo entran textos y pilares. */
+  if (ov.ciencia) {
+    VITALICA_CONFIG.ciencia = VITALICA_CONFIG.ciencia || {};
+    var CI = VITALICA_CONFIG.ciencia;
+    ['eyebrow', 'titulo', 'texto'].forEach(function (k) {
+      if (ov.ciencia[k] != null) CI[k] = ov.ciencia[k];
+    });
+    if (Array.isArray(ov.ciencia.pilares) && ov.ciencia.pilares.length) {
+      CI.pilares = ov.ciencia.pilares.map(function (p, i) {
+        var base = (CI.pilares || [])[i] || {};
+        // El ícono no se edita en el panel: viaja oculto para no perderlo.
+        return Object.assign({}, base, p, { icono: p.icono || base.icono || '' });
+      });
+    }
   }
 
   // Productos (por id)
@@ -2346,7 +2412,7 @@ function aplicarOverrides(ov) {
   /* ETIQUETAS Y PROMOCIONES
 
      Faltaba. Y faltaba en los tres lugares a la vez, que es lo que lo hacía
-     invisible: el panel editaba 'campanas', api/config-sitio.php la tiraba
+     invisible: el panel editaba 'campanas', api/guardar-sitio.php la tiraba
      por no estar en su lista blanca, y acá tampoco se aplicaba. Marketing
      cambiaba una etiqueta, leía "✓ Publicado" y en el sitio no pasaba nada.
      Corregido el 2/10/2026.
@@ -2484,7 +2550,7 @@ function aplicarOverrides(ov) {
 
 /* LAS DOS CAPAS, EN ESTE ORDEN
    ---------------------------------------------------------------------------
-   1. LO PUBLICADO. Lo escribe api/config-sitio.php en data-overrides.js cuando
+   1. LO PUBLICADO. Lo escribe api/guardar-sitio.php en data-overrides.js cuando
       alguien toca Publicar en el panel. Lo ve todo el mundo.
 
    2. EL BORRADOR. Lo guarda el panel en el navegador de quien esta

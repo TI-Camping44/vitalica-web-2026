@@ -1,6 +1,6 @@
 <?php
 /* ============================================================================
-   VITALICA — api/config-sitio.php  ·  PUBLICAR LA CONFIGURACIÓN DEL SITIO
+   VITALICA — api/guardar-sitio.php  ·  PUBLICAR LA CONFIGURACIÓN DEL SITIO
    ----------------------------------------------------------------------------
    Recibe lo que armó el panel de administrador y lo deja publicado para
    todos los visitantes.
@@ -37,6 +37,30 @@
    publicado. "Restablecer" borra solo la capa local: nunca despublica.
    ============================================================================ */
 
+/* ⚠️ ESTE ARCHIVO NO PUEDE LLAMARSE config-ALGO.php
+   ----------------------------------------------------------------------------
+   Se llamaba api/config-sitio.php y el servidor lo bloqueaba. No PHP: Apache,
+   antes de ejecutar nada, con un 403 de cuerpo vacío.
+
+   Cómo se descubrió (2/10/2026): pidiendo por HTTP un archivo que NO EXISTE.
+     api/config-inventado.php  ->  403     (si fuera inexistente, sería 404)
+     api/sitio-config.php      ->  404
+   O sea que el bloqueo es por el NOMBRE, y engancha todo lo que empiece con
+   "config". El .htaccess de este proyecto no hace eso —su regla está anclada
+   en ^config\.php$— así que viene del hosting o de un .htaccess viejo que
+   quedó en el servidor.
+
+   Consecuencia: publicar desde el panel NUNCA funcionó en producción. Se
+   arreglaron cuatro bugs de las etiquetas creyendo que el problema era ese, y
+   lo era, pero por debajo el endpoint ni se ejecutaba. Marketing veía "no se
+   pudo publicar" sin que hubiera nada roto del lado de PHP.
+
+   Por eso el nombre nuevo no empieza con "config". Si algún día hay que
+   agregar otro endpoint de configuración, tampoco: guardar-, publicar-,
+   ajustes- sirven. Y ante un 403 raro, probar primero con un nombre
+   inexistente: distingue "no existe" de "está bloqueado" en diez segundos.
+   ============================================================================ */
+
 declare(strict_types=1);
 require_once __DIR__ . '/sesion.php';
 
@@ -56,6 +80,13 @@ require_once __DIR__ . '/sesion.php';
    Ahora el error dice qué pasó y el panel lo puede mostrar tal cual.
    -------------------------------------------------------------------------- */
 header('Content-Type: application/json; charset=utf-8');
+
+/* NO CACHEAR. La respuesta del GET lleva el token de formulario, que vale
+   para una sesión. Sin esta línea el navegador se guardaba esa respuesta y
+   seguía mandando el MISMO token después de cerrar e iniciar sesión de
+   nuevo, con lo cual publicar fallaba para siempre y volver a entrar no
+   arreglaba nada. */
+header('Cache-Control: no-store');
 
 if (!sesion_activa()) {
     http_response_code(401);
@@ -96,7 +127,8 @@ $PUBLICADO = $RAIZ . '/assets/js/data-overrides.js';
    porque la clave no estaba en esta lista. Nadie podía darse cuenta: la
    respuesta era un éxito. Corregido el 2/10/2026, junto con el aviso de
    abajo para que no vuelva a pasar en silencio. */
-const CFG_CLAVES = ['config', 'hero', 'productos', 'tiendas', 'campanas'];
+const CFG_CLAVES = ['config', 'hero', 'productos', 'tiendas', 'campanas',
+                    'embajadores', 'ciencia', 'popups'];
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -184,7 +216,7 @@ if (@file_put_contents($ARCHIVO, $json, LOCK_EX) === false) {
 $cab = "/* ==========================================================================\n"
      . "   VITALICA — data-overrides.js  ·  CONFIGURACIÓN PUBLICADA\n"
      . "   --------------------------------------------------------------------------\n"
-     . "   GENERADO POR api/config-sitio.php. No editar a mano: se sobrescribe entero\n"
+     . "   GENERADO POR api/guardar-sitio.php. No editar a mano: se sobrescribe entero\n"
      . "   cada vez que alguien publica desde el panel de administrador.\n"
      . "   El original está en api/almacen/overrides.json.\n"
      . "   Se carga ANTES que data.js, que es quien lo aplica.\n"

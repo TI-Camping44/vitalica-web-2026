@@ -289,7 +289,27 @@ const Vitalica = {
 
   /* ====================== BARRA DE ANUNCIOS (rotativa) ====================== */
   barraAnuncios: function () {
-    var textos = (VITALICA_CONFIG.anuncios || []).slice();
+    /* CADA MENSAJE PUEDE TENER FECHAS.
+       -------------------------------------------------------------------
+       Antes esto era una lista de textos sueltos. Desde que el panel deja
+       poner "desde" y "hasta", cada ítem puede ser un objeto. Se aceptan
+       las dos formas: hay configuraciones guardadas con la lista vieja y
+       romperlas dejaría el sitio sin barra de anuncios.
+
+       Las fechas vacías significan "siempre", que es lo cómodo para
+       escribir algo rápido. La que importa es "hasta": sin ella, una promo
+       de noviembre sigue anunciándose en enero, y a nadie se le ocurre
+       mirar la barra de arriba para darse cuenta. */
+    var hoy = (typeof Datos !== 'undefined' && Datos.hoyISO) ? Datos.hoyISO() : '';
+    var textos = (VITALICA_CONFIG.anuncios || []).map(function (a) {
+      return (typeof a === 'string') ? { texto: a } : (a || {});
+    }).filter(function (a) {
+      if (!a.texto) return false;
+      if (!hoy) return true;                       // sin reloj, no se filtra nada
+      if (a.desde && a.desde > hoy) return false;  // todavía no arrancó
+      if (a.hasta && a.hasta < hoy) return false;  // ya terminó
+      return true;
+    }).map(function (a) { return a.texto; });
 
     /* El envío gratis se anuncia solo.
        -------------------------------------------------------------------

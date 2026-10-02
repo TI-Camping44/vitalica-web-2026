@@ -117,6 +117,191 @@
     return '<details class="admin-sec"' + (abierta ? ' open' : '') + '>' +
       '<summary>' + titulo + '</summary><div class="admin-sec__body">' + contenido + '</div></details>';
   }
+
+  /* ---------- LISTAS QUE SE PUEDEN AGRANDAR Y ACHICAR --------------------
+     Los campos normales se identifican con data-ov="ruta.al.campo" y
+     recolectar() los lee por esa ruta. Para las listas donde se agregan y
+     quitan filas eso no sirve: la ruta lleva el índice adentro
+     —hero.2.titulo— y al borrar la fila 1, la 2 pasa a ser la 1 y todas las
+     rutas quedan mintiendo.
+
+     Por eso estas filas NO usan data-ov. Se marcan con una clase y
+     recolectar() las lee por posición, de arriba hacia abajo, que es
+     exactamente el orden en que se van a ver en el sitio. Es el mismo
+     mecanismo que ya usaban los comercios aliados.
+
+     Agregar y quitar tampoco redibujan el panel entero: insertan o sacan un
+     nodo. Redibujar perdería lo que la persona esté escribiendo en otra
+     sección, y eso enoja con razón. */
+  var contadorImg = 0;
+
+  /* Campo de imagen para una fila dinámica: igual que fImg pero sin ruta,
+     con un id único para que el lector de archivos sepa a cuál escribirle. */
+  function fImgLibre(label, clase, val, hint) {
+    var id = 'imx_' + (++contadorImg);
+    return '<div class="admin-campo admin-img"><span class="admin-campo__label">' + label + '</span>' +
+      '<div class="admin-img__row">' +
+        '<img class="admin-img__preview" src="' + escAttr(val) + '" alt="" data-prev="' + id + '">' +
+        '<div class="admin-img__ctrl">' +
+          '<input type="file" accept="image/*" class="admin-file" data-file="' + id + '">' +
+          '<span class="admin-hint">' + hint + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<input type="hidden" id="' + id + '" class="' + clase + '" value="' + escAttr(val) + '">' +
+    '</div>';
+  }
+
+  function barraFila(titulo, accionBorrar) {
+    return '<div class="admin-fila__barra">' +
+      '<h3 class="admin-grupo__t">' + titulo + '</h3>' +
+      '<button type="button" class="admin-quitar" ' + accionBorrar + '>Quitar</button>' +
+    '</div>';
+  }
+  function botonAgregar(accion, texto) {
+    return '<button type="button" class="admin-agregar" ' + accion + '>+ ' + texto + '</button>';
+  }
+
+  /* --- Una diapositiva del carrusel --- */
+  function filaSlide(s) {
+    s = s || { modo: 'banner', cta1: {}, cta2: {} };
+    var esBanner = (s.modo !== 'producto');
+    var c1 = s.cta1 || {}, c2 = s.cta2 || {};
+    return '<div class="admin-grupo admin-slide">' +
+      barraFila('Slide', 'data-del-slide') +
+      '<label class="admin-campo"><span class="admin-campo__label">Eyebrow (texto chico de arriba)</span>' +
+        '<input type="text" class="s-eyebrow" value="' + escAttr(s.eyebrow) + '"></label>' +
+      '<label class="admin-campo"><span class="admin-campo__label">Título (podés usar &lt;br&gt; para cortar la línea)</span>' +
+        '<textarea class="s-titulo" rows="2">' + escTxt(s.titulo) + '</textarea></label>' +
+      '<label class="admin-campo"><span class="admin-campo__label">Texto</span>' +
+        '<textarea class="s-texto" rows="3">' + escTxt(s.texto) + '</textarea></label>' +
+      '<label class="admin-campo"><span class="admin-campo__label">Modo de la imagen</span>' +
+        '<select class="s-modo">' +
+          '<option value="producto"' + (esBanner ? '' : ' selected') + '>Producto flotante (foto del envase sobre el fondo azul)</option>' +
+          '<option value="banner"' + (esBanner ? ' selected' : '') + '>Banner completo (la imagen cubre todo el rectángulo)</option>' +
+        '</select></label>' +
+      fImgLibre('Imagen del slide', 's-imagen', s.imagen,
+        'Banner completo: ~1920×760 px, JPG/WebP &lt;500 KB · Producto flotante: ~800×800 px con fondo transparente') +
+      '<div class="admin-dos">' +
+        '<label class="admin-campo"><span class="admin-campo__label">Botón 1 — texto</span>' +
+          '<input type="text" class="s-c1t" value="' + escAttr(c1.texto) + '"></label>' +
+        '<label class="admin-campo"><span class="admin-campo__label">Botón 1 — destino</span>' +
+          '<input type="text" class="s-c1h" value="' + escAttr(c1.href) + '" placeholder="productos.html"></label>' +
+      '</div>' +
+      '<div class="admin-dos">' +
+        '<label class="admin-campo"><span class="admin-campo__label">Botón 2 — texto</span>' +
+          '<input type="text" class="s-c2t" value="' + escAttr(c2.texto) + '"></label>' +
+        '<label class="admin-campo"><span class="admin-campo__label">Botón 2 — destino</span>' +
+          '<input type="text" class="s-c2h" value="' + escAttr(c2.href) + '" placeholder="sobre.html"></label>' +
+      '</div>' +
+      '<span class="admin-hint">Dejá los dos botones vacíos si el slide no lleva botones.</span>' +
+    '</div>';
+  }
+
+  /* --- Un mensaje de la barra de anuncios, con fechas --- */
+  function filaAnuncio(a) {
+    a = (typeof a === 'string') ? { texto: a } : (a || {});
+    return '<div class="admin-anuncio">' +
+      '<input type="text" class="a-texto" value="' + escAttr(a.texto) + '" placeholder="Mensaje que rota en la barra de arriba">' +
+      '<label class="admin-mini">Desde<input type="date" class="a-desde" value="' + escAttr(a.desde) + '"></label>' +
+      '<label class="admin-mini">Hasta<input type="date" class="a-hasta" value="' + escAttr(a.hasta) + '"></label>' +
+      '<button type="button" class="admin-quitar" data-del-anuncio aria-label="Quitar mensaje">✕</button>' +
+    '</div>';
+  }
+
+  /* --- Una persona de "Quiénes nos eligen" --- */
+  function filaPersona(g) {
+    g = g || { rol: 'nutricionista' };
+    var esAtleta = (g.rol || 'embajador') === 'embajador';
+    return '<div class="admin-grupo admin-persona">' +
+      barraFila(escTxt(g.nombre) || 'Persona nueva', 'data-del-persona') +
+      '<div class="admin-dos">' +
+        '<label class="admin-campo"><span class="admin-campo__label">Nombre y apellido</span>' +
+          '<input type="text" class="g-nombre" value="' + escAttr(g.nombre) + '"></label>' +
+        '<label class="admin-campo"><span class="admin-campo__label">Va en la columna de</span>' +
+          '<select class="g-rol">' +
+            '<option value="embajador"' + (esAtleta ? ' selected' : '') + '>Atletas</option>' +
+            '<option value="nutricionista"' + (esAtleta ? '' : ' selected') + '>Nutricionistas</option>' +
+          '</select></label>' +
+      '</div>' +
+      '<label class="admin-campo"><span class="admin-campo__label">Instagram (sin la arroba)</span>' +
+        '<input type="text" class="g-ig" value="' + escAttr(g.instagram) + '" placeholder="nutrigabi_azcona">' +
+        '<span class="admin-hint">Dejalo vacío y la tarjeta no lleva enlace.</span></label>' +
+      fImgLibre('Foto', 'g-foto', g.foto,
+        'Vertical 3:4 · 600×800 px · la cara en el tercio de arriba · JPG &lt;120 KB. ' +
+        'Sin foto se muestran las iniciales sobre el naranja de marca, que también se ve bien.') +
+    '</div>';
+  }
+
+  /* --- Un pop-up de campaña ---
+     El motor ya existía en popups.js desde siempre; lo único que faltaba era
+     poder cargarlos sin tocar data.js. Las reglas duras del motor —uno solo
+     a la vez, nunca en el carrito ni en el checkout— no se exponen acá a
+     propósito: no son decisiones de campaña, son decisiones de no arruinar
+     una compra en curso. */
+  function filaPopup(p) {
+    p = p || { activo: false, segundos: 6, repetirDias: 7, cta: {}, cta2: {}, paginas: [] };
+    var c1 = p.cta || {}, c2 = p.cta2 || {};
+    var pags = (p.paginas || []).join(', ');
+    return '<div class="admin-grupo admin-popup">' +
+      barraFila(escTxt(p.titulo) || 'Pop-up nuevo', 'data-del-popup') +
+      '<input type="hidden" class="o-id" value="' + escAttr(p.id) + '">' +
+      '<div class="admin-dos">' +
+        '<label class="admin-campo"><span class="admin-campo__label">¿Está prendido?</span>' +
+          '<select class="o-activo">' +
+            '<option value="no"' + (p.activo ? '' : ' selected') + '>No — no se muestra</option>' +
+            '<option value="si"' + (p.activo ? ' selected' : '') + '>Sí — se muestra</option>' +
+          '</select></label>' +
+        '<label class="admin-campo"><span class="admin-campo__label">Etiqueta chica de arriba</span>' +
+          '<input type="text" class="o-etiqueta" value="' + escAttr(p.etiqueta) + '" placeholder="Promo, Lanzamiento, Beneficio"></label>' +
+      '</div>' +
+      '<label class="admin-campo"><span class="admin-campo__label">Título</span>' +
+        '<input type="text" class="o-titulo" value="' + escAttr(p.titulo) + '"></label>' +
+      '<label class="admin-campo"><span class="admin-campo__label">Texto</span>' +
+        '<textarea class="o-texto" rows="3">' + escTxt(p.texto) + '</textarea></label>' +
+      fImgLibre('Imagen (opcional)', 'o-imagen', p.imagen, 'Apaisada ~800×450 px · JPG/WebP &lt;150 KB. Sin imagen queda solo el texto, que también funciona.') +
+      '<div class="admin-dos">' +
+        '<label class="admin-campo"><span class="admin-campo__label">Botón — texto</span>' +
+          '<input type="text" class="o-c1t" value="' + escAttr(c1.texto) + '"></label>' +
+        '<label class="admin-campo"><span class="admin-campo__label">Botón — destino</span>' +
+          '<input type="text" class="o-c1h" value="' + escAttr(c1.href) + '" placeholder="productos.html o whatsapp"></label>' +
+      '</div>' +
+      '<div class="admin-dos">' +
+        '<label class="admin-campo"><span class="admin-campo__label">Segundo botón — texto</span>' +
+          '<input type="text" class="o-c2t" value="' + escAttr(c2.texto) + '"></label>' +
+        '<label class="admin-campo"><span class="admin-campo__label">Segundo botón — destino</span>' +
+          '<input type="text" class="o-c2h" value="' + escAttr(c2.href) + '"></label>' +
+      '</div>' +
+      '<span class="admin-hint">En «destino» podés poner una página del sitio (<code>productos.html</code>) ' +
+      'o la palabra <code>whatsapp</code>, que abre el chat con el mensaje ya armado. ' +
+      'Dejá el texto vacío y el botón no aparece.</span>' +
+      '<div class="admin-dos">' +
+        '<label class="admin-campo"><span class="admin-campo__label">Aparece a los… (segundos)</span>' +
+          '<input type="number" class="o-segundos" min="0" max="60" value="' + escAttr(p.segundos == null ? 6 : p.segundos) + '"></label>' +
+        '<label class="admin-campo"><span class="admin-campo__label">No repetir durante… (días)</span>' +
+          '<input type="number" class="o-dias" min="0" max="365" value="' + escAttr(p.repetirDias == null ? 7 : p.repetirDias) + '"></label>' +
+      '</div>' +
+      '<label class="admin-campo"><span class="admin-campo__label">¿En qué páginas?</span>' +
+        '<input type="text" class="o-paginas" value="' + escAttr(pags) + '" placeholder="index.html, productos.html">' +
+        '<span class="admin-hint">Separadas por coma. <b>Vacío = en todas.</b> Nunca se muestra en el carrito ' +
+        'ni en el checkout: interrumpir a alguien que ya está comprando es la forma más cara de ganar un clic.</span></label>' +
+      '<label class="admin-campo admin-check"><input type="checkbox" class="o-unavez"' + (p.soloUnaVez ? ' checked' : '') + '>' +
+        ' Mostrarlo una sola vez por persona</label>' +
+    '</div>';
+  }
+
+  /* --- Un pilar de "Ciencia real" --- */
+  function filaPilar(p) {
+    p = p || {};
+    return '<div class="admin-grupo admin-pilar">' +
+      barraFila(escTxt(p.titulo) || 'Pilar nuevo', 'data-del-pilar') +
+      '<label class="admin-campo"><span class="admin-campo__label">Título</span>' +
+        '<input type="text" class="p-titulo" value="' + escAttr(p.titulo) + '"></label>' +
+      '<label class="admin-campo"><span class="admin-campo__label">Texto</span>' +
+        '<textarea class="p-texto" rows="4">' + escTxt(p.texto) + '</textarea></label>' +
+      fImgLibre('Foto', 'p-foto', p.foto, 'Apaisada ~700×500 px · JPG/WebP &lt;200 KB') +
+      '<input type="hidden" class="p-icono" value="' + escAttr(p.icono) + '">' +
+    '</div>';
+  }
   function filaTienda(t) {
     t = t || {};
     // Ya no se pide la dirección: el sitio muestra el logo del comercio, no
@@ -153,27 +338,13 @@
     }).join('');
     secciones += seccion('🧭 Menú (navegación)', navHTML);
 
-    // Hero
-    var heroHTML = (typeof VITALICA_HERO !== 'undefined' ? VITALICA_HERO : []).map(function (s, i) {
-      var esBanner = (s.modo === 'banner');
-      return '<div class="admin-grupo"><h3 class="admin-grupo__t">Slide ' + (i + 1) + '</h3>' +
-        fTexto('Eyebrow (texto chico de arriba)', 'hero.' + i + '.eyebrow', s.eyebrow) +
-        fArea('Título (podés usar &lt;br&gt; para cortar la línea)', 'hero.' + i + '.titulo', s.titulo) +
-        fArea('Texto', 'hero.' + i + '.texto', s.texto) +
-        '<label class="admin-campo"><span class="admin-campo__label">Modo de la imagen</span>' +
-          '<select data-ov="hero.' + i + '.modo">' +
-            '<option value="producto"' + (esBanner ? '' : ' selected') + '>Producto flotante (foto del envase sobre el fondo azul)</option>' +
-            '<option value="banner"' + (esBanner ? ' selected' : '') + '>Banner completo (la imagen cubre todo el rectángulo)</option>' +
-          '</select>' +
-          '<span class="admin-hint">«Banner completo» hace que la imagen llene todo el slide (se recorta para cubrir, sin deformarse).</span>' +
-        '</label>' +
-        fImg('Imagen del slide', 'hero.' + i + '.imagen', s.imagen,
-          'Producto flotante: ~800×800 px, fondo transparente · Banner completo: ~1920×760 px, JPG/WebP &lt;500 KB') +
-        fEnlace('Botón 1', 'hero.' + i + '.cta1.texto', 'hero.' + i + '.cta1.href', s.cta1 && s.cta1.texto, s.cta1 && s.cta1.href) +
-        fEnlace('Botón 2', 'hero.' + i + '.cta2.texto', 'hero.' + i + '.cta2.href', s.cta2 && s.cta2.texto, s.cta2 && s.cta2.href) +
-      '</div>';
-    }).join('');
-    secciones += seccion('🎞️ Hero (carrusel principal)', heroHTML);
+    // Hero — ahora se pueden agregar y quitar slides
+    var slides = (typeof VITALICA_HERO !== 'undefined' ? VITALICA_HERO : []);
+    secciones += seccion('🎞️ Hero (carrusel principal)',
+      '<p class="admin-nota">Los slides se muestran en este orden y rotan solos. ' +
+      'Con uno solo, el carrusel deja de rotar y queda una portada fija.</p>' +
+      '<div data-slides>' + slides.map(filaSlide).join('') + '</div>' +
+      botonAgregar('data-add-slide', 'Agregar slide'));
 
     // Comunidad / Instagram (sección "Sumate a la comunidad" del home)
     var comu = C.comunidad || { handle: '@vitalica.py', posts: [] };
@@ -186,10 +357,14 @@
     }
     secciones += seccion('📸 Comunidad / Instagram (home)', comuHTML);
 
-    // Anuncios
+    // Anuncios — con fecha de inicio y fin
     secciones += seccion('📢 Barra de anuncios',
-      fArea('Mensajes (uno por línea)', 'config.anuncios', (C.anuncios || []).join('\n'),
-        'Cada línea es un mensaje que rota en la barra de arriba.', true));
+      '<p class="admin-nota">Los mensajes rotan en la franja de arriba de todo. ' +
+      'Las fechas son opcionales: vacías quiere decir que el mensaje está siempre. ' +
+      'Poner «Hasta» es la forma de que una promo se apague sola y no quede ' +
+      'anunciando en enero algo que terminó en noviembre.</p>' +
+      '<div data-anuncios>' + (C.anuncios || []).map(filaAnuncio).join('') + '</div>' +
+      botonAgregar('data-add-anuncio', 'Agregar mensaje'));
 
     // WhatsApp
     secciones += seccion('💬 WhatsApp',
@@ -207,6 +382,67 @@
     secciones += seccion('🚚 Costos de envío (Gs.)',
       fNum('Gran Asunción', 'config.envio.granAsuncion', envio.granAsuncion, 'Monto en guaraníes (ej. 25000).') +
       fNum('Interior', 'config.envio.interior', envio.interior, 'Monto en guaraníes (ej. 40000).'));
+
+    /* ---- Quiénes nos eligen -------------------------------------------
+       La sección que más se mueve: cada vez que llega una foto nueva o
+       entra alguien al programa había que tocar data.js. Ahora no.
+
+       Lo que NO se pide a propósito: cédula, teléfono y ciudad. Los dos
+       primeros están en la planilla de contratos y no pueden entrar nunca
+       —data.js se descarga entero con solo abrir el sitio—; la ciudad la
+       sacó marketing el 24/9. */
+    var emb = C.embajadores || {};
+    var gente = emb.gente || [];
+    var cols = emb.columnas || {};
+    secciones += seccion('👥 Quiénes nos eligen (atletas y nutricionistas)',
+      '<p class="admin-nota">Se muestran en este orden, repartidos en dos grupos según la columna ' +
+      'que elijas. Quien no tenga foto cargada va al final del grupo con sus iniciales. ' +
+      '<b>No cargues cédula ni teléfono acá</b>: este archivo lo descarga cualquiera que abra el sitio.</p>' +
+      fTexto('Encabezado de la sección', 'embajadores.titulo', emb.titulo) +
+      fArea('Texto de abajo', 'embajadores.texto', emb.texto) +
+      '<div class="admin-dos">' +
+        fTexto('Título de la columna izquierda', 'embajadores.columnas.embajador.titulo',
+               (cols.embajador || {}).titulo) +
+        fTexto('Título de la columna derecha', 'embajadores.columnas.nutricionista.titulo',
+               (cols.nutricionista || {}).titulo) +
+      '</div>' +
+      '<div data-gente>' + gente.map(filaPersona).join('') + '</div>' +
+      botonAgregar('data-add-persona', 'Agregar persona'));
+
+    // Ciencia real
+    var ci = C.ciencia || {};
+    secciones += seccion('🔬 Ciencia real (los pilares de Olimp)',
+      fTexto('Eyebrow', 'ciencia.eyebrow', ci.eyebrow) +
+      fArea('Título', 'ciencia.titulo', ci.titulo) +
+      fArea('Texto de presentación', 'ciencia.texto', ci.texto) +
+      '<p class="admin-nota">El video vertical de la planta no se edita acá: es un archivo ' +
+      'que se sube una sola vez por cPanel a <code>assets/video/</code>. Si querés cambiarlo, avisá.</p>' +
+      '<div data-pilares>' + (ci.pilares || []).map(filaPilar).join('') + '</div>' +
+      botonAgregar('data-add-pilar', 'Agregar pilar'));
+
+    /* ---- Pop-ups de campaña -------------------------------------------
+       El motor vive en popups.js y ya existía; lo que faltaba era cargarlos
+       sin tocar data.js. */
+    var pops = (typeof VITALICA_POPUPS !== 'undefined' ? VITALICA_POPUPS : []);
+    secciones += seccion('🔔 Pop-ups de campaña',
+      '<p class="admin-nota">Avisos que aparecen sobre la página para comunicar una promo, ' +
+      'un lanzamiento o un beneficio. <b>Se muestra uno solo por visita</b>: si hay varios ' +
+      'prendidos para la misma página gana el primero de la lista. Dos pop-ups encima del otro ' +
+      'no venden más, venden menos.</p>' +
+      '<div data-popups>' + pops.map(filaPopup).join('') + '</div>' +
+      botonAgregar('data-add-popup', 'Agregar pop-up'));
+
+    // Datos de la empresa (pie de página y documentos legales)
+    var em = C.empresa || {};
+    secciones += seccion('🏢 Datos de la empresa',
+      '<p class="admin-nota">Se usan en el pie del sitio y en las páginas de términos y privacidad.</p>' +
+      fTexto('Razón social', 'config.empresa.razonSocial', em.razonSocial) +
+      fTexto('RUC', 'config.empresa.ruc', em.ruc) +
+      fTexto('Domicilio', 'config.empresa.domicilio', em.domicilio) +
+      fTexto('Ciudad', 'config.empresa.ciudad', em.ciudad) +
+      fTexto('Teléfono', 'config.empresa.telefono', em.telefono) +
+      fTexto('Email para temas de privacidad', 'config.empresa.emailPrivacidad', em.emailPrivacidad,
+             'Si queda vacío se usa el correo general de contacto.'));
 
     // Productos
     var prodHTML = VITALICA_PRODUCTOS.map(function (p) {
@@ -338,6 +574,108 @@
       }
       setPath(ov, path, val);
     });
+    /* --- LISTAS DINÁMICAS, LEÍDAS POR POSICIÓN -------------------------
+       Ver el comentario de filaSlide(): estas filas no tienen data-ov
+       porque el índice cambia al agregar o quitar. Se leen de arriba hacia
+       abajo, que es el orden en que se van a ver en el sitio. */
+    var leer = function (row, sel) {
+      var el = row.querySelector(sel);
+      return el ? el.value.trim() : '';
+    };
+
+    // Slides del carrusel
+    var slides = [];
+    app.querySelectorAll('.admin-slide').forEach(function (row) {
+      var s = {
+        eyebrow: leer(row, '.s-eyebrow'),
+        titulo:  leer(row, '.s-titulo'),
+        texto:   leer(row, '.s-texto'),
+        modo:    leer(row, '.s-modo') || 'banner',
+        imagen:  leer(row, '.s-imagen'),
+        cta1: { texto: leer(row, '.s-c1t'), href: leer(row, '.s-c1h') },
+        cta2: { texto: leer(row, '.s-c2t'), href: leer(row, '.s-c2h') }
+      };
+      // Un slide sin título ni imagen es una fila que alguien agregó y no
+      // llenó. Guardarlo dejaría una portada en blanco rotando en el sitio.
+      if (s.titulo || s.imagen) slides.push(s);
+    });
+    if (slides.length) ov.hero = slides;
+
+    // Mensajes de la barra de anuncios
+    var anuncios = [];
+    app.querySelectorAll('.admin-anuncio').forEach(function (row) {
+      var t = leer(row, '.a-texto');
+      if (!t) return;
+      var a = { texto: t };
+      var d = leer(row, '.a-desde'), h = leer(row, '.a-hasta');
+      if (d) a.desde = d;
+      if (h) a.hasta = h;
+      anuncios.push(a);
+    });
+    ov.config = ov.config || {};
+    ov.config.anuncios = anuncios;
+
+    // Atletas y nutricionistas
+    var gente = [];
+    app.querySelectorAll('.admin-persona').forEach(function (row) {
+      var n = leer(row, '.g-nombre');
+      if (!n) return;
+      gente.push({
+        nombre: n,
+        rol: leer(row, '.g-rol') || 'nutricionista',
+        instagram: leer(row, '.g-ig').replace('@', ''),
+        foto: leer(row, '.g-foto'),
+        disciplina: ''   // la ciudad se sacó el 24/9; el campo queda vacío
+      });
+    });
+    ov.embajadores = ov.embajadores || {};
+    ov.embajadores.gente = gente;
+
+    // Pilares de "Ciencia real"
+    var pilares = [];
+    app.querySelectorAll('.admin-pilar').forEach(function (row) {
+      var t = leer(row, '.p-titulo');
+      if (!t) return;
+      pilares.push({
+        titulo: t,
+        texto:  leer(row, '.p-texto'),
+        foto:   leer(row, '.p-foto'),
+        icono:  leer(row, '.p-icono')
+      });
+    });
+    ov.ciencia = ov.ciencia || {};
+    ov.ciencia.pilares = pilares;
+
+    // Pop-ups de campaña
+    var popups = [];
+    app.querySelectorAll('.admin-popup').forEach(function (row, i) {
+      var t = leer(row, '.o-titulo');
+      if (!t) return;
+      var c1t = leer(row, '.o-c1t'), c2t = leer(row, '.o-c2t');
+      /* El id tiene que ser único Y estable: popups.js guarda en el navegador
+         cuáles ya se cerraron, y si el id cambia, a quien lo cerró le vuelve
+         a aparecer. Por eso se conserva el que ya tenía, y solo se inventa
+         uno cuando la fila es nueva. */
+      var id = leer(row, '.o-id') ||
+               ('pop-' + Date.now().toString(36) + '-' + i);
+      popups.push({
+        id: id,
+        activo: leer(row, '.o-activo') === 'si',
+        etiqueta: leer(row, '.o-etiqueta'),
+        titulo: t,
+        texto: leer(row, '.o-texto'),
+        imagen: leer(row, '.o-imagen'),
+        cta:  c1t ? { texto: c1t, href: leer(row, '.o-c1h') } : null,
+        cta2: c2t ? { texto: c2t, href: leer(row, '.o-c2h') } : null,
+        paginas: leer(row, '.o-paginas').split(',')
+                   .map(function (s) { return s.trim(); }).filter(Boolean),
+        segundos: Number(leer(row, '.o-segundos') || 6),
+        repetirDias: Number(leer(row, '.o-dias') || 7),
+        soloUnaVez: !!(row.querySelector('.o-unavez') || {}).checked
+      });
+    });
+    ov.popups = popups;
+
     // Tiendas (lista dinámica)
     var tiendas = [];
     app.querySelectorAll('.admin-tienda').forEach(function (row) {
@@ -383,10 +721,14 @@
   var cfgToken = '';
 
   function pedirToken(listo) {
-    fetch('api/config-sitio.php', { credentials: 'same-origin' })
+    /* cache: 'no-store' no es un adorno. Esta respuesta lleva el token, que
+       vale para una sesión, y el navegador la cacheaba: después de cerrar e
+       iniciar sesión de nuevo seguía usando el token viejo, publicar seguía
+       fallando y volver a entrar no arreglaba nada. */
+    fetch('api/guardar-sitio.php', { credentials: 'same-origin', cache: 'no-store' })
       .then(function (r) { return r.json(); })
       .then(function (d) { cfgToken = (d && d.token) || ''; listo(); })
-      .catch(function () { listo(); });
+      .catch(function () { cfgToken = ''; listo(); });
   }
 
   function publicar() {
@@ -394,8 +736,20 @@
     var boton = app.querySelector('[data-publicar]');
     if (boton) { boton.disabled = true; boton.textContent = 'Publicando…'; }
 
+    /* Un solo reintento, y automático.
+       -------------------------------------------------------------------
+       El token se guarda en esta variable y se reusaba sin volver a pedirlo
+       nunca: `if (cfgToken) mandar()`. Entonces, si el token quedaba viejo
+       —porque la sesión se renovó, o porque el navegador sirvió la respuesta
+       cacheada— publicar fallaba, y seguía fallando igual para siempre. La
+       única salida era recargar la página, y nada lo decía.
+
+       Ahora, ante un 401 o un 403, se pide un token nuevo y se manda otra
+       vez. Si vuelve a fallar, ahí sí es de verdad y el mensaje se muestra. */
+    var reintento = false;
+
     var mandar = function () {
-      fetch('api/config-sitio.php', {
+      fetch('api/guardar-sitio.php', {
         method: 'POST',
         credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' },
@@ -420,16 +774,33 @@
           var fuera = res.d.ignoradas || [];
           if (fuera.length) {
             toast('⚠ Publicado, PERO el servidor no aceptó: ' + fuera.join(', ') +
-                  '. Avisá que falta agregarlas en api/config-sitio.php.');
+                  '. Avisá que falta agregarlas en api/guardar-sitio.php.');
           } else {
             toast('✓ Publicado. Ya lo ven todos los visitantes.');
           }
           marcarEstado('publicado');
           return;
         }
+        /* Token vencido o sesión renovada: se pide uno nuevo y se manda otra
+           vez, una sola. Sin esto hacía falta recargar a mano. */
+        if ((res.estado === 401 || res.estado === 403) && !reintento) {
+          reintento = true;
+          pedirToken(mandar);
+          return;
+        }
+
         if (res.d && res.d.error) { toast('✗ ' + res.d.error); return; }
         if (res.estado === 401 || res.estado === 403) {
           toast('✗ Se cerró tu sesión. Entrá de nuevo y volvé a publicar: lo que editaste no se perdió.');
+          return;
+        }
+        /* Un 403 con el cuerpo vacío no viene de PHP: viene del servidor web,
+           que corta antes. Pasó con el nombre del endpoint —ver el comentario
+           arriba de api/guardar-sitio.php— y el mensaje genérico mandó a todo
+           el mundo a buscar el problema en la sesión, donde no estaba. */
+        if (res.estado === 403 && !res.d) {
+          toast('✗ El servidor bloqueó el pedido antes de procesarlo (403 vacío). '
+              + 'No es tu sesión: es una regla del hosting. Avisá y pasame esta frase.');
           return;
         }
         toast('✗ El servidor contestó algo que no entiendo (código ' + res.estado + '). '
@@ -510,11 +881,48 @@
       else if (e.target.closest('[data-exportar]')) exportar();
       else if (e.target.closest('[data-reset]')) restablecer();
       else if (e.target.closest('[data-add-tienda]')) {
-        var cont = app.querySelector('[data-tiendas]');
-        cont.insertAdjacentHTML('beforeend', filaTienda({}));
-      } else if (e.target.closest('[data-del-tienda]')) {
-        var row = e.target.closest('.admin-tienda');
-        if (row) row.remove();
+        app.querySelector('[data-tiendas]').insertAdjacentHTML('beforeend', filaTienda({}));
+      }
+      else if (e.target.closest('[data-add-slide]')) {
+        app.querySelector('[data-slides]').insertAdjacentHTML('beforeend', filaSlide(null));
+      }
+      else if (e.target.closest('[data-add-anuncio]')) {
+        app.querySelector('[data-anuncios]').insertAdjacentHTML('beforeend', filaAnuncio(''));
+      }
+      else if (e.target.closest('[data-add-persona]')) {
+        app.querySelector('[data-gente]').insertAdjacentHTML('beforeend', filaPersona(null));
+      }
+      else if (e.target.closest('[data-add-pilar]')) {
+        app.querySelector('[data-pilares]').insertAdjacentHTML('beforeend', filaPilar(null));
+      }
+      else if (e.target.closest('[data-add-popup]')) {
+        app.querySelector('[data-popups]').insertAdjacentHTML('beforeend', filaPopup(null));
+      }
+      else {
+        /* Quitar. Una sola rama para todas las listas: cada botón dice de
+           qué fila cuelga y acá se busca ese ancestro. Agregar una lista
+           nueva es agregar un par acá y nada más.
+
+           Pide confirmación porque no hay deshacer dentro del panel: lo que
+           sí hay es "Restablecer", que tira TODO el borrador, y usar eso
+           para recuperar una fila borrada por error es desproporcionado. */
+        var quitar = [
+          ['[data-del-tienda]',  '.admin-tienda',  'este comercio'],
+          ['[data-del-slide]',   '.admin-slide',   'este slide del carrusel'],
+          ['[data-del-anuncio]', '.admin-anuncio', 'este mensaje'],
+          ['[data-del-persona]', '.admin-persona', 'a esta persona'],
+          ['[data-del-pilar]',   '.admin-pilar',   'este pilar'],
+          ['[data-del-popup]',   '.admin-popup',   'este pop-up']
+        ];
+        for (var i = 0; i < quitar.length; i++) {
+          if (e.target.closest(quitar[i][0])) {
+            var fila = e.target.closest(quitar[i][1]);
+            if (fila && confirm('¿Quitar ' + quitar[i][2] + '?\n\nSe va a ir cuando guardes o publiques.')) {
+              fila.remove();
+            }
+            break;
+          }
+        }
       }
     });
 
