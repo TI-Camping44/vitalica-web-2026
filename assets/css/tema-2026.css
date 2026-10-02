@@ -328,18 +328,22 @@
    para un titular blanco en peso 900— y se va a cero bastante antes, en el
    86%, así que el sujeto de la foto queda limpio.
 
-   Y es NAVY (8,20,40) en vez de casi negro (5,5,6). Las tres portadas tienen
-   el azul quemado adentro del .jpg; un velo negro encima las volvía grises
-   por la ventana de atrás, justo lo que acabábamos de sacar al quitar el
-   grayscale. Del mismo azul, el velo se funde con la foto en lugar de
-   apagarla. */
+   EL VELO ES NEUTRO, NO AZUL  ·  corregido el mismo día
+   Primero se probó en navy, con el argumento de que las portadas tienen el
+   azul quemado adentro del .jpg y un velo del mismo color se fundiría mejor.
+   Martín lo rechazó, y el argumento es mejor que el mío: "ya su imagen
+   original tiene su color, por qué agregar ese azul". Tiene razón —el velo
+   está para que se lea el titular, no para teñir la foto—.
+
+   Así que es gris oscuro neutro (10,10,12): oscurece sin empujar la imagen
+   hacia ningún lado. El azul que quede es el de la foto, no el nuestro. */
 [data-tema="2026"] .hero__slide--banner::after {
   background: linear-gradient(90deg,
-    rgba(8, 20, 40, 0.80) 0%,
-    rgba(8, 20, 40, 0.66) 28%,
-    rgba(8, 20, 40, 0.34) 52%,
-    rgba(8, 20, 40, 0.08) 74%,
-    rgba(8, 20, 40, 0.00) 86%);
+    rgba(10, 10, 12, 0.78) 0%,
+    rgba(10, 10, 12, 0.62) 28%,
+    rgba(10, 10, 12, 0.30) 52%,
+    rgba(10, 10, 12, 0.07) 74%,
+    rgba(10, 10, 12, 0.00) 86%);
 }
 
 /* En celular el recorte es horizontal y el texto queda sobre el medio de la
@@ -348,9 +352,9 @@
 @media (max-width: 760px) {
   [data-tema="2026"] .hero__slide--banner::after {
     background: linear-gradient(180deg,
-      rgba(8, 20, 40, 0.70) 0%,
-      rgba(8, 20, 40, 0.48) 45%,
-      rgba(8, 20, 40, 0.70) 100%);
+      rgba(10, 10, 12, 0.70) 0%,
+      rgba(10, 10, 12, 0.48) 45%,
+      rgba(10, 10, 12, 0.70) 100%);
   }
 }
 [data-tema="2026"] .hero__slide--banner .hero__inner > * { position: relative; z-index: 1; }

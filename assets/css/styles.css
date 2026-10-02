@@ -2040,11 +2040,10 @@ p { color: var(--color-tinta); }
 
    Dos cambios y el porqué de cada uno:
 
-     · Es NAVY (12,28,56) y ya no casi negro (7,13,24). Las portadas tienen
-       el azul quemado adentro del .jpg; un velo negro encima las ensuciaba
-       y las volvía grises de nuevo por la ventana de atrás. Un velo del
-       mismo azul se funde con la foto en vez de apagarla.
-
+     · Es gris NEUTRO (10,10,12). Se probó en navy y Martín lo rechazó con
+       buen argumento: "ya su imagen original tiene su color, por qué
+       agregar ese azul". El velo está para que se lea el titular, no para
+       teñir la foto.
      · Llega a cero en el 82% en vez de quedarse en 0.05 hasta el final. El
        lado derecho es justo donde está el sujeto de las tres portadas: ahí
        no hay texto que proteger y no había razón para taparlo.
@@ -2056,10 +2055,10 @@ p { color: var(--color-tinta); }
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg,
-    rgba(12, 28, 56, 0.78) 0%,
-    rgba(12, 28, 56, 0.46) 42%,
-    rgba(12, 28, 56, 0.10) 70%,
-    rgba(12, 28, 56, 0.00) 82%);
+    rgba(10, 10, 12, 0.78) 0%,
+    rgba(10, 10, 12, 0.46) 42%,
+    rgba(10, 10, 12, 0.10) 70%,
+    rgba(10, 10, 12, 0.00) 82%);
 }
 .hero__slide--banner .hero__inner {
   position: relative;
@@ -2079,7 +2078,7 @@ p { color: var(--color-tinta); }
        texto queda encima de la foto, no al costado. Mismo navy y mismo
        aflojada que en pantalla grande, pero no puede llegar a cero —acá sí
        hay texto sobre la parte de abajo—. */
-    background: linear-gradient(180deg, rgba(12,28,56,0.70) 0%, rgba(12,28,56,0.38) 100%);
+    background: linear-gradient(180deg, rgba(10,10,12,0.70) 0%, rgba(10,10,12,0.38) 100%);
   }
 }
 

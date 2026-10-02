@@ -19,7 +19,25 @@
 #>
 
 $raiz = Split-Path -Parent $PSScriptRoot
-$paginas = Get-ChildItem $raiz -Filter *.html -File
+
+<#
+  TAMBIEN LOS .php DE LA RAIZ, NO SOLO LOS .html.
+
+  Esto miraba unicamente *.html, y admin.php quedo congelado en ?v=59
+  mientras el sitio iba por la v76. O sea: diecisiete versiones seguidas en
+  las que el panel de configuracion se desplego perfecto al servidor y el
+  navegador siguio usando el admin.js viejo que tenia en cache.
+
+  Costo caro. El 2/10/2026 se arreglaron cuatro bugs de las etiquetas, se
+  subieron, se verifico que los archivos correctos estaban en el servidor...
+  y marketing seguia viendo el error, porque su navegador ni se molestaba en
+  pedirlos. Un arreglo que no llega al navegador no es un arreglo.
+
+  Los .php del subdirectorio api/ no entran: son endpoints, no paginas, y
+  ninguno carga .js versionado.
+#>
+$paginas = @(Get-ChildItem $raiz -Filter *.html -File) +
+           @(Get-ChildItem $raiz -Filter *.php  -File)
 
 # Se busca el numero mas alto que haya hoy y se suma uno.
 $maximo = 0
