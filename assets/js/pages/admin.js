@@ -370,18 +370,38 @@
       '<input type="hidden" class="p-icono" value="' + escAttr(p.icono) + '">' +
     '</div>';
   }
+  /* --- Un comercio aliado ---
+     Ya no se pide la dirección: el sitio muestra el logo del comercio, no
+     dónde queda (ver assets/js/pages/contacto.js).
+
+     EL LOGO AHORA SE SUBE DESDE ACÁ.
+     Antes viajaba en un campo oculto y solo se podía cargar escribiéndolo en
+     data.js. El razonamiento era "es un archivo, no un texto", pero el
+     resultado fue que todo comercio que marketing agregara nacía sin logo y
+     sin forma de ponérselo: en la fila de aliados aparecía el nombre suelto
+     en texto, que es exactamente lo que la sección quiere evitar.
+
+     Las medidas se calculan solas al subir la imagen (ver wirePanel): los
+     logos vienen con proporciones muy distintas —hay uno de 190×27 y otro de
+     111×61— y pedirle a alguien que las escriba a mano es pedirle que las
+     invente. */
   function filaTienda(t) {
     t = t || {};
-    // Ya no se pide la dirección: el sitio muestra el logo del comercio, no
-    // dónde queda (ver assets/js/pages/contacto.js). El logo tampoco se edita
-    // acá porque es un archivo, no un texto: va en assets/img/aliados/ y se
-    // enlaza desde VITALICA_TIENDAS en data.js.
+    var id = 'tl_' + (++contadorImg);
     return '<div class="admin-tienda">' +
-      '<input type="text" class="t-nombre" value="' + escAttr(t.nombre) + '" placeholder="Nombre del comercio">' +
-      '<input type="text" class="t-ciudad" value="' + escAttr(t.ciudad) + '" placeholder="Ciudad (opcional)">' +
-      '<input type="hidden" class="t-logo" value="' + escAttr(t.logo) + '">' +
-      '<span class="admin-tienda__logo">' + (t.logo ? '🖼️ con logo' : '— sin logo') + '</span>' +
-      '<button type="button" class="admin-tienda__del" data-del-tienda aria-label="Quitar comercio">✕</button>' +
+      '<div class="admin-tienda__datos">' +
+        '<input type="text" class="t-nombre" value="' + escAttr(t.nombre) + '" placeholder="Nombre del comercio">' +
+        '<input type="text" class="t-ciudad" value="' + escAttr(t.ciudad) + '" placeholder="Ciudad (opcional)">' +
+      '</div>' +
+      '<div class="admin-tienda__logo">' +
+        '<img class="admin-img__preview admin-img__preview--logo" src="' + escAttr(t.logo) + '" alt="" data-prev="' + id + '">' +
+        '<input type="file" accept="image/*" class="admin-file" data-file="' + id + '">' +
+        '<span class="admin-hint">PNG con fondo transparente · el logo del comercio, no una foto del local</span>' +
+      '</div>' +
+      '<input type="hidden" id="' + id + '" class="t-logo" value="' + escAttr(t.logo) + '">' +
+      '<input type="hidden" class="t-ancho"  value="' + escAttr(t.ancho) + '">' +
+      '<input type="hidden" class="t-altura" value="' + escAttr(t.altura) + '">' +
+      '<button type="button" class="admin-quitar" data-del-tienda aria-label="Quitar comercio">✕</button>' +
     '</div>';
   }
 
@@ -807,13 +827,18 @@
     app.querySelectorAll('.admin-tienda').forEach(function (row) {
       var n = row.querySelector('.t-nombre').value.trim();
       var c = row.querySelector('.t-ciudad').value.trim();
-      // El logo viaja en un campo oculto para no perderlo al guardar: no se
-      // edita desde el panel, pero si se pierde el comercio queda sin imagen.
       var campoLogo = row.querySelector('.t-logo');
       var t = { nombre: n, ciudad: c, logo: campoLogo ? campoLogo.value : '' };
-      // Ancho y alto del logo se conservan de data.js buscando por nombre: son
-      // medidas calculadas por la forma de cada archivo, no algo que se tipee.
-      if (typeof VITALICA_TIENDAS !== 'undefined') {
+
+      /* Medidas del logo. Si la imagen se subió recién, las calculó el
+         lector de archivos midiéndola de verdad. Si no, se buscan en la
+         lista de fábrica por nombre, que es lo que pasaba hasta ahora con
+         los diez comercios que ya estaban. */
+      var a = (row.querySelector('.t-ancho') || {}).value;
+      var al = (row.querySelector('.t-altura') || {}).value;
+      if (a && al) {
+        t.ancho = Number(a); t.altura = Number(al);
+      } else if (typeof VITALICA_TIENDAS !== 'undefined') {
         var orig = VITALICA_TIENDAS.filter(function (x) { return x.nombre === n; })[0];
         if (orig) { t.ancho = orig.ancho; t.altura = orig.altura; }
       }
@@ -993,6 +1018,26 @@
           if (hidden) hidden.value = reader.result;
           var prev = app.querySelector('[data-prev="' + id + '"]');
           if (prev) prev.src = reader.result;
+
+          /* Logo de comercio aliado: se miden ancho y alto reales y se
+             guardan. Los logos vienen con proporciones muy distintas —hay
+             uno de 190×27 y otro de 111×61— así que sin medida propia
+             todos saldrían con la misma y los anchos se deformarían.
+
+             Se encajan en una caja de 190×52 conservando la proporción,
+             que es el rango en el que están los que ya había. */
+          if (hidden && hidden.classList.contains('t-logo')) {
+            var fila = hidden.closest('.admin-tienda');
+            var medidor = new Image();
+            medidor.onload = function () {
+              if (!medidor.width || !medidor.height) return;
+              var esc = Math.min(190 / medidor.width, 52 / medidor.height);
+              var a = fila.querySelector('.t-ancho'), al = fila.querySelector('.t-altura');
+              if (a)  a.value  = Math.round(medidor.width * esc);
+              if (al) al.value = Math.round(medidor.height * esc);
+            };
+            medidor.src = reader.result;
+          }
         };
         reader.readAsDataURL(f.files[0]);
         return;

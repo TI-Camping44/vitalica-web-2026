@@ -1991,8 +1991,81 @@ p { color: var(--color-tinta); }
 .admin-grupo { border: 1px solid var(--color-linea); border-left: 3px solid var(--color-primario); border-radius: var(--radio); padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); background: var(--color-fondo); }
 .admin-grupo__t { font-size: var(--fs-md); }
 
-.admin-tienda { display: grid; grid-template-columns: 1fr 1fr 1.4fr auto; gap: var(--space-2); margin-bottom: var(--space-2); align-items: center; }
+/* ==========================================================================
+   PANEL · LISTAS QUE SE AGRANDAN Y SE ACHICAN
+   --------------------------------------------------------------------------
+   Slides del carrusel, atletas, pilares, pop-ups, productos, sabores,
+   anuncios y comercios aliados. Todas comparten el mismo lenguaje: una barra
+   con el título y el botón de quitar arriba, y un botón de agregar abajo.
+   ========================================================================== */
+.admin-nota {
+  font-size: var(--fs-sm); color: var(--color-tinta-suave);
+  background: var(--color-fondo-suave); border-radius: var(--radio);
+  padding: var(--space-3) var(--space-4); margin: 0;
+}
+.admin-fila__barra {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-3); border-bottom: 1px solid var(--color-linea);
+  padding-bottom: var(--space-2); margin-bottom: var(--space-1);
+}
+.admin-agregar {
+  align-self: flex-start;
+  background: #fff; border: 1px dashed var(--color-primario);
+  color: var(--color-primario-texto); font-weight: 700;
+  font-size: var(--fs-sm); padding: 0.55em 1.1em;
+  border-radius: var(--radio); cursor: pointer;
+}
+.admin-agregar:hover { background: var(--color-primario); color: #fff; border-style: solid; }
+.admin-agregar--mini { font-size: var(--fs-xs); padding: 0.4em 0.9em; }
+
+.admin-quitar {
+  background: none; border: 1px solid var(--color-linea);
+  color: var(--color-alerta); font-weight: 700; font-size: var(--fs-xs);
+  padding: 0.35em 0.8em; border-radius: var(--radio); cursor: pointer;
+  white-space: nowrap; flex-shrink: 0;
+}
+.admin-quitar:hover { background: var(--color-alerta); color: #fff; border-color: var(--color-alerta); }
+
+.admin-dos { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.admin-check { flex-direction: row; align-items: center; gap: 8px; font-size: var(--fs-sm); }
+.admin-check input { width: auto; }
+
+/* Sublista: los sabores y tamaños adentro de un producto */
+.admin-sublista {
+  border-top: 1px solid var(--color-linea); padding-top: var(--space-3);
+  display: flex; flex-direction: column; gap: var(--space-2);
+}
+.admin-sublista__t { font-size: var(--fs-sm); margin: 0; text-transform: uppercase; letter-spacing: .04em; color: var(--color-tinta-suave); }
+.admin-variante {
+  display: grid; grid-template-columns: 1.6fr 1.4fr 60px 1fr auto;
+  gap: var(--space-2); align-items: center;
+}
+
+/* Un mensaje de la barra de anuncios, con sus dos fechas */
+.admin-anuncio {
+  display: grid; grid-template-columns: 1fr auto auto auto;
+  gap: var(--space-2); align-items: end; margin-bottom: var(--space-2);
+}
+.admin-mini { display: flex; flex-direction: column; font-size: var(--fs-xs); color: var(--color-tinta-suave); gap: 3px; }
+
+/* Comercio aliado: datos a la izquierda, logo a la derecha */
+.admin-tienda {
+  display: grid; grid-template-columns: 1.4fr 1.6fr auto;
+  gap: var(--space-3); margin-bottom: var(--space-3); align-items: start;
+  border: 1px solid var(--color-linea); border-radius: var(--radio);
+  padding: var(--space-3);
+}
+.admin-tienda__datos { display: flex; flex-direction: column; gap: var(--space-2); }
+.admin-tienda__logo { display: flex; flex-direction: column; gap: 6px; }
+.admin-img__preview--logo { width: 100%; max-width: 190px; height: 56px; padding: 4px; }
 .admin-tienda__del { color: var(--color-alerta); font-weight: 800; padding: 0 0.5em; }
+
+@media (max-width: 760px) {
+  .admin-dos { grid-template-columns: 1fr; }
+  .admin-variante { grid-template-columns: 1fr 1fr; }
+  .admin-anuncio { grid-template-columns: 1fr 1fr; }
+  .admin-tienda { grid-template-columns: 1fr; }
+}
 
 .admin-barra-guardar { position: sticky; bottom: 0; background: rgba(255, 255, 255, 0.95); border-top: 1px solid var(--color-linea); padding: var(--space-3) var(--space-5); text-align: center; backdrop-filter: blur(4px); }
 
@@ -2005,7 +2078,6 @@ p { color: var(--color-tinta); }
 
 @media (max-width: 560px) {
   .admin-enlace__row { grid-template-columns: 1fr; }
-  .admin-tienda { grid-template-columns: 1fr 1fr; }
 }
 
 

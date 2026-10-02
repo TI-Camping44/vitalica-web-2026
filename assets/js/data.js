@@ -340,9 +340,10 @@ const VITALICA_CONFIG = {
 
        LAS FOTOS (actualizado el 1/10/2026)
        Paula mando dos carpetas de Drive, una por persona. Quedaron con foto
-       los cuatro atletas y siete de las diez nutricionistas. Siguen sin
-       foto Angie Ozorio, Diana Espinola y Jessica Sholan: sus carpetas
+       los cuatro atletas y ocho de las diez nutricionistas. Siguen sin
+       foto Diana Espinola y Jessica Sholan: sus carpetas en Drive
        estan creadas pero vacias. Hasta que lleguen muestran sus iniciales.
+       La de Angie Ozorio llego el 2/10 y ya esta puesta.
 
        En esa carpeta aparecio ademas MAISA GHANEM, que no esta en la lista
        de abajo. No se agrego: la carpeta esta vacia y no hay Instagram ni
@@ -388,7 +389,7 @@ const VITALICA_CONFIG = {
 
       { nombre: 'Osvaldo Delvalle', rol: 'nutricionista', foto: 'assets/img/embajadores/osvaldo-delvalle.jpg', disciplina: '', instagram: 'osdelvalle.nutri' },
       { nombre: 'Fernanda Picco',   rol: 'nutricionista', foto: 'assets/img/embajadores/fernanda-picco.jpg', disciplina: '', instagram: 'nutricionpiccopy' },
-      { nombre: 'Angie Ozorio',     rol: 'nutricionista', foto: '', disciplina: '', instagram: 'angieozoriob' },
+      { nombre: 'Angie Ozorio',     rol: 'nutricionista', foto: 'assets/img/embajadores/angie-ozorio.jpg', disciplina: '', instagram: 'angieozoriob' },
       { nombre: 'Tamara Britez',    rol: 'nutricionista', foto: 'assets/img/embajadores/tamara-britez.jpg', disciplina: '', instagram: 'nutritaami' },
       { nombre: 'Diana Espínola',   rol: 'nutricionista', foto: '', disciplina: '', instagram: 'nutridires' },
       { nombre: 'Jessica Sholan',   rol: 'nutricionista', foto: '', disciplina: '', instagram: '' }
