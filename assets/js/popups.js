@@ -68,6 +68,12 @@
   function corresponde(pop) {
     if (!pop || !pop.activo) return false;
 
+    /* En la vista en vivo del panel, no. Esa ventana recarga el sitio cada
+       vez que alguien escribe una letra, y el aviso aparecía encima tapando
+       justamente lo que se estaba editando. El panel marca sus recargas con
+       ?vp= en la dirección. */
+    if (/[?&]vp=/.test(location.search)) return false;
+
     /* VENTANA DE FECHAS. Agregada el 2/10/2026, con el sorteo del BIGG
        Under Armour Running Festival como caso: se define el 7 de octubre y
        el aviso tiene que dejar de aparecer solo.

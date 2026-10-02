@@ -634,6 +634,7 @@
           '<a class="btn btn--contorno" href="index.html" target="_blank" rel="noopener">Ver el sitio ↗</a>' +
           '<button class="btn btn--contorno" type="button" data-exportar>Exportar</button>' +
           '<label class="btn btn--contorno admin-import">Importar<input type="file" accept="application/json,.json" data-importar hidden></label>' +
+          '<button class="btn btn--contorno" type="button" data-vista-abrir>Ver mientras edito</button>' +
           '<button class="btn btn--contorno" type="button" data-reset>Restablecer</button>' +
           '<button class="btn btn--contorno" type="button" data-guardar>Guardar borrador</button>' +
           '<button class="btn btn--primario" type="button" data-publicar>Publicar</button>' +
@@ -671,10 +672,48 @@
             'para descartarlos y volver a ver lo que está publicado.' +
           '</div>'
         : '') +
-      '<div class="admin-form">' + secciones + '</div>' +
+      /* ---- VISTA EN VIVO ---------------------------------------------
+         El sitio al lado del formulario, actualizándose solo mientras se
+         escribe. Es lo que convierte "publico y cruzo los dedos" en "lo veo
+         y después publico", que era el paso donde más se tropezaba.
+
+         Son DOS iframes, no uno. Recargar el único que había hacía parpadear
+         la pantalla de carga del sitio en cada tecleo. Así se carga en el
+         que está escondido y recién cuando terminó se intercambian: el
+         cambio aparece de una, sin parpadeo. */
+      '<div class="admin-split" data-split>' +
+        '<div class="admin-form">' + secciones + '</div>' +
+        '<aside class="admin-vista" data-vista>' +
+          '<div class="admin-vista__barra">' +
+            '<select data-vista-pagina title="Qué página mirar">' +
+              '<option value="index.html">Portada</option>' +
+              '<option value="productos.html">Productos</option>' +
+              '<option value="noticias.html">Noticias</option>' +
+              '<option value="contacto.html">Contacto</option>' +
+              '<option value="sobre.html">Olimp</option>' +
+            '</select>' +
+            '<div class="admin-vista__anchos">' +
+              '<button type="button" data-ancho="suelto" class="on" title="Pantalla de computadora">🖥</button>' +
+              '<button type="button" data-ancho="390" title="Celular">📱</button>' +
+            '</div>' +
+            '<span class="admin-vista__estado" data-vista-estado></span>' +
+            '<button type="button" class="admin-vista__cerrar" data-vista-cerrar title="Ocultar la vista">✕</button>' +
+          '</div>' +
+          '<div class="admin-vista__marco" data-vista-marco>' +
+            '<iframe data-vista-a title="Vista del sitio"></iframe>' +
+            '<iframe data-vista-b title="Vista del sitio" hidden></iframe>' +
+          '</div>' +
+        '</aside>' +
+      '</div>' +
       '<div class="admin-barra-guardar"><button class="btn btn--primario btn--grande" type="button" data-guardar>Guardar cambios</button></div>';
 
     wirePanel();
+
+    /* Si la vista quedó abierta la última vez, se abre sola. Volver a
+       prenderla en cada visita sería una tarea diaria sin sentido. */
+    var abierta = '';
+    try { abierta = localStorage.getItem('vitalica_vista_abierta') || ''; } catch (e) {}
+    if (abierta) vistaAbrir(true);
   }
 
   /* ---------- Recolectar valores del formulario → objeto overrides ---------- */
@@ -1091,6 +1130,78 @@
   }
 
   /* ---------- Eventos del panel ---------- */
+  /* ======================================================================
+     VISTA EN VIVO
+     ----------------------------------------------------------------------
+     El sitio se dibuja solo a partir de data.js más el borrador guardado en
+     localStorage (ver "LAS DOS CAPAS" en data.js). Así que para que la vista
+     muestre lo que se está escribiendo alcanza con guardar el borrador y
+     recargar el iframe: no hace falta tocar una sola línea del sitio, y lo
+     que se ve es exactamente lo que verían los visitantes al publicar, no
+     una simulación aparte que mañana se desincroniza.
+
+     El precio es que escribir auto-guarda el borrador. Es lo que hace
+     WordPress y es lo correcto acá: el aviso rojo de arriba dice que hay
+     borrador sin publicar, y "Restablecer" lo descarta.
+     ====================================================================== */
+  var vistaTimer = null;
+  var vistaActiva = false;
+
+  function vistaMarco(cual) { return app.querySelector('[data-vista-' + cual + ']'); }
+
+  function vistaEstado(txt) {
+    var e = app.querySelector('[data-vista-estado]');
+    if (e) e.textContent = txt || '';
+  }
+
+  /** Carga la página en el iframe escondido y recién ahí los intercambia. */
+  function vistaRefrescar() {
+    if (!vistaActiva) return;
+    var a = vistaMarco('a'), b = vistaMarco('b');
+    if (!a || !b) return;
+
+    var visible = a.hidden ? b : a;
+    var oculto  = a.hidden ? a : b;
+
+    var sel = app.querySelector('[data-vista-pagina]');
+    var pagina = (sel && sel.value) || 'index.html';
+
+    vistaEstado('actualizando…');
+    guardar(true);   // el borrador es lo que la vista va a leer
+
+    oculto.onload = function () {
+      oculto.onload = null;
+      /* Se mantiene la posición de scroll entre recargas. Sin esto, tocar
+         una coma en "Comercios aliados" devolvía la vista al encabezado y
+         había que bajar de nuevo cada vez. */
+      try {
+        var y = visible.contentWindow.scrollY;
+        if (y) oculto.contentWindow.scrollTo(0, y);
+      } catch (e) { /* otra página, otro origen: no pasa nada */ }
+      oculto.hidden = false;
+      visible.hidden = true;
+      vistaEstado('al día');
+    };
+    // El sello de tiempo evita que el navegador sirva la página de su cache.
+    oculto.src = pagina + (pagina.indexOf('?') === -1 ? '?' : '&') + 'vp=' + Date.now();
+  }
+
+  /** Se llama en cada tecleo; espera a que la persona pare de escribir. */
+  function vistaPedirRefresco() {
+    if (!vistaActiva) return;
+    vistaEstado('escribiendo…');
+    clearTimeout(vistaTimer);
+    vistaTimer = setTimeout(vistaRefrescar, 700);
+  }
+
+  function vistaAbrir(abrir) {
+    vistaActiva = !!abrir;
+    var split = app.querySelector('[data-split]');
+    if (split) split.classList.toggle('admin-split--con-vista', vistaActiva);
+    try { localStorage.setItem('vitalica_vista_abierta', vistaActiva ? '1' : ''); } catch (e) {}
+    if (vistaActiva) vistaRefrescar();
+  }
+
   function wirePanel() {
     // Subir imagen → base64 → preview + input oculto
     app.addEventListener('change', function (e) {
@@ -1230,7 +1341,46 @@
       if (imp && imp.files && imp.files[0]) importar(imp.files[0]);
     });
 
+    /* Cualquier cambio en el formulario pide refrescar la vista. Va con
+       'input' además de 'change' para que se vea mientras se escribe y no
+       recién al salir del campo, que es la diferencia entre "dinámico" y
+       "otro formulario más". */
+    app.addEventListener('input', function (e) {
+      if (e.target.closest('.admin-form')) vistaPedirRefresco();
+    });
+    app.addEventListener('change', function (e) {
+      if (e.target.closest('.admin-form')) vistaPedirRefresco();
+      /* El selector de página vive en la barra de la vista, no en el
+         formulario, así que no lo agarra la línea de arriba. Y acá se
+         refresca de una, sin esperar: no es tecleo, es una decisión. */
+      if (e.target.closest('[data-vista-pagina]')) vistaRefrescar();
+    });
+
     app.addEventListener('click', function (e) {
+      /* Agregar y quitar filas no disparan 'input', así que se refresca acá.
+         setTimeout(0) para que corra después de que el nodo se agregó. */
+      if (e.target.closest('[data-add-tienda],[data-add-slide],[data-add-anuncio],' +
+                           '[data-add-persona],[data-add-pilar],[data-add-popup],' +
+                           '[data-add-producto],[data-add-variante],[data-del-tienda],' +
+                           '[data-del-slide],[data-del-anuncio],[data-del-persona],' +
+                           '[data-del-pilar],[data-del-popup],[data-del-producto],' +
+                           '[data-del-variante]')) {
+        setTimeout(vistaPedirRefresco, 0);
+      }
+
+      if (e.target.closest('[data-vista-abrir]')) { vistaAbrir(true); return; }
+      if (e.target.closest('[data-vista-cerrar]')) { vistaAbrir(false); return; }
+
+      var ancho = e.target.closest('[data-ancho]');
+      if (ancho) {
+        var marco = app.querySelector('[data-vista-marco]');
+        app.querySelectorAll('[data-ancho]').forEach(function (b) { b.classList.remove('on'); });
+        ancho.classList.add('on');
+        if (marco) marco.style.maxWidth = ancho.getAttribute('data-ancho') === 'suelto'
+          ? '' : ancho.getAttribute('data-ancho') + 'px';
+        return;
+      }
+
       if (e.target.closest('[data-publicar]')) publicar();
       else if (e.target.closest('[data-guardar]')) { guardar(); marcarEstado('borrador'); }
       else if (e.target.closest('[data-exportar]')) exportar();
