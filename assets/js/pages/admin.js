@@ -713,7 +713,26 @@
           '</div>' +
         '</aside>' +
       '</div>' +
-      '<div class="admin-barra-guardar"><button class="btn btn--primario btn--grande" type="button" data-guardar>Guardar cambios</button></div>';
+      /* LA BARRA DE ABAJO OFRECE LAS DOS COSAS, Y PUBLICAR ES LA PRINCIPAL.
+         ------------------------------------------------------------------
+         Acá había un solo botón naranja grande que decía "Guardar cambios"
+         —el más visible de toda la pantalla— y guardaba un BORRADOR. El de
+         Publicar quedaba arriba, chico y lejos.
+
+         El resultado es el que tenía que ser: alguien carga una persona,
+         toca el botón grande, lee "✓ Cambios guardados" y se va convencido
+         de que publicó. Paso con Jessica Sholan el 2/10/2026, y no fue un
+         descuido: el boton mas prominente hacia lo menos importante y su
+         texto no decia "borrador" por ningun lado.
+
+         Ahora dice qué es cada uno, y el que destaca es el que la gente
+         viene a hacer. */
+      '<div class="admin-barra-guardar">' +
+        '<button class="btn btn--contorno" type="button" data-guardar>Guardar borrador</button>' +
+        '<button class="btn btn--primario btn--grande" type="button" data-publicar>Publicar en el sitio</button>' +
+        '<span class="admin-barra-guardar__nota">El borrador lo ves solo vos. ' +
+        'Publicar lo deja en el sitio para todos.</span>' +
+      '</div>';
 
     wirePanel();
 
@@ -1051,6 +1070,20 @@
             toast('✓ Publicado. Ya lo ven todos los visitantes.');
           }
           marcarEstado('publicado');
+
+          /* El borrador deja de existir al publicar.
+             ----------------------------------------------------------------
+             Antes quedaba, y con él quedaba el cartel "Tenés un borrador sin
+             publicar" — diciendo algo que acababa de dejar de ser cierto.
+             Facundo publicó, vio la etiqueta "publicado" arriba y el cartel
+             rojo abajo al mismo tiempo, y con razón no supo a cuál creerle.
+
+             Borrarlo es lo correcto además de lo claro: el borrador es "lo
+             que todavía no publiqué", y después de publicar no queda nada
+             de eso. Si vuelve a editar, se crea uno nuevo. */
+          try { localStorage.removeItem('vitalica_overrides'); } catch (err) {}
+          var cartel = app.querySelector('.admin-aviso--borrador');
+          if (cartel) cartel.remove();
           return;
         }
         /* Token vencido o sesión renovada: se pide uno nuevo y se manda otra
