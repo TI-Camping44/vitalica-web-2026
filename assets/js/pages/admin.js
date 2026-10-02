@@ -919,9 +919,46 @@
       .catch(function () { cfgToken = ''; listo(); });
   }
 
+  /** Cuánto pesa, en MB, lo que se va a mandar. */
+  function pesoMB(ov) {
+    try { return (JSON.stringify(ov).length / 1024 / 1024).toFixed(1); }
+    catch (e) { return '?'; }
+  }
+
+  /* Qué sección es la que pesa. Sirve para que el aviso diga dónde mirar en
+     vez de mandar a revisar las catorce. */
+  function masPesada(ov) {
+    var peor = '', max = 0;
+    Object.keys(ov || {}).forEach(function (k) {
+      var n = 0;
+      try { n = JSON.stringify(ov[k]).length; } catch (e) {}
+      if (n > max) { max = n; peor = k; }
+    });
+    var nombres = {
+      config: 'Marca / Logos, menú, Instagram o anuncios',
+      hero: 'el carrusel', catalogo: 'los productos', variantes: 'los sabores',
+      embajadores: 'atletas y nutricionistas', ciencia: 'Ciencia real',
+      popups: 'los pop-ups', tiendas: 'los comercios aliados',
+      campanas: 'etiquetas y promociones'
+    };
+    return nombres[peor] || peor;
+  }
+
   function publicar() {
     var ov = guardar(true);
     var boton = app.querySelector('[data-publicar]');
+
+    /* Aviso ANTES de mandar. El servidor igual lo va a rechazar, pero
+       enterarse despues de esperar la subida de varios MB es peor, y el
+       mensaje del servidor no puede decir cual seccion pesa porque recibe
+       todo junto. */
+    if (JSON.stringify(ov).length > 2.6 * 1024 * 1024) {
+      toast('✗ Esto pesa ' + pesoMB(ov) + ' MB y el servidor acepta hasta 3. ' +
+            'Lo más pesado es ' + masPesada(ov) + ': cambiá esa imagen por una más chica. ' +
+            'No se publicó nada; tus cambios siguen guardados acá.');
+      return;
+    }
+
     if (boton) { boton.disabled = true; boton.textContent = 'Publicando…'; }
 
     /* Un solo reintento, y automático.
@@ -978,6 +1015,17 @@
         }
 
         if (res.d && res.d.error) { toast('✗ ' + res.d.error); return; }
+
+        /* 413 = el pedido pesa demasiado. PHP tiene su propio tope además del
+           nuestro, y cuando lo pasa contesta el servidor web directamente,
+           sin JSON: por eso caía en el mensaje genérico "no entiendo", que no
+           le dice a nadie qué hacer. Pasó con la imagen del sorteo. */
+        if (res.estado === 413) {
+          toast('✗ La configuración pesa demasiado para el servidor (' + pesoMB(ov) + ' MB). ' +
+                'Casi siempre es una imagen: subí una más chica en la sección que acabás de tocar. ' +
+                'Tus cambios siguen guardados acá.');
+          return;
+        }
         if (res.estado === 401 || res.estado === 403) {
           toast('✗ Se cerró tu sesión. Entrá de nuevo y volvé a publicar: lo que editaste no se perdió.');
           return;
