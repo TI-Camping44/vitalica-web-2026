@@ -57,6 +57,24 @@ function esquema_tablas(): array
             'google_id'  => 'TEXTO(64) NULL',
             'nombre'     => 'TEXTO(120) NOT NULL',
             'telefono'   => "TEXTO(32) NOT NULL DEFAULT ''",
+
+            /* CIUDAD Y DIRECCIÓN, obligatorias al registrarse desde el
+               2/10/2026. Antes se pedían recién en el checkout, y había que
+               escribirlas en cada compra. Pedirlas una vez y traerlas solas
+               es la diferencia entre comprar en un minuto y abandonar.
+
+               Arrancan vacías y no NULL, por lo mismo que teléfono: quien
+               entra con Google no las trae, y hasta que las complete la
+               cuenta existe igual. El sitio le pide completarlas antes de
+               dejarlo comprar, no antes de dejarlo entrar.
+
+               GIMNASIO es opcional y es otra cosa: Vitalica tiene convenios
+               con algunos, y pedir que te lo lleven ahí sale sin costo de
+               envío. Quien no va a ninguno deja el campo vacío y no cambia
+               nada para él. */
+            'ciudad'     => "TEXTO(80) NOT NULL DEFAULT ''",
+            'direccion'  => "TEXTO(200) NOT NULL DEFAULT ''",
+            'gimnasio'   => "TEXTO(120) NOT NULL DEFAULT ''",
             'verificado' => 'ENTERO NOT NULL DEFAULT 0',
             'estado'     => "TEXTO(16) NOT NULL DEFAULT 'activo'",
             'creado'     => 'FECHA NOT NULL',
@@ -285,6 +303,54 @@ function esquema_revisar(): array
     return $problemas;
 }
 
+/** Los nombres de columna que la tabla tiene HOY en la base. */
+function esquema_columnas_de(string $tabla, string $motor): array
+{
+    $nombres = [];
+    if ($motor === 'sqlite') {
+        foreach (db_filas("PRAGMA table_info(`$tabla`)") as $f) {
+            $nombres[] = (string)$f['name'];
+        }
+    } else {
+        foreach (db_filas("SHOW COLUMNS FROM `$tabla`") as $f) {
+            $nombres[] = (string)($f['Field'] ?? reset($f));
+        }
+    }
+    return $nombres;
+}
+
+/**
+ * Agrega las columnas declaradas que todavía no existen. Devuelve cuáles.
+ *
+ * Solo agrega: nunca borra ni cambia una columna existente. Borrar una
+ * columna es tirar datos, y eso no lo decide un script que corre solo al
+ * entrar a una página: lo decide una persona mirando qué hay adentro.
+ */
+function esquema_columnas_faltantes(string $tabla, array $cols, string $motor): array
+{
+    unset($cols['@indices'], $cols['@fk']);
+    $hay = esquema_columnas_de($tabla, $motor);
+    $agregadas = [];
+
+    foreach ($cols as $nombre => $decl) {
+        if (in_array($nombre, $hay, true)) continue;
+
+        /* Una columna NOT NULL sin DEFAULT no se puede agregar a una tabla
+           que ya tiene filas: la base no sabe qué poner en las que están.
+           Mejor avisar que fallar a mitad de camino. */
+        $tipo = esquema_tipo($decl, $motor);
+        if (stripos($tipo, 'NOT NULL') !== false && stripos($tipo, 'DEFAULT') === false) {
+            throw new RuntimeException(
+                "No puedo agregar `$tabla`.`$nombre`: es NOT NULL y no tiene DEFAULT, "
+              . "y la tabla ya tiene filas. Dale un DEFAULT en esquema.php.");
+        }
+
+        db()->exec("ALTER TABLE `$tabla` ADD COLUMN `$nombre` $tipo");
+        $agregadas[] = $nombre;
+    }
+    return $agregadas;
+}
+
 /** Crea lo que falte. Devuelve qué hizo, para poder contarlo. */
 function esquema_crear(): array
 {
@@ -301,7 +367,24 @@ function esquema_crear(): array
     $hecho = [];
 
     foreach (esquema_tablas() as $tabla => $cols) {
-        if (esquema_existe($tabla)) { $hecho[$tabla] = 'ya estaba'; continue; }
+        if (esquema_existe($tabla)) {
+            /* LA TABLA EXISTE PERO PUEDE FALTARLE UNA COLUMNA.
+               ----------------------------------------------------------------
+               Esto antes decía "ya estaba" y seguía de largo. El efecto:
+               agregar una columna acá no la creaba nunca en un servidor donde
+               la tabla ya existía —o sea, en producción, siempre—. El código
+               nuevo escribía esa columna y la base contestaba "no column
+               named ciudad", con el registro de clientes caído.
+
+               Lo encontré agregando ciudad y dirección el 2/10/2026, y lo
+               encontré porque las pruebas de clientes.php corrieron contra
+               una base vieja y reventaron. Sin esas pruebas, esto se
+               descubría en producción y con gente intentando registrarse. */
+            $faltan = esquema_columnas_faltantes($tabla, $cols, $motor);
+            $hecho[$tabla] = $faltan ? ('columnas agregadas: ' . implode(', ', $faltan))
+                                     : 'ya estaba';
+            continue;
+        }
 
         $indices = $cols['@indices'] ?? [];
         $foraneas = $cols['@fk'] ?? [];

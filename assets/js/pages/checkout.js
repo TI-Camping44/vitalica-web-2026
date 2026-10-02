@@ -77,16 +77,49 @@
      en cuyo caso el sitio dice "a confirmar" en vez de inventar un monto. */
   function costoEnvio(entrega) {
     if (entrega === 'retiro') return 0;
+    /* ENTREGA EN EL GIMNASIO: sin costo.
+       Vitalica tiene convenio con algunos y lleva todo junto a un solo lugar
+       en vez de repartir cinco entregas sueltas; por eso puede no cobrarlo.
+       Ver VITALICA_CONFIG.gimnasios en data.js. */
+    if (entrega === 'gimnasio') return 0;
     var sub = Carrito.subtotal();
     if (envios.gratisDesde != null && sub != null && sub >= envios.gratisDesde) return 0;
     if (entrega === 'gran-asuncion') return envios.granAsuncion != null ? envios.granAsuncion : null;
     if (entrega === 'interior')      return envios.interior     != null ? envios.interior     : null;
     return null;
   }
+
+  /* Agrega la opción "entregar en mi gimnasio" si el cliente tiene uno
+     cargado Y ese gimnasio sigue teniendo convenio.
+     --------------------------------------------------------------------
+     Se revisa contra la lista en vez de confiar en lo que guardó la cuenta:
+     si marketing saca un gimnasio del convenio, quien lo tenía elegido deja
+     de ver la opción en su próxima compra. Confiar en el dato viejo sería
+     regalar envíos de un acuerdo que ya no existe. */
+  var miGimnasio = '';
+  function gimnasioElegido() {
+    return entregaElegida() === 'gimnasio' ? miGimnasio : '';
+  }
+
+  function ofrecerEntregaEnGimnasio(nombre) {
+    var lista = (VITALICA_CONFIG.gimnasios || []);
+    var g = lista.filter(function (x) { return x && x.nombre === nombre; })[0];
+    if (!g) return;
+    miGimnasio = g.nombre;
+
+    var cont = document.querySelector('.opciones');
+    if (!cont || cont.querySelector('[value="gimnasio"]')) return;
+
+    cont.insertAdjacentHTML('beforeend', opcionEntrega(
+      'gimnasio',
+      'Entregar en mi gimnasio',
+      g.nombre + (g.ciudad ? ' · ' + g.ciudad : '') + ' · sin costo de envío',
+      false));
+  }
   function etiquetaCosto(entrega) {
     var c = costoEnvio(entrega);
     if (c === null) return 'Costo a confirmar';
-    if (c === 0)    return entrega === 'retiro' ? 'Sin costo' : 'Envío gratis';
+    if (c === 0)    return (entrega === 'retiro' || entrega === 'gimnasio') ? 'Sin costo' : 'Envío gratis';
     return Vitalica.formatearGs(c);
   }
 
@@ -126,7 +159,7 @@
     var env = costoEnvio(entrega);
 
     var htmlEnvio = env === 0
-      ? '<span class="envio-gratis">' + (entrega === 'retiro' ? 'Sin costo' : 'Gratis') + '</span>'
+      ? '<span class="envio-gratis">' + ((entrega === 'retiro' || entrega === 'gimnasio') ? 'Sin costo' : 'Gratis') + '</span>'
       : (env === null ? 'A confirmar' : Vitalica.formatearGs(env));
 
     // El total solo se muestra si se puede calcular de verdad.
@@ -172,6 +205,11 @@
     L.push(datos.entregaLabel);
     if (datos.entrega === 'retiro') {
       if (datos.local) L.push('Local: ' + datos.local);
+    } else if (datos.entrega === 'gimnasio') {
+      /* Sin esta línea el pedido llegaba diciendo "Entregar en mi gimnasio"
+         y nada más, y logística tenía que preguntar a cuál. El dato existe
+         desde que la persona lo eligió: hay que escribirlo. */
+      L.push('Gimnasio: ' + (datos.gimnasio || 'sin especificar'));
     } else {
       L.push('Ciudad: ' + datos.ciudad);
       L.push('Dirección: ' + datos.direccion);
@@ -341,6 +379,18 @@
         poner('telefono', tel);
         poner('email', c.email);
 
+        /* Ciudad y dirección, que desde el 2/10/2026 se piden al registrarse.
+           Ese era el punto de pedirlas: que acá ya estén. poner() no pisa lo
+           que la persona haya escrito, así que mandar un pedido a otra
+           dirección sigue siendo escribirla y nada más. */
+        poner('ciudad', c.ciudad);
+        poner('direccion', c.direccion);
+
+        /* El gimnasio habilita una opción de entrega que no existe para
+           quien no eligió ninguno. Se guarda acá para que la arme
+           ofrecerEntregaEnGimnasio(). */
+        if (c.gimnasio) ofrecerEntregaEnGimnasio(c.gimnasio);
+
         var aviso = document.createElement('p');
         aviso.className = 'checkout__quien';
         aviso.innerHTML = 'Comprando como <strong>' + textoSeguro(c.nombre) + '</strong>. ' +
@@ -377,15 +427,19 @@
   function alCambiarEntrega() {
     var entrega = entregaElegida();
     var esRetiro = entrega === 'retiro';
+    /* Entregar en el gimnasio tampoco necesita la dirección de casa: el
+       destino es el gimnasio, que ya sabemos cuál es. Pedirla igual sería
+       pedir un dato que no vamos a usar. */
+    var sinDireccion = esRetiro || entrega === 'gimnasio';
 
-    camposDir.hidden = esRetiro;
-    campoRef.hidden = esRetiro;
+    camposDir.hidden = sinDireccion;
+    campoRef.hidden = sinDireccion;
     if (selLocal) selLocal.hidden = !esRetiro;
 
     // Los campos ocultos no pueden seguir siendo obligatorios (bloquearían el submit)
     ['ciudad', 'direccion'].forEach(function (n) {
       var input = form.querySelector('[name="' + n + '"]');
-      if (input) input.required = !esRetiro;
+      if (input) input.required = !sinDireccion;
     });
 
     contResumen.innerHTML = resumen(entrega);
@@ -440,8 +494,19 @@
     notaPago.innerHTML = texto;
   }
 
-  form.querySelectorAll('input[name="entrega"]').forEach(function (r) {
-    r.addEventListener('change', alCambiarEntrega);
+  /* El escuchador va en el FORMULARIO, no en cada radio.
+     --------------------------------------------------------------------
+     Estaba atado a cada input, uno por uno, al dibujar la página. Eso
+     funcionaba mientras las opciones fueran siempre las mismas tres. Desde
+     que "Entregar en mi gimnasio" se agrega después —cuando contesta la
+     consulta de la cuenta—, esa opción nacía sin escuchador: se podía
+     elegir y no pasaba nada. El envío seguía cobrándose y seguía pidiendo
+     la dirección.
+
+     Delegado en el formulario, cualquier opción que se agregue más tarde
+     funciona sola. */
+  form.addEventListener('change', function (e) {
+    if (e.target && e.target.name === 'entrega') alCambiarEntrega();
   });
   form.querySelectorAll('input[name="pago"]').forEach(function (r) {
     r.addEventListener('change', mostrarNotaPago);
@@ -458,7 +523,8 @@
     var etiquetas = {
       'gran-asuncion': 'Envío a Gran Asunción',
       'interior': 'Envío al interior del país',
-      'retiro': 'Retiro en nuestro local'
+      'retiro': 'Retiro en nuestro local',
+      'gimnasio': 'Entrega en el gimnasio'
     };
     var idPago = pagoElegido();
     var mPago = metodos.filter(function (x) { return x.id === idPago; })[0];
@@ -468,6 +534,9 @@
       telefono: val('telefono'), email: val('email'),
       ciudad: val('ciudad'), direccion: val('direccion'), referencia: val('referencia'),
       local: val('local'),
+      /* El gimnasio no es un campo del formulario: sale de la cuenta y lo
+         dejo ofrecerEntregaEnGimnasio() en la propia opcion. */
+      gimnasio: gimnasioElegido(),
       entrega: entrega, entregaLabel: etiquetas[entrega],
       pagoLabel: mPago ? mPago.nombre : ''
     };
@@ -503,6 +572,7 @@
           telefono: datos.telefono, email: datos.email,
           ciudad: datos.ciudad, direccion: datos.direccion,
           referencia: datos.referencia, local: datos.local,
+          gimnasio: datos.gimnasio,
           entrega: datos.entrega, entregaLabel: datos.entregaLabel,
           pago: idPago || '', pagoLabel: datos.pagoLabel,
           subtotal: sub0, envio: env0,

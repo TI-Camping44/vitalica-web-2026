@@ -162,16 +162,33 @@ function clientes_ip(): string
  * entrar— y cualquiera puede averiguar lo mismo probando el formulario de
  * "olvidé mi contraseña". Al ingresar SÍ se oculta, que es donde importa.
  */
-function clientes_registrar(string $email, string $nombre, string $telefono, string $clave): array
+function clientes_registrar(string $email, string $nombre, string $telefono, string $clave,
+                            string $ciudad = '', string $direccion = '', string $gimnasio = ''): array
 {
     $email  = clientes_email($email);
     $nombre = trim($nombre);
     $tel    = clientes_telefono($telefono);
+    $ciudad    = trim($ciudad);
+    $direccion = trim($direccion);
+    $gimnasio  = trim($gimnasio);
 
     if (!clientes_email_valido($email))  return ['error' => 'Ese correo no parece válido.'];
     if (mb_strlen($nombre) < 2)          return ['error' => 'Escribí tu nombre.'];
     if (mb_strlen($nombre) > 120)        return ['error' => 'Ese nombre es demasiado largo.'];
     if ($tel === '')                     return ['error' => 'Necesitamos un celular paraguayo, así te escribimos por WhatsApp.'];
+
+    /* Ciudad y dirección son obligatorias desde el 2/10/2026: se piden una
+       vez acá y después el checkout las trae solas.
+
+       El mínimo de 6 caracteres en la dirección no es capricho: sin él
+       entraban cosas como "casa" o "-", que llegan a logística y obligan a
+       llamar por teléfono. Seis tampoco garantiza una dirección buena, pero
+       corta lo que claramente no lo es. */
+    if (mb_strlen($ciudad) < 2)          return ['error' => 'Escribí tu ciudad.'];
+    if (mb_strlen($ciudad) > 80)         return ['error' => 'Esa ciudad es demasiado larga.'];
+    if (mb_strlen($direccion) < 6)       return ['error' => 'Escribí tu dirección completa: calle, número y una referencia.'];
+    if (mb_strlen($direccion) > 200)     return ['error' => 'Esa dirección es demasiado larga.'];
+    if (mb_strlen($gimnasio) > 120)      return ['error' => 'Ese nombre de gimnasio es demasiado largo.'];
 
     $mal = clientes_revisar_clave($clave);
     if ($mal !== '') return ['error' => $mal];
@@ -182,9 +199,10 @@ function clientes_registrar(string $email, string $nombre, string $telefono, str
 
     try {
         db_consulta(
-            'INSERT INTO clientes (email, hash, nombre, telefono, creado)
-             VALUES (?, ?, ?, ?, ?)',
-            [$email, password_hash($clave, PASSWORD_DEFAULT), $nombre, $tel, db_ahora()]);
+            'INSERT INTO clientes (email, hash, nombre, telefono, ciudad, direccion, gimnasio, creado)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [$email, password_hash($clave, PASSWORD_DEFAULT), $nombre, $tel,
+             $ciudad, $direccion, $gimnasio, db_ahora()]);
     } catch (PDOException $e) {
         /* La consulta de arriba ya miró si existía, pero entre esa consulta y
            este INSERT pueden pasar milisegundos, y en esos milisegundos otro
@@ -311,9 +329,14 @@ function clientes_google(string $googleId, string $email, string $nombre): array
 }
 
 /** ¿Tiene lo mínimo para poder comprar? */
+/* Completo = alcanza para comprar sin volver a preguntar nada.
+   El gimnasio NO entra: es opcional y no todo el mundo va a uno. */
 function clientes_perfil_completo(?array $c): bool
 {
-    return $c && trim((string)($c['telefono'] ?? '')) !== '';
+    return $c
+        && trim((string)($c['telefono']  ?? '')) !== ''
+        && trim((string)($c['ciudad']    ?? '')) !== ''
+        && trim((string)($c['direccion'] ?? '')) !== '';
 }
 
 
@@ -425,17 +448,27 @@ function clientes_limpiar_sesiones(): void
    EDITAR EL PERFIL
    =========================================================================== */
 
-function clientes_guardar_perfil(int $id, string $nombre, string $telefono): array
+function clientes_guardar_perfil(int $id, string $nombre, string $telefono,
+                                 string $ciudad = '', string $direccion = '',
+                                 string $gimnasio = ''): array
 {
     $nombre = trim($nombre);
     $tel    = clientes_telefono($telefono);
+    $ciudad    = trim($ciudad);
+    $direccion = trim($direccion);
+    $gimnasio  = trim($gimnasio);
 
     if (mb_strlen($nombre) < 2)   return ['error' => 'Escribí tu nombre.'];
     if (mb_strlen($nombre) > 120) return ['error' => 'Ese nombre es demasiado largo.'];
     if ($tel === '')              return ['error' => 'Necesitamos un celular paraguayo, así te escribimos por WhatsApp.'];
+    if (mb_strlen($ciudad) < 2)      return ['error' => 'Escribí tu ciudad.'];
+    if (mb_strlen($ciudad) > 80)     return ['error' => 'Esa ciudad es demasiado larga.'];
+    if (mb_strlen($direccion) < 6)   return ['error' => 'Escribí tu dirección completa: calle, número y una referencia.'];
+    if (mb_strlen($direccion) > 200) return ['error' => 'Esa dirección es demasiado larga.'];
+    if (mb_strlen($gimnasio) > 120)  return ['error' => 'Ese nombre de gimnasio es demasiado largo.'];
 
-    db_consulta('UPDATE clientes SET nombre = ?, telefono = ? WHERE id = ?',
-                [$nombre, $tel, $id]);
+    db_consulta('UPDATE clientes SET nombre = ?, telefono = ?, ciudad = ?, direccion = ?, gimnasio = ? WHERE id = ?',
+                [$nombre, $tel, $ciudad, $direccion, $gimnasio, $id]);
     return ['ok' => true];
 }
 
@@ -520,16 +553,34 @@ if (PHP_SAPI === 'cli' && in_array('--probar', $argv ?? [], true)) {
     $prueba('ocho alcanzan',                clientes_revisar_clave('12345678'), '');
 
     echo "\nREGISTRO\n";
-    $r = clientes_registrar('zz-prueba-uno@ejemplo.com', 'Juan Perez', '0981111111', 'clave-larga-1');
+    $r = clientes_registrar('zz-prueba-uno@ejemplo.com', 'Juan Perez', '0981111111',
+                            'clave-larga-1', 'Asuncion', 'Avda. Mcal. Lopez 1234, casi Brasil');
     $prueba('se crea la cuenta', isset($r['id']), true);
     $id = (int)($r['id'] ?? 0);
 
     $prueba('el mismo correo en MAYUSCULAS se rechaza',
-        isset(clientes_registrar('ZZ-PRUEBA-UNO@ejemplo.com', 'Otro', '0981222222', 'clave-larga-2')['error']), true);
+        isset(clientes_registrar('ZZ-PRUEBA-UNO@ejemplo.com', 'Otro', '0981222222',
+              'clave-larga-2', 'Luque', 'Calle 1 casi Calle 2')['error']), true);
     $prueba('sin celular valido se rechaza',
-        isset(clientes_registrar('zz-prueba-dos@ejemplo.com', 'Ana', '021555444', 'clave-larga-1')['error']), true);
+        isset(clientes_registrar('zz-prueba-dos@ejemplo.com', 'Ana', '021555444',
+              'clave-larga-1', 'Luque', 'Calle 1 casi Calle 2')['error']), true);
     $prueba('con clave corta se rechaza',
-        isset(clientes_registrar('zz-prueba-tres@ejemplo.com', 'Ana', '0981333333', 'corta')['error']), true);
+        isset(clientes_registrar('zz-prueba-tres@ejemplo.com', 'Ana', '0981333333',
+              'corta', 'Luque', 'Calle 1 casi Calle 2')['error']), true);
+
+    /* Ciudad y direccion, obligatorias desde el 2/10/2026. */
+    $prueba('sin ciudad se rechaza',
+        isset(clientes_registrar('zz-prueba-cuatro@ejemplo.com', 'Ana', '0981333333',
+              'clave-larga-1', '', 'Calle 1 casi Calle 2')['error']), true);
+    $prueba('sin direccion se rechaza',
+        isset(clientes_registrar('zz-prueba-cinco@ejemplo.com', 'Ana', '0981333333',
+              'clave-larga-1', 'Luque', '')['error']), true);
+    $prueba('una direccion de dos letras se rechaza',
+        isset(clientes_registrar('zz-prueba-seis@ejemplo.com', 'Ana', '0981333333',
+              'clave-larga-1', 'Luque', 'ac')['error']), true);
+    $prueba('el gimnasio es opcional',
+        isset(clientes_registrar('zz-prueba-siete@ejemplo.com', 'Ana', '0981444444',
+              'clave-larga-1', 'Luque', 'Calle 1 casi Calle 2')['id']), true);
 
     $g = db_fila('SELECT * FROM clientes WHERE id = ?', [$id]);
     $prueba('el correo quedo en minusculas',  $g['email'], 'zz-prueba-uno@ejemplo.com');

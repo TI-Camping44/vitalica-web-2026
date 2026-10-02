@@ -107,6 +107,26 @@ const VITALICA_CONFIG = {
      Si dejás la lista vacía, la opción "Retiro en un local" desaparece del
      checkout y quedan solo los envíos. Es lo correcto si hoy no tenés dónde
      recibir gente. */
+  /* GIMNASIOS CON CONVENIO
+     --------------------------------------------------------------------------
+     Vitalica tiene acuerdos con algunos gimnasios: si el cliente pide que le
+     lleven el pedido ahí, el envío no se cobra. Para la persona es una opción
+     más al comprar; para Vitalica es un envío agrupado a un solo lugar en vez
+     de cinco entregas sueltas, que es por qué conviene regalarlo.
+
+     La lista la carga marketing desde el panel, en "Gimnasios con convenio".
+     Vacía quiere decir que la opción no existe: ni se pregunta en el registro
+     ni aparece en el checkout. Es mejor que mostrar una lista vacía.
+
+     EL NOMBRE ES LA LLAVE. La cuenta del cliente guarda el nombre elegido, y
+     el checkout lo compara con esta lista para decidir si el envío es gratis.
+     Por eso en el registro es una lista desplegable y no un texto libre:
+     escrito a mano llegan "Bigg", "BIGG fitness" y "big" como tres gimnasios
+     distintos, y ninguno cobra bien. Si acá se renombra un gimnasio, quien lo
+     tenía guardado pierde el beneficio hasta volver a elegirlo: conviene
+     corregir el nombre antes de repartirlo, no después. */
+  gimnasios: [],
+
   retiro: {
     // ⚠️ CONFIRMAR: esta es la dirección fiscal que figura en Odoo.
     // Si no es un lugar preparado para recibir clientes, borrala.
@@ -2336,6 +2356,8 @@ function aplicarOverrides(ov) {
       }
     });
     if (Array.isArray(ov.config.anuncios)) VITALICA_CONFIG.anuncios = ov.config.anuncios;
+    // Gimnasios con convenio: la lista entera, porque se agregan y se quitan.
+    if (Array.isArray(ov.config.gimnasios)) VITALICA_CONFIG.gimnasios = ov.config.gimnasios;
     if (Array.isArray(ov.config.nav))      VITALICA_CONFIG.nav = ov.config.nav;
     // Normaliza los costos de envío a entero (acepta "25.000" o "25000").
     if (VITALICA_CONFIG.envio) {

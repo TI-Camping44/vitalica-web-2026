@@ -311,6 +311,21 @@
     '</div>';
   }
 
+  /* --- Un gimnasio con convenio ---
+     El nombre es la llave: la cuenta del cliente guarda exactamente este
+     texto y el checkout lo compara para decidir si el envío es gratis.
+     Cambiarlo acá deja sin beneficio a quien ya lo había elegido, hasta que
+     vuelva a elegirlo. Conviene escribirlo bien la primera vez. */
+  function filaGimnasio(g) {
+    g = g || {};
+    return '<div class="admin-gimnasio">' +
+      agarre() +
+      '<input type="text" class="y-nombre" value="' + escAttr(g.nombre) + '" placeholder="Nombre del gimnasio">' +
+      '<input type="text" class="y-ciudad" value="' + escAttr(g.ciudad) + '" placeholder="Ciudad (opcional)">' +
+      '<button type="button" class="admin-quitar" data-del-gimnasio aria-label="Quitar gimnasio">✕</button>' +
+    '</div>';
+  }
+
   /* --- Un pop-up de campaña ---
      El motor ya existía en popups.js desde siempre; lo único que faltaba era
      poder cargarlos sin tocar data.js. Las reglas duras del motor —uno solo
@@ -497,6 +512,17 @@
     secciones += seccion('🚚 Costos de envío (Gs.)',
       fNum('Gran Asunción', 'config.envio.granAsuncion', envio.granAsuncion, 'Monto en guaraníes (ej. 25000).') +
       fNum('Interior', 'config.envio.interior', envio.interior, 'Monto en guaraníes (ej. 40000).'));
+
+    // Gimnasios con convenio
+    secciones += seccion('🏋️ Gimnasios con convenio',
+      '<p class="admin-nota">Si el cliente pide que le lleven el pedido a uno de estos ' +
+      'gimnasios, <b>el envío no se cobra</b>. La lista aparece al registrarse y al comprar. ' +
+      'Vacía quiere decir que la opción no existe y no se pregunta nada.<br><br>' +
+      '<b>Escribí bien el nombre la primera vez.</b> Es con lo que se guarda en la cuenta ' +
+      'de cada cliente: si después lo cambiás, quien ya lo había elegido pierde el ' +
+      'beneficio hasta volver a elegirlo.</p>' +
+      '<div data-gimnasios>' + (C.gimnasios || []).map(filaGimnasio).join('') + '</div>' +
+      botonAgregar('data-add-gimnasio', 'Agregar gimnasio'), false, 'gimnasios');
 
     /* ---- Quiénes nos eligen -------------------------------------------
        La sección que más se mueve: cada vez que llega una foto nueva o
@@ -896,6 +922,16 @@
       ov.catalogo = catalogo;
       ov.variantes = variantes;
     }
+
+    // Gimnasios con convenio
+    var gimnasios = [];
+    app.querySelectorAll('.admin-gimnasio').forEach(function (row) {
+      var n = leer(row, '.y-nombre');
+      if (!n) return;
+      gimnasios.push({ nombre: n, ciudad: leer(row, '.y-ciudad') });
+    });
+    ov.config = ov.config || {};
+    ov.config.gimnasios = gimnasios;
 
     // Pop-ups de campaña
     var popups = [];
@@ -1877,6 +1913,9 @@
       else if (e.target.closest('[data-add-popup]')) {
         app.querySelector('[data-popups]').insertAdjacentHTML('beforeend', filaPopup(null));
       }
+      else if (e.target.closest('[data-add-gimnasio]')) {
+        app.querySelector('[data-gimnasios]').insertAdjacentHTML('beforeend', filaGimnasio(null));
+      }
       else if (e.target.closest('[data-add-producto]')) {
         app.querySelector('[data-productos]').insertAdjacentHTML('beforeend', filaProducto(null));
       }
@@ -1899,6 +1938,7 @@
           ['[data-del-persona]', '.admin-persona', 'a esta persona'],
           ['[data-del-pilar]',   '.admin-pilar',   'este pilar'],
           ['[data-del-popup]',   '.admin-popup',   'este pop-up'],
+          ['[data-del-gimnasio]','.admin-gimnasio','este gimnasio'],
           ['[data-del-producto]','.admin-producto','este producto del catalogo'],
           ['[data-del-variante]','.admin-variante','este sabor o tamano']
         ];

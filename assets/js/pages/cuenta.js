@@ -54,6 +54,40 @@
     return t || '';
   }
 
+  /* EL GIMNASIO, Y POR QUÉ ES UNA LISTA Y NO UN TEXTO LIBRE
+     --------------------------------------------------------------------
+     Vitalica tiene convenio con algunos gimnasios: si pedís que te lleven
+     ahí, el envío no se cobra. Para que eso funcione, el nombre que elige
+     la persona tiene que coincidir EXACTO con el del convenio. Escrito a
+     mano llegan "Bigg", "BIGG fitness" y "big" como tres gimnasios
+     distintos, y ninguno cobra bien.
+
+     Por eso es una lista, y la lista la carga marketing desde el panel.
+     Si todavía no hay ninguno cargado, el campo no aparece: preguntar por
+     algo que no tiene opciones es peor que no preguntar. */
+  function gimnasiosConConvenio() {
+    var g = (typeof VITALICA_CONFIG !== 'undefined' && VITALICA_CONFIG.gimnasios) || [];
+    return g.filter(function (x) { return x && x.nombre; });
+  }
+
+  function campoGimnasio(elegido) {
+    var lista = gimnasiosConConvenio();
+    if (!lista.length) return '';
+    return '<div class="campo">' +
+      '<label for="c-gimnasio">¿A qué gimnasio vas? <span class="campo__opcional">(opcional)</span></label>' +
+      '<select id="c-gimnasio" name="gimnasio">' +
+        '<option value="">— No voy a ninguno de la lista —</option>' +
+        lista.map(function (x) {
+          return '<option value="' + esc(x.nombre) + '"' +
+                 (elegido === x.nombre ? ' selected' : '') + '>' +
+                 esc(x.nombre) + (x.ciudad ? ' · ' + esc(x.ciudad) : '') + '</option>';
+        }).join('') +
+      '</select>' +
+      '<span class="campo__ayuda">Tenemos convenio con estos gimnasios: ' +
+      'si pedís que te lo llevemos ahí, <strong>el envío te sale sin costo</strong>.</span>' +
+    '</div>';
+  }
+
   function guaranies(n) {
     var v = Number(n) || 0;
     return 'Gs. ' + v.toLocaleString('es-PY');
@@ -140,7 +174,24 @@
                 '<input id="c-telefono" name="telefono" type="tel" inputmode="tel" ' +
                        'autocomplete="tel" placeholder="0981 123 456" required>' +
                 '<span class="campo__ayuda">Por acá coordinamos la entrega. Solo celulares.</span>' +
-              '</div>') +
+              '</div>' +
+              /* CIUDAD Y DIRECCIÓN, obligatorias desde el 2/10/2026.
+                 Se piden una sola vez acá y el checkout las trae solas. Son
+                 dos campos más al registrarse, sí, pero son dos campos menos
+                 en cada compra, que es donde de verdad se pierde gente. */
+              '<div class="campo">' +
+                '<label for="c-ciudad">Ciudad</label>' +
+                '<input id="c-ciudad" name="ciudad" type="text" ' +
+                       'autocomplete="address-level2" placeholder="Asunción" required>' +
+              '</div>' +
+              '<div class="campo">' +
+                '<label for="c-direccion">Dirección</label>' +
+                '<input id="c-direccion" name="direccion" type="text" ' +
+                       'autocomplete="street-address" ' +
+                       'placeholder="Calle, número y una referencia" required>' +
+                '<span class="campo__ayuda">Con una referencia llegamos sin llamarte.</span>' +
+              '</div>' +
+              campoGimnasio('')) +
 
             '<div class="campo">' +
               '<label for="c-email">Correo</label>' +
@@ -180,17 +231,30 @@
     return '' +
       '<div class="contenedor cuenta">' +
         '<div class="cuenta__caja">' +
-          '<h1 class="cuenta__titulo">Falta tu celular</h1>' +
-          '<p class="cuenta__intro">Hola, ' + esc(yo.nombre) + '. Nos falta un dato para poder ' +
-            'coordinar las entregas: los pedidos los cerramos por WhatsApp.</p>' +
+          '<h1 class="cuenta__titulo">Nos faltan tus datos de entrega</h1>' +
+          '<p class="cuenta__intro">Hola, ' + esc(yo.nombre) + '. Nos faltan estos datos para ' +
+            'poder llevarte el pedido. Se cargan una vez y después ya no te los pedimos más.</p>' +
           '<p class="cuenta__error" data-error hidden></p>' +
           '<form data-form="perfil" novalidate>' +
             '<input type="hidden" name="nombre" value="' + esc(yo.nombre) + '">' +
             '<div class="campo">' +
               '<label for="c-telefono">Celular</label>' +
               '<input id="c-telefono" name="telefono" type="tel" inputmode="tel" ' +
-                     'autocomplete="tel" placeholder="0981 123 456" required autofocus>' +
+                     'autocomplete="tel" placeholder="0981 123 456" ' +
+                     'value="' + esc(telefonoLindo(yo.telefono)) + '" required autofocus>' +
             '</div>' +
+            '<div class="campo">' +
+              '<label for="c-ciudad">Ciudad</label>' +
+              '<input id="c-ciudad" name="ciudad" type="text" autocomplete="address-level2" ' +
+                     'placeholder="Asunción" value="' + esc(yo.ciudad || '') + '" required>' +
+            '</div>' +
+            '<div class="campo">' +
+              '<label for="c-direccion">Dirección</label>' +
+              '<input id="c-direccion" name="direccion" type="text" autocomplete="street-address" ' +
+                     'placeholder="Calle, número y una referencia" ' +
+                     'value="' + esc(yo.direccion || '') + '" required>' +
+            '</div>' +
+            campoGimnasio(yo.gimnasio || '') +
             '<button class="btn btn--primario btn--bloque" type="submit">Guardar</button>' +
           '</form>' +
         '</div>' +
@@ -223,6 +287,19 @@
                 '<input id="c-telefono" name="telefono" type="tel" inputmode="tel" ' +
                        'autocomplete="tel" value="' + esc(telefonoLindo(yo.telefono)) + '" required>' +
               '</div>' +
+              '<div class="campo">' +
+                '<label for="c-ciudad">Ciudad</label>' +
+                '<input id="c-ciudad" name="ciudad" type="text" autocomplete="address-level2" ' +
+                       'value="' + esc(yo.ciudad || '') + '" required>' +
+              '</div>' +
+              '<div class="campo">' +
+                '<label for="c-direccion">Dirección</label>' +
+                '<input id="c-direccion" name="direccion" type="text" autocomplete="street-address" ' +
+                       'value="' + esc(yo.direccion || '') + '" required>' +
+                '<span class="campo__ayuda">Es la que te vamos a proponer al comprar. ' +
+                  'Si un día querés mandar un pedido a otro lado, lo cambiás ahí mismo.</span>' +
+              '</div>' +
+              campoGimnasio(yo.gimnasio || '') +
               '<div class="campo">' +
                 '<label for="c-email">Correo</label>' +
                 '<input id="c-email" type="email" value="' + esc(yo.email) + '" disabled>' +

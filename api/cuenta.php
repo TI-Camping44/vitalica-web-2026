@@ -44,6 +44,12 @@ function cuenta_publico(?array $c): ?array
         'nombre'   => (string)$c['nombre'],
         'email'    => (string)$c['email'],
         'telefono' => (string)$c['telefono'],
+        /* Ciudad, dirección y gimnasio viajan a la página para que el
+           checkout los traiga solos. No son secretos: son los datos que la
+           propia persona cargó y que va a volver a ver al comprar. */
+        'ciudad'    => (string)($c['ciudad']    ?? ''),
+        'direccion' => (string)($c['direccion'] ?? ''),
+        'gimnasio'  => (string)($c['gimnasio']  ?? ''),
         'completo' => clientes_perfil_completo($c),
         // Para saber si ofrecer "cambiar contraseña" o "ponerle una".
         'conClave' => (string)($c['hash'] ?? '') !== '',
@@ -115,7 +121,9 @@ switch ($accion) {
         if (clientes_actual()) {
             cuenta_responder(['ok' => false, 'error' => 'Ya tenés la sesión abierta.'], 400);
         }
-        $r = clientes_registrar($txt('email'), $txt('nombre'), $txt('telefono'), (string)($entra['clave'] ?? ''));
+        $r = clientes_registrar($txt('email'), $txt('nombre'), $txt('telefono'),
+                                (string)($entra['clave'] ?? ''),
+                                $txt('ciudad'), $txt('direccion'), $txt('gimnasio'));
         if (isset($r['error'])) cuenta_responder(['ok' => false, 'error' => $r['error']], 400);
 
         /* Se entra solo después de registrarse. Pedirle que escriba de nuevo
@@ -146,7 +154,8 @@ switch ($accion) {
     case 'perfil': {
         $c = clientes_actual();
         if (!$c) cuenta_responder(['ok' => false, 'error' => 'Iniciá sesión para cambiar tus datos.'], 401);
-        $r = clientes_guardar_perfil((int)$c['id'], $txt('nombre'), $txt('telefono'));
+        $r = clientes_guardar_perfil((int)$c['id'], $txt('nombre'), $txt('telefono'),
+                                     $txt('ciudad'), $txt('direccion'), $txt('gimnasio'));
         if (isset($r['error'])) cuenta_responder(['ok' => false, 'error' => $r['error']], 400);
         $c = db_fila('SELECT * FROM clientes WHERE id = ?', [(int)$c['id']]);
         cuenta_responder(['ok' => true, 'cliente' => cuenta_publico($c)]);
