@@ -940,9 +940,16 @@ const VITALICA_POPUPS = [
      fecha el aviso seguiría invitando a participar de algo ya sorteado hasta
      que alguien se acordara de apagarlo. No se acuerda nadie.
 
-     Sin imagen a propósito: la placa de la campaña está en Instagram y
-     todavía no la tenemos como archivo. Se agrega desde el panel cuando
-     llegue, en el campo "Imagen" de esta misma campaña.
+     LA IMAGEN SALE DEL PROPIO POSTEO, pero recortada abajo a propósito.
+     Instagram publica de cada posteo una sola versión para compartir, y de
+     uno vertical la deja cuadrada: la palabra "SORTEAMOS" queda partida y
+     se lee "ORTEAMO". El original sin recortar no lo expone. Así que se usa
+     la franja de abajo, que tiene "1 Pase para el BIGG Under Armour Running
+     Festival" entera y a los corredores. El titular lo pone el pop-up en
+     texto, que además se lee mejor y es seleccionable.
+
+     Si marketing pasa la placa original, se reemplaza desde el panel en el
+     campo "Imagen" de esta misma campaña y queda mejor todavía.
 
      Va solo en la portada. Participar es una acción de Instagram, no de
      compra: ponerlo en el catálogo o en una ficha sería interrumpir a
@@ -953,7 +960,7 @@ const VITALICA_POPUPS = [
     etiqueta: 'Sorteo',
     titulo: 'Sorteamos 1 pase para el BIGG Under Armour Running Festival',
     texto: 'Inscripción + kit + remera oficial. Para participar seguinos en Instagram, dale like al posteo y etiquetá a dos amigos con quienes correrías. Sorteamos el miércoles 7 de octubre.',
-    imagen: '',
+    imagen: 'assets/img/sorteo-bigg.jpg',
     cta:  { texto: 'Cómo participar', href: 'https://www.instagram.com/p/Dd_hEytNc9v/' },
     cta2: null,
     paginas: ['index.html'],
