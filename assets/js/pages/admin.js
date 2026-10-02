@@ -1119,7 +1119,31 @@
              transparencia -los logos la necesitan-; el resto sale JPG, que
              para una foto pesa una fracción. */
           var original = reader.result;
-          var esPng = /^data:image\/png/i.test(original);
+
+          /* ¿Tiene transparencia de verdad?
+             ----------------------------------------------------------------
+             Esto antes se decidía por la extensión: si era PNG, se guardaba
+             PNG para no perderle la transparencia a los logos. El error es
+             que PNG comprime fatal las fotos, y marketing exporta sus placas
+             de campaña en PNG. La del sorteo pesaba 2,7 MB DESPUÉS de
+             achicarla, y el panel la rechazaba igual.
+
+             Lo que importa no es la extensión sino si hay píxeles
+             transparentes. Se revisa el canal alfa de una muestra —no de los
+             millones de píxeles, que trabaría el navegador— y con eso se
+             decide: con transparencia va PNG, sin transparencia va JPG, que
+             para una foto pesa una fracción. */
+          function tieneTransparencia(lienzo, cx) {
+            try {
+              var d = cx.getImageData(0, 0, lienzo.width, lienzo.height).data;
+              // Un píxel de cada 40: alcanza para encontrar un fondo recortado
+              // y es instantáneo incluso en imágenes grandes.
+              for (var i = 3; i < d.length; i += 4 * 40) {
+                if (d[i] < 250) return true;
+              }
+            } catch (e) { return true; }   // ante la duda, no se pierde nada
+            return false;
+          }
 
           var medidor = new Image();
           medidor.onload = function () {
@@ -1136,8 +1160,27 @@
                 lienzo.width = cw; lienzo.height = ch;
                 var cx = lienzo.getContext('2d');
                 cx.drawImage(medidor, 0, 0, cw, ch);
-                var reducida = esPng ? lienzo.toDataURL('image/png')
-                                     : lienzo.toDataURL('image/jpeg', 0.85);
+
+                var reducida = tieneTransparencia(lienzo, cx)
+                  ? lienzo.toDataURL('image/png')
+                  : lienzo.toDataURL('image/jpeg', 0.85);
+
+                /* Un PNG con transparencia y mucho detalle puede seguir
+                   pesando de más. Se baja de tamaño antes que de calidad:
+                   perder transparencia rompe el logo, perder 300 px no se
+                   nota en pantalla. */
+                var vuelta = 0;
+                while (reducida.length > 700 * 1024 && vuelta < 3) {
+                  vuelta++;
+                  lienzo.width  = Math.round(lienzo.width * 0.7);
+                  lienzo.height = Math.round(lienzo.height * 0.7);
+                  cx = lienzo.getContext('2d');
+                  cx.drawImage(medidor, 0, 0, lienzo.width, lienzo.height);
+                  reducida = tieneTransparencia(lienzo, cx)
+                    ? lienzo.toDataURL('image/png')
+                    : lienzo.toDataURL('image/jpeg', 0.85);
+                }
+
                 // Solo se usa si realmente quedó más liviana.
                 if (reducida && reducida.length < original.length) dato = reducida;
               } catch (e) { /* si el navegador no deja, va la original */ }
