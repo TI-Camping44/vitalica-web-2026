@@ -2696,11 +2696,24 @@ p { color: var(--color-tinta); }
   color: #fff;
   border-radius: 28px;         /* hoja de iOS, no ventana */
 
+  /* ANCHO: ACÁ ESTABA EL PROBLEMA DE VERDAD.
+     --------------------------------------------------------------------
+     El aviso de MyFonts que mandó marketing mide unos 940px de ancho: es
+     un cartel. El pop-up del sitio mide 440: es una tarjeta de celular.
+     Yo le estuve poniendo vidrio, centrado y tipografía grande a una
+     tarjeta angosta, y por eso no se parecía por más que ajustara: no era
+     el estilo, era la proporción.
+
+     Esto vale solo para placa. El formato ficha sigue en 440, que es lo
+     que corresponde a un aviso con texto para leer: un renglón de 900px
+     de ancho obliga a barrer la cabeza y se lee peor. */
+  width: min(880px, 100%);
+
   /* ALTO: un piso y un techo, los dos necesarios.
      Sin piso, un aviso de tres palabras queda una tirita. Sin techo, uno de
      texto largo crecía hasta pasarse de la pantalla y se cortaba el título
      arriba, que era lo primero que saltaba a la vista. */
-  min-height: 520px;
+  min-height: 560px;
   max-height: min(calc(100vh - var(--space-5)), 700px);
 
   overflow: hidden;            /* el que scrollea es el cuerpo, no el panel */
@@ -2730,12 +2743,16 @@ p { color: var(--color-tinta); }
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  -webkit-backdrop-filter: blur(11px) saturate(125%);
-  backdrop-filter: blur(11px) saturate(125%);
+  /* saturate POR DEBAJO de 100 = la foto se va al gris. En el ejemplo la
+     imagen de atrás está casi en blanco y negro, y eso es la mitad del
+     efecto: deja de pelear con el texto y con el naranja de la marca. Yo
+     la tenía en 125, o sea subiéndole el color, justo al revés. */
+  -webkit-backdrop-filter: blur(2px) saturate(60%);
+  backdrop-filter: blur(2px) saturate(60%);
   background: linear-gradient(to bottom,
-    rgba(10, 12, 16, .40) 0%,
-    rgba(10, 12, 16, .50) 55%,
-    rgba(10, 12, 16, .64) 100%);
+    rgba(10, 12, 16, .34) 0%,
+    rgba(10, 12, 16, .46) 55%,
+    rgba(10, 12, 16, .62) 100%);
 }
 
 .popup--placa .popup__cuerpo {
@@ -2781,8 +2798,11 @@ p { color: var(--color-tinta); }
   letter-spacing: -0.02em;
 }
 .popup--placa .popup__titulo--xl {             /* corto: "50% OFF" */
-  font-size: clamp(3rem, 9vw, 4.2rem);
-  line-height: 1;
+  /* En 880px de ancho el titular puede ser de verdad grande. En el ejemplo
+     el "60% OFF" ocupa casi media altura del aviso; con 4.2rem dentro de
+     una tarjeta de 440 se veía grande pero no imponente. */
+  font-size: clamp(3.2rem, 9vw, 6rem);
+  line-height: 0.98;
   letter-spacing: -0.035em;
 }
 
@@ -2790,7 +2810,9 @@ p { color: var(--color-tinta); }
   color: rgba(255, 255, 255, .82);
   font-size: var(--fs-sm);
   line-height: 1.55;
-  max-width: 34ch;             /* renglones cortos: se leen de un vistazo */
+  /* El panel es ancho pero el renglón no: un renglón de 880px obliga a
+     barrer la cabeza y se pierde dónde seguía. Se centra una columna. */
+  max-width: 46ch;
   margin-left: auto;
   margin-right: auto;
 }
