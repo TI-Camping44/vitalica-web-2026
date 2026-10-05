@@ -978,14 +978,30 @@ const VITALICA_POPUPS = [
     id: 'sorteo-bigg-ua-2026-10',
     activo: true,
     etiqueta: 'Sorteo',
-    titulo: 'Sorteamos 1 pase para el BIGG Under Armour Running Festival',
-    texto: 'Inscripción + kit + remera oficial. Para participar seguinos en Instagram, dale like al posteo y etiquetá a dos amigos con quienes correrías. Sorteamos el miércoles 7 de octubre.',
-    /* FICHA, no placa, aunque placa sea la forma que pidió marketing el
-       5/10/2026. Las dos están disponibles y se eligen desde el panel; esta
-       campaña tiene cuatro renglones de condiciones -seguir, dar like,
-       etiquetar, fecha- y encima de una foto no se leen. La placa es para
-       "50% OFF": un número y tres palabras. */
-    estilo: 'ficha',
+    /* EL TÍTULO SE ACORTÓ PARA ESTE FORMATO, y es un cambio de forma, no de
+       mensaje. En la placa el título va gigante: "Sorteamos 1 pase para el
+       BIGG Under Armour Running Festival" ocupaba cinco renglones y dejaba de
+       ser un titular. El ejemplo de MyFonts hace lo mismo que esto: una línea
+       chica arriba, dos palabras enormes al medio, el detalle abajo.
+
+       El evento no se pierde: pasa al texto, primero de todo. Si marketing lo
+       quiere al revés, es un campo del panel y se cambia en diez segundos. */
+    titulo: 'Ganá 1 pase',
+    texto: 'Para el BIGG Under Armour Running Festival: inscripción + kit + remera oficial. Seguinos, dale like al posteo y etiquetá a dos amigos. Sorteamos el miércoles 7.',
+    /* PLACA: la forma que pidió marketing el 5/10/2026 mirando el aviso de
+       MyFonts. Es esta campaña la que la estrena, porque es la que está en la
+       web ahora.
+
+       Primero la dejé en ficha por las cuatro condiciones que hay que leer
+       -seguir, dar like, etiquetar, fecha-. Con el vidrio esmerilado el texto
+       se lee igual, así que la objeción se cae. El texto quedó más corto que
+       la versión de ficha igual: en este formato cada renglón de más pesa.
+
+       La imagen es una tira de 800x230 y, nítida y estirada, se veía
+       pixelada. Desenfocada funciona: deja de ser una foto que mirar y pasa
+       a ser el color del aviso. Si marketing manda la placa original parada,
+       se cambia desde el panel y queda mejor todavía. */
+    estilo: 'placa',
     imagen: 'assets/img/sorteo-bigg.jpg',
     cta:  { texto: 'Cómo participar', href: 'https://www.instagram.com/p/Dd_hEytNc9v/' },
     cta2: null,
