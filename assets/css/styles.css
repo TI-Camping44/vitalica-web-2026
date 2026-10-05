@@ -2662,9 +2662,76 @@ p { color: var(--color-tinta); }
   margin-top: var(--space-5);
 }
 
+/* ==========================================================================
+   POP-UP EN MODO PLACA
+   --------------------------------------------------------------------------
+   La imagen ocupa el aviso entero y el texto va encima, en grande. Lo pidió
+   marketing el 5/10/2026 mostrando el aviso de MyFonts: "60% OFF" ocupando
+   media pantalla.
+
+   Funciona para un número y tres palabras. NO funciona para explicar cómo se
+   participa de un sorteo: sobre una foto, seis renglones se vuelven ilegibles
+   por más velo que se les ponga. Por eso conviven las dos formas y marketing
+   elige por campaña, en vez de cambiar todas de una.
+
+   EL VELO NO ES DECORACIÓN. Una foto cualquiera tiene zonas claras y oscuras,
+   y el texto blanco desaparece en las claras. El degradado oscurece de abajo
+   hacia arriba, que es donde va el texto, y deja respirar la parte de arriba
+   de la imagen, que suele ser donde está el motivo.
+   ========================================================================== */
+.popup__panel.popup--placa {
+  background-color: #14171B;   /* se ve mientras carga la imagen, y si falta */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #fff;
+  min-height: 460px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;   /* el texto se apoya abajo, como en el ejemplo */
+}
+/* EL VELO VA EN EL CUERPO, NO EN UN ::before QUE TAPE TODO.
+   El panel tiene overflow-y: auto, así que una capa absoluta con inset:0 se
+   desplaza con el contenido y deja la parte de abajo sin oscurecer justo
+   cuando el texto es largo, que es cuando más hace falta. Puesto en el
+   cuerpo, el degradado acompaña exactamente al texto que tiene que proteger
+   y no hay nada que se pueda desincronizar. */
+.popup--placa .popup__cuerpo {
+  padding: var(--space-8) var(--space-6) var(--space-6);
+  text-align: center;
+  background: linear-gradient(to top,
+    rgba(8, 8, 10, .90) 0%,
+    rgba(8, 8, 10, .78) 45%,
+    rgba(8, 8, 10, .45) 75%,
+    rgba(8, 8, 10, 0) 100%);
+  border-radius: 0 0 var(--radio-md) var(--radio-md);
+}
+.popup--placa .popup__etiqueta { color: var(--color-primario); }
+.popup--placa .popup__titulo {
+  font-size: clamp(1.9rem, 6vw, 2.9rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #fff;
+  text-wrap: balance;
+}
+.popup--placa .popup__texto { color: rgba(255, 255, 255, .88); }
+.popup--placa .popup__acciones { margin-top: var(--space-6); }
+/* El botón en grande: en este formato es lo único que se toca. */
+.popup--placa .popup__acciones .btn { font-size: var(--fs-md); padding: 0.95em 1.4em; }
+/* Sobre una foto, el botón de contorno blanco se pierde. Se rellena. */
+.popup--placa .btn--contorno {
+  border-color: rgba(255,255,255,.75);
+  color: #fff;
+  background: rgba(255,255,255,.10);
+}
+.popup--placa .btn--contorno:hover { background: rgba(255,255,255,.2); }
+
 @media (max-width: 480px) {
   .popup__cuerpo { padding: var(--space-5); }
   .popup__titulo { font-size: var(--fs-lg); }
+  .popup--placa { min-height: 400px; }
+  .popup--placa .popup__titulo { font-size: clamp(1.6rem, 8vw, 2.2rem); }
 }
 
 @media (prefers-reduced-motion: reduce) {

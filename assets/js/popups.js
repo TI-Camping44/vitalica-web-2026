@@ -159,11 +159,32 @@
     if (pop.cta  && pop.cta.texto)  botones += enlace('btn--primario', pop.cta);
     if (pop.cta2 && pop.cta2.texto) botones += enlace('btn--contorno', pop.cta2);
 
+    /* DOS FORMAS DE AVISO, y la decide marketing por campaña.
+       --------------------------------------------------------------------
+       'ficha'  — la de siempre: foto arriba, texto y botón abajo, sobre
+                  blanco. Es la que se lee mejor cuando hay algo que
+                  explicar: tres renglones de condiciones, un descuento con
+                  letra chica.
+
+       'placa'  — la que pidieron el 5/10/2026 mirando el aviso de MyFonts:
+                  la imagen ocupa el aviso entero y el texto va encima, en
+                  grande. Vende más fuerte y lee peor: sirve para "60% OFF",
+                  no para explicar cómo se participa de un sorteo.
+
+       Las dos usan el MISMO html. Lo único que cambia es una clase, así que
+       no hay dos aviso distintos que mantener: cuando se arregla algo del
+       foco o del teclado, se arregla para los dos. */
+    var estilo = (pop.estilo === 'placa') ? ' popup--placa' : '';
+
     caja.innerHTML =
       '<div class="popup__velo" data-popup-cerrar></div>' +
-      '<div class="popup__panel">' +
+      '<div class="popup__panel' + estilo + '">' +
         '<button class="popup__cerrar" type="button" aria-label="Cerrar aviso" data-popup-cerrar>&times;</button>' +
-        (pop.imagen ? '<img class="popup__imagen" src="' + escapar(pop.imagen) + '" alt="" onerror="this.remove()">' : '') +
+        /* En modo placa la imagen va de fondo, no como <img>: si fuera un
+           <img> habría que superponerle el texto con posiciones absolutas y
+           en un celular angosto se encimaría. De fondo, el texto fluye. */
+        (pop.imagen && !estilo
+          ? '<img class="popup__imagen" src="' + escapar(pop.imagen) + '" alt="" onerror="this.remove()">' : '') +
         '<div class="popup__cuerpo">' +
           (pop.etiqueta ? '<p class="popup__etiqueta">' + escapar(pop.etiqueta) + '</p>' : '') +
           '<h2 class="popup__titulo" id="popup-titulo">' + escapar(pop.titulo) + '</h2>' +
@@ -171,6 +192,21 @@
           (botones ? '<div class="popup__acciones">' + botones + '</div>' : '') +
         '</div>' +
       '</div>';
+
+    /* La imagen de fondo del modo placa se pone acá, con la API del
+       navegador, y NO escrita dentro del html de arriba.
+
+       Lo intenté primero como style="background-image:url(...)" y es una
+       trampa: la foto que sube el panel es un data:image/...;base64, la
+       función que escapa el html ya convirtió las comillas en &quot; y
+       limpiarlas después del escapado no las encuentra. Una imagen con un
+       paréntesis en el nombre cortaba el url() y el aviso salía gris.
+       Asignando la propiedad, el navegador se encarga de las comillas y no
+       hay nada que escapar a mano. */
+    if (estilo && pop.imagen) {
+      var panel = caja.querySelector('.popup__panel');
+      if (panel) panel.style.backgroundImage = 'url("' + String(pop.imagen).replace(/"/g, '%22') + '")';
+    }
 
     document.body.appendChild(caja);
     // Un tick después para que la transición de entrada se vea.

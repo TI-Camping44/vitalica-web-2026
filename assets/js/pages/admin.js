@@ -336,6 +336,12 @@
     p = p || { activo: false, segundos: 6, repetirDias: 7, cta: {}, cta2: {}, paginas: [] };
     var c1 = p.cta || {}, c2 = p.cta2 || {};
     var pags = (p.paginas || []).join(', ');
+    /* La forma decide el recorte, porque son dos imágenes distintas: en
+       «ficha» la imagen es una banda apaisada arriba del texto; en «placa»
+       es el fondo de un aviso casi cuadrado. Recortar una a la medida de la
+       otra deja franjas o corta la mitad del motivo. */
+    var esPlaca = p.estilo === 'placa';
+    var recorteImg = esPlaca ? '900x1100' : '800x450';
     return '<div class="admin-grupo admin-popup">' +
       barraFila(escTxt(p.titulo) || 'Pop-up nuevo', 'data-del-popup') +
       '<input type="hidden" class="o-id" value="' + escAttr(p.id) + '">' +
@@ -352,7 +358,19 @@
         '<input type="text" class="o-titulo" value="' + escAttr(p.titulo) + '"></label>' +
       '<label class="admin-campo"><span class="admin-campo__label">Texto</span>' +
         '<textarea class="o-texto" rows="3">' + escTxt(p.texto) + '</textarea></label>' +
-      fImgLibre('Imagen (opcional)', 'o-imagen', p.imagen, 'Apaisada. Al elegirla vas a poder recortarla. Sin imagen queda solo el texto, que también funciona.', '800x450') +
+      '<label class="admin-campo"><span class="admin-campo__label">Cómo se ve</span>' +
+        '<select class="o-estilo">' +
+          '<option value="ficha"' + (esPlaca ? '' : ' selected') + '>Ficha — imagen arriba, texto abajo sobre blanco</option>' +
+          '<option value="placa"' + (esPlaca ? ' selected' : '') + '>Placa — la imagen ocupa todo y el texto va encima, en grande</option>' +
+        '</select>' +
+        '<span class="admin-hint"><b>Placa</b> es la forma que pidió marketing: sirve para un número y tres ' +
+        'palabras («50% OFF», «Sorteo»). <b>Ficha</b> sirve cuando hay algo que explicar, porque seis ' +
+        'renglones encima de una foto no se leen por más que se oscurezca. Elegí según el texto que tengas, ' +
+        'no según cuál se ve más lindo vacío.</span></label>' +
+      fImgLibre('Imagen (opcional)', 'o-imagen', p.imagen,
+        esPlaca ? 'Parada, casi cuadrada: es el fondo del aviso entero. Al elegirla vas a poder recortarla. Sin imagen la placa queda en gris y pierde el sentido.'
+                : 'Apaisada. Al elegirla vas a poder recortarla. Sin imagen queda solo el texto, que también funciona.',
+        recorteImg) +
       '<div class="admin-dos">' +
         '<label class="admin-campo"><span class="admin-campo__label">Botón — texto</span>' +
           '<input type="text" class="o-c1t" value="' + escAttr(c1.texto) + '"></label>' +
@@ -951,6 +969,7 @@
         etiqueta: leer(row, '.o-etiqueta'),
         titulo: t,
         texto: leer(row, '.o-texto'),
+        estilo: leer(row, '.o-estilo') || 'ficha',
         imagen: leer(row, '.o-imagen'),
         cta:  c1t ? { texto: c1t, href: leer(row, '.o-c1h') } : null,
         cta2: c2t ? { texto: c2t, href: leer(row, '.o-c2h') } : null,
@@ -1864,6 +1883,22 @@
          formulario, así que no lo agarra la línea de arriba. Y acá se
          refresca de una, sin esperar: no es tecleo, es una decisión. */
       if (e.target.closest('[data-vista-pagina]')) vistaRefrescar();
+
+      /* Cambiar la forma del pop-up cambia la medida del recorte, porque
+         ficha pide apaisado y placa pide parado. Se toca el atributo en vivo
+         y no se redibuja la fila: redibujar perdería el texto a medio
+         escribir. La imagen que ya estaba cargada no se vuelve a recortar
+         -eso sería decidir por la persona-, pero la próxima que suba sale
+         con la medida nueva. */
+      var selEstilo = e.target.closest('.o-estilo');
+      if (selEstilo) {
+        var fila = selEstilo.closest('.admin-popup');
+        var campoImg = fila && fila.querySelector('.o-imagen');
+        if (campoImg) {
+          campoImg.setAttribute('data-recorte',
+            selEstilo.value === 'placa' ? '900x1100' : '800x450');
+        }
+      }
     });
 
     app.addEventListener('click', function (e) {

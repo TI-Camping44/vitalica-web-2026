@@ -980,6 +980,12 @@ const VITALICA_POPUPS = [
     etiqueta: 'Sorteo',
     titulo: 'Sorteamos 1 pase para el BIGG Under Armour Running Festival',
     texto: 'Inscripción + kit + remera oficial. Para participar seguinos en Instagram, dale like al posteo y etiquetá a dos amigos con quienes correrías. Sorteamos el miércoles 7 de octubre.',
+    /* FICHA, no placa, aunque placa sea la forma que pidió marketing el
+       5/10/2026. Las dos están disponibles y se eligen desde el panel; esta
+       campaña tiene cuatro renglones de condiciones -seguir, dar like,
+       etiquetar, fecha- y encima de una foto no se leen. La placa es para
+       "50% OFF": un número y tres palabras. */
+    estilo: 'ficha',
     imagen: 'assets/img/sorteo-bigg.jpg',
     cta:  { texto: 'Cómo participar', href: 'https://www.instagram.com/p/Dd_hEytNc9v/' },
     cta2: null,
