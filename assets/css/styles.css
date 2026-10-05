@@ -2852,6 +2852,73 @@ p { color: var(--color-tinta); }
 }
 .popup--placa .popup__cerrar:hover { background: rgba(255, 255, 255, .3); }
 
+/* ==========================================================================
+   POP-UP EN MODO IMAGEN  ·  "la placa manda"
+   --------------------------------------------------------------------------
+   Para cuando la imagen YA ES el aviso: la placa que marketing diseñó para
+   Instagram, con su título, su premio y sus condiciones adentro. Ahí no hay
+   nada que escribirle encima; lo único que falta es el botón.
+
+   LA REGLA DE ORO ACÁ ES NO RECORTAR. Un pop-up normal recorta la imagen
+   para que entre en su marco, y en una placa eso se come una línea de las
+   condiciones o media palabra del título. Por eso object-fit es contain y no
+   cover: entra entera o se achica, pero no se corta.
+
+   El botón va ABAJO, sobre una franja oscura, no encima de la imagen: estas
+   placas suelen terminar con su propio "¿Cómo participar?" y un botón encima
+   caería justo ahí.
+   ========================================================================== */
+.popup__panel.popup--imagen {
+  width: min(460px, 100%);     /* las placas de Instagram son paradas */
+  max-height: calc(100vh - var(--space-5));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #0E1014;
+  border-radius: 24px;
+}
+.popup--imagen .popup__imagen {
+  aspect-ratio: auto;          /* la que traiga la imagen, no 16/9 */
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;               /* sin esto no se achica y se va de pantalla */
+  object-fit: contain;
+  border-radius: 24px 24px 0 0;
+}
+/* El botón siempre visible: no entra en el reparto de altura. */
+.popup--imagen .popup__cuerpo {
+  flex: 0 0 auto;
+  padding: var(--space-4) var(--space-5) var(--space-5);
+}
+.popup--imagen .popup__acciones { margin-top: 0; }
+.popup--imagen .popup__acciones .btn { border-radius: var(--radio-pill); }
+.popup--imagen .popup__cerrar {
+  background: rgba(255, 255, 255, .16);
+  border: 1px solid rgba(255, 255, 255, .28);
+  color: #fff;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.popup--imagen .popup__cerrar:hover { background: rgba(255, 255, 255, .3); }
+
+/* Título, etiqueta y texto SIGUEN EN EL HTML, escondidos a la vista.
+   No es un detalle: son lo que lee un lector de pantalla y lo que le da
+   nombre al diálogo. Una imagen sin alternativa en texto es un aviso que
+   para una persona ciega no existe. Borrarlos del html sería más simple y
+   dejaría afuera a quien no ve la placa. */
+.popup--imagen .popup__etiqueta,
+.popup--imagen .popup__titulo,
+.popup--imagen .popup__texto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 @media (max-width: 480px) {
   .popup__cuerpo { padding: var(--space-5); }
   .popup__titulo { font-size: var(--fs-lg); }

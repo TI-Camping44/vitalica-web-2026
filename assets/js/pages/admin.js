@@ -341,7 +341,10 @@
        es el fondo de un aviso casi cuadrado. Recortar una a la medida de la
        otra deja franjas o corta la mitad del motivo. */
     var esPlaca = p.estilo === 'placa';
-    var recorteImg = esPlaca ? '900x1100' : '800x450';
+    var esImagen = p.estilo === 'imagen';
+    /* En modo imagen NO hay recorte: la placa se muestra entera porque dice
+       cosas, y recortarla se come una condición o media palabra del título. */
+    var recorteImg = esImagen ? '' : (esPlaca ? '900x1100' : '800x450');
     return '<div class="admin-grupo admin-popup">' +
       barraFila(escTxt(p.titulo) || 'Pop-up nuevo', 'data-del-popup') +
       '<input type="hidden" class="o-id" value="' + escAttr(p.id) + '">' +
@@ -360,16 +363,22 @@
         '<textarea class="o-texto" rows="3">' + escTxt(p.texto) + '</textarea></label>' +
       '<label class="admin-campo"><span class="admin-campo__label">Cómo se ve</span>' +
         '<select class="o-estilo">' +
-          '<option value="ficha"' + (esPlaca ? '' : ' selected') + '>Ficha — imagen arriba, texto abajo sobre blanco</option>' +
+          '<option value="ficha"' + (esPlaca || esImagen ? '' : ' selected') + '>Ficha — imagen arriba, texto abajo sobre blanco</option>' +
+          '<option value="imagen"' + (esImagen ? ' selected' : '') + '>Solo la imagen — la placa entera y el botón abajo</option>' +
           '<option value="placa"' + (esPlaca ? ' selected' : '') + '>Placa — la imagen ocupa todo y el texto va encima, en grande</option>' +
         '</select>' +
-        '<span class="admin-hint"><b>Placa</b> es la forma que pidió marketing: sirve para un número y tres ' +
-        'palabras («50% OFF», «Sorteo»). <b>Ficha</b> sirve cuando hay algo que explicar, porque seis ' +
-        'renglones encima de una foto no se leen por más que se oscurezca. Elegí según el texto que tengas, ' +
-        'no según cuál se ve más lindo vacío.</span></label>' +
+        '<span class="admin-hint">La pregunta para elegir es una sola: <b>¿la imagen ya dice el mensaje?</b><br>' +
+        '<b>Solo la imagen</b> — sí, es una placa terminada de Instagram. Se muestra entera, sin recortar, ' +
+        'y abajo va el botón. El título y el texto se siguen cargando igual (los usan Google y los lectores ' +
+        'de pantalla) pero no se ven.<br>' +
+        '<b>Placa</b> — no, es una foto y el mensaje lo pone el aviso. El título va enorme encima. Sirve para ' +
+        'un número y tres palabras: «50% OFF».<br>' +
+        '<b>Ficha</b> — hay algo que explicar. Seis renglones encima de una foto no se leen por más que se ' +
+        'oscurezca.</span></label>' +
       fImgLibre('Imagen (opcional)', 'o-imagen', p.imagen,
-        esPlaca ? 'Parada, casi cuadrada: es el fondo del aviso entero. Al elegirla vas a poder recortarla. Sin imagen la placa queda en gris y pierde el sentido.'
-                : 'Apaisada. Al elegirla vas a poder recortarla. Sin imagen queda solo el texto, que también funciona.',
+        esImagen ? 'La placa tal cual la diseñaron, de cualquier forma. No se recorta ni se estira: se muestra entera.'
+          : esPlaca ? 'Parada, casi cuadrada: es el fondo del aviso entero. Al elegirla vas a poder recortarla. Sin imagen la placa queda en gris y pierde el sentido.'
+                    : 'Apaisada. Al elegirla vas a poder recortarla. Sin imagen queda solo el texto, que también funciona.',
         recorteImg) +
       '<div class="admin-dos">' +
         '<label class="admin-campo"><span class="admin-campo__label">Botón — texto</span>' +
@@ -1895,8 +1904,11 @@
         var fila = selEstilo.closest('.admin-popup');
         var campoImg = fila && fila.querySelector('.o-imagen');
         if (campoImg) {
-          campoImg.setAttribute('data-recorte',
-            selEstilo.value === 'placa' ? '900x1100' : '800x450');
+          var medidaNueva = selEstilo.value === 'placa' ? '900x1100'
+                          : selEstilo.value === 'imagen' ? ''      // entera
+                          : '800x450';
+          if (medidaNueva) campoImg.setAttribute('data-recorte', medidaNueva);
+          else campoImg.removeAttribute('data-recorte');
         }
       }
     });

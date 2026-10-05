@@ -174,7 +174,26 @@
        Las dos usan el MISMO html. Lo único que cambia es una clase, así que
        no hay dos aviso distintos que mantener: cuando se arregla algo del
        foco o del teclado, se arregla para los dos. */
-    var estilo = (pop.estilo === 'placa') ? ' popup--placa' : '';
+    /* TERCERA FORMA: 'imagen'. Agregada el 5/10/2026, y la pidió el propio
+       material.
+       --------------------------------------------------------------------
+       Al poner el sorteo en placa con la imagen que marketing había
+       publicado, el resultado fue ilegible: esa imagen no es una foto, es
+       una placa terminada —ya dice "SORTEAMOS", el premio, las condiciones
+       y el "Seguí a @vitalica.py"—. Encima le caía nuestro título y nuestro
+       texto diciendo lo mismo, cruzados.
+
+       El error era mío de concepto: 'placa' sirve cuando la imagen es una
+       FOTO y el mensaje lo pone el aviso. Cuando la imagen YA ES el mensaje,
+       lo único que falta es el botón. Entonces la imagen se muestra entera,
+       sin recortar, y abajo va el botón. Nada encima.
+
+       El título y el texto no desaparecen: se esconden a la vista pero
+       siguen en el html, porque son lo que lee un lector de pantalla y lo
+       que nombra al diálogo. Una imagen sin texto alternativo sería un
+       aviso que para una persona ciega no existe. */
+    var modo = (pop.estilo === 'placa' || pop.estilo === 'imagen') ? pop.estilo : 'ficha';
+    var estilo = (modo === 'ficha') ? '' : ' popup--' + modo;
 
     /* EL TAMAÑO DEL TÍTULO LO DECIDE EL TÍTULO.
        --------------------------------------------------------------------
@@ -193,7 +212,7 @@
        ahí para arriba el título deja de ser un titular y pasa a ser una
        frase, y una frase se lee, no se grita. */
     var claseTitulo = '';
-    if (estilo) {
+    if (modo === 'placa') {
       var largoTitulo = String(pop.titulo || '').trim().length;
       if (largoTitulo <= 14) claseTitulo = ' popup__titulo--xl';
       else if (largoTitulo <= 34) claseTitulo = ' popup__titulo--l';
@@ -203,10 +222,11 @@
       '<div class="popup__velo" data-popup-cerrar></div>' +
       '<div class="popup__panel' + estilo + '">' +
         '<button class="popup__cerrar" type="button" aria-label="Cerrar aviso" data-popup-cerrar>&times;</button>' +
-        /* En modo placa la imagen va de fondo, no como <img>: si fuera un
-           <img> habría que superponerle el texto con posiciones absolutas y
-           en un celular angosto se encimaría. De fondo, el texto fluye. */
-        (pop.imagen && !estilo
+        /* Solo en placa la imagen va de fondo: ahí el texto va encima y, si
+           fuera un <img>, habría que superponerlo con posiciones absolutas y
+           en un celular angosto se encimaría. En ficha y en imagen va como
+           <img> de verdad, que es lo que permite mostrarla entera. */
+        (pop.imagen && modo !== 'placa'
           ? '<img class="popup__imagen" src="' + escapar(pop.imagen) + '" alt="" onerror="this.remove()">' : '') +
         '<div class="popup__cuerpo">' +
           (pop.etiqueta ? '<p class="popup__etiqueta">' + escapar(pop.etiqueta) + '</p>' : '') +
@@ -226,7 +246,7 @@
        paréntesis en el nombre cortaba el url() y el aviso salía gris.
        Asignando la propiedad, el navegador se encarga de las comillas y no
        hay nada que escapar a mano. */
-    if (estilo && pop.imagen) {
+    if (modo === 'placa' && pop.imagen) {
       var panel = caja.querySelector('.popup__panel');
       if (panel) panel.style.backgroundImage = 'url("' + String(pop.imagen).replace(/"/g, '%22') + '")';
     }

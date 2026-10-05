@@ -988,20 +988,21 @@ const VITALICA_POPUPS = [
        quiere al revés, es un campo del panel y se cambia en diez segundos. */
     titulo: 'Ganá 1 pase',
     texto: 'Para el BIGG Under Armour Running Festival: inscripción + kit + remera oficial. Seguinos, dale like al posteo y etiquetá a dos amigos. Sorteamos el miércoles 7.',
-    /* PLACA: la forma que pidió marketing el 5/10/2026 mirando el aviso de
-       MyFonts. Es esta campaña la que la estrena, porque es la que está en la
-       web ahora.
+    /* IMAGEN, no placa, y la diferencia es de material, no de gusto.
+       ----------------------------------------------------------------------
+       Marketing pidió el formato de MyFonts: imagen a sangre con el texto
+       encima. Lo armé, lo probé con la placa que ellos mismos publicaron
+       desde el panel, y salió ilegible: esa placa ya dice "SORTEAMOS", el
+       premio, las condiciones y el "Seguí a @vitalica.py". Encima le caía
+       nuestro título diciendo lo mismo, cruzados.
 
-       Primero la dejé en ficha por las cuatro condiciones que hay que leer
-       -seguir, dar like, etiquetar, fecha-. Con el vidrio esmerilado el texto
-       se lee igual, así que la objeción se cae. El texto quedó más corto que
-       la versión de ficha igual: en este formato cada renglón de más pesa.
+       'placa' sirve cuando la imagen es una FOTO y el mensaje lo pone el
+       aviso -que es el caso de MyFonts: atrás hay una cara, no un cartel-.
+       Cuando la imagen YA ES el mensaje, lo que corresponde es mostrarla
+       entera y poner el botón abajo. Eso es 'imagen'.
 
-       La imagen es una tira de 800x230 y, nítida y estirada, se veía
-       pixelada. Desenfocada funciona: deja de ser una foto que mirar y pasa
-       a ser el color del aviso. Si marketing manda la placa original parada,
-       se cambia desde el panel y queda mejor todavía. */
-    estilo: 'placa',
+       Las tres formas siguen disponibles y se eligen desde el panel. */
+    estilo: 'imagen',
     imagen: 'assets/img/sorteo-bigg.jpg',
     cta:  { texto: 'Cómo participar', href: 'https://www.instagram.com/p/Dd_hEytNc9v/' },
     cta2: null,
@@ -2526,11 +2527,38 @@ function aplicarOverrides(ov) {
   }
 
   /* POP-UPS DE CAMPAÑA. Lista entera, igual que el hero: desde el panel se
-     agregan y se quitan. popups.js se encarga del resto. */
+     agregan y se quitan. popups.js se encarga del resto.
+
+     LO PUBLICADO MANDA, PERO SOLO SOBRE LO QUE CONOCE.
+     ------------------------------------------------------------------------
+     Esto se arregló el 5/10/2026 y conviene entender por qué, porque la
+     trampa se repite con cada campo nuevo.
+
+     Facu subió la versión con el formato placa y en el sitio seguía saliendo
+     como antes. No era caché ni un error al subir: lo que marketing había
+     publicado desde el panel reemplazaba la lista entera, y esa publicación
+     se hizo cuando el campo "Cómo se ve" todavía no existía. Entonces el
+     pop-up llegaba sin ese dato y se iba al formato viejo. Lo mismo iba a
+     pasar con cualquier campo que agregue de acá en adelante: nace muerto
+     para toda campaña ya publicada.
+
+     Ahora se mezcla en vez de reemplazar: se arranca de la campaña de
+     fábrica con el mismo id y se pisan SOLO los campos que la publicación
+     trae. Un campo vacío a propósito —una imagen borrada, un botón sacado—
+     viaja igual y gana, porque viaja como '' o null, no ausente. Lo único
+     que cae de pie es lo que el panel de ese momento no sabía preguntar. */
   if (Array.isArray(ov.popups)) {
+    var fabricaPop = VITALICA_POPUPS.slice();
     VITALICA_POPUPS.length = 0;
     ov.popups.forEach(function (p) {
-      if (p && p.id && p.titulo) VITALICA_POPUPS.push(p);
+      if (!p || !p.id || !p.titulo) return;
+      var base = fabricaPop.filter(function (f) { return f.id === p.id; })[0];
+      if (!base) { VITALICA_POPUPS.push(p); return; }
+      var mezcla = Object.assign({}, base);
+      Object.keys(p).forEach(function (k) {
+        if (p[k] !== undefined) mezcla[k] = p[k];
+      });
+      VITALICA_POPUPS.push(mezcla);
     });
   }
 
