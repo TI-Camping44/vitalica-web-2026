@@ -2682,41 +2682,100 @@ p { color: var(--color-tinta); }
 .popup__panel.popup--placa {
   background-color: #14171B;   /* se ve mientras carga la imagen, y si falta */
   background-size: cover;
-  background-position: center;
+  background-position: center top;
   background-repeat: no-repeat;
   color: #fff;
-  min-height: 460px;
+
+  /* ALTO: un piso y un techo, los dos necesarios.
+     Sin piso, un aviso de tres palabras queda una tirita y la foto no se ve.
+     Sin techo, uno de texto largo crecía hasta pasarse de la pantalla y se
+     cortaba el título arriba —era lo primero que saltaba a la vista—. */
+  min-height: 480px;
+  max-height: min(calc(100vh - var(--space-5)), 680px);
+
+  /* El panel deja de scrollear: scrollea el cuerpo. Es lo que mantiene la
+     foto quieta arriba mientras el texto se mueve, en vez de que se vaya
+     todo junto y quede un rectángulo negro. */
+  overflow: hidden;
+
   display: flex;
   flex-direction: column;
   justify-content: flex-end;   /* el texto se apoya abajo, como en el ejemplo */
 }
-/* EL VELO VA EN EL CUERPO, NO EN UN ::before QUE TAPE TODO.
-   El panel tiene overflow-y: auto, así que una capa absoluta con inset:0 se
-   desplaza con el contenido y deja la parte de abajo sin oscurecer justo
-   cuando el texto es largo, que es cuando más hace falta. Puesto en el
-   cuerpo, el degradado acompaña exactamente al texto que tiene que proteger
-   y no hay nada que se pueda desincronizar. */
-.popup--placa .popup__cuerpo {
-  padding: var(--space-8) var(--space-6) var(--space-6);
-  text-align: center;
+
+/* EL VELO, AHORA SÍ, SOBRE TODO EL PANEL.
+   La primera versión lo puso en el cuerpo porque el panel scrolleaba y una
+   capa fija se habría desplazado con el contenido. Ahora el panel no
+   scrollea, así que la capa se queda donde tiene que estar y oscurece
+   parejo: suave arriba, donde está la foto, y firme abajo, donde está el
+   texto. Sin esto, un título blanco sobre una zona clara de la foto
+   desaparece. */
+.popup--placa::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
   background: linear-gradient(to top,
-    rgba(8, 8, 10, .90) 0%,
-    rgba(8, 8, 10, .78) 45%,
-    rgba(8, 8, 10, .45) 75%,
-    rgba(8, 8, 10, 0) 100%);
-  border-radius: 0 0 var(--radio-md) var(--radio-md);
+    rgba(8, 8, 10, .92) 0%,
+    rgba(8, 8, 10, .86) 30%,
+    rgba(8, 8, 10, .55) 58%,
+    rgba(8, 8, 10, .22) 80%,
+    rgba(8, 8, 10, .18) 100%);
 }
+
+.popup--placa .popup__cuerpo {
+  position: relative;          /* por encima del velo */
+  z-index: 1;
+
+  /* ESTA FRANJA ES LA QUE SALVA LA FOTO.
+     El texto arranca 180px más abajo del borde, pase lo que pase. Sin esto,
+     un texto largo empujaba hacia arriba hasta tapar la imagen entera y el
+     aviso quedaba igual que uno sin foto: un cuadro oscuro con letras. */
+  margin-top: 180px;
+
+  min-height: 0;               /* en flex, sin esto no scrollea: se desborda */
+  overflow-y: auto;
+  padding: var(--space-6) var(--space-6) var(--space-6);
+  text-align: center;
+}
+
 .popup--placa .popup__etiqueta { color: var(--color-primario); }
+
+/* EL TÍTULO SE MIDE SOLO, SEGÚN LO LARGO QUE SEA.
+   --------------------------------------------------------------------------
+   Acá estaba lo feo. Un solo tamaño gigante para todos los títulos funciona
+   con "50% OFF" y revienta con "Sorteamos 1 pase para el BIGG Under Armour
+   Running Festival": cinco renglones enormes, en mayúsculas, que se comen el
+   aviso y tapan la foto.
+
+   Un tamaño fijo obliga a elegir entre que el corto se vea chico o que el
+   largo no entre. Así que lo elige el propio texto: popups.js cuenta los
+   caracteres del título y le pone la clase. Tres escalones alcanzan. */
 .popup--placa .popup__titulo {
-  font-size: clamp(1.9rem, 6vw, 2.9rem);
   font-weight: 900;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
+  letter-spacing: -0.01em;
   color: #fff;
   text-wrap: balance;
+  font-size: clamp(1.35rem, 3.6vw, 1.7rem);   /* largo: tiene que LEERSE */
+  line-height: 1.12;
 }
-.popup--placa .popup__texto { color: rgba(255, 255, 255, .88); }
-.popup--placa .popup__acciones { margin-top: var(--space-6); }
+.popup--placa .popup__titulo--l {            /* medio */
+  font-size: clamp(1.8rem, 5.2vw, 2.4rem);
+  letter-spacing: -0.02em;
+}
+.popup--placa .popup__titulo--xl {           /* corto: "50% OFF" */
+  font-size: clamp(2.6rem, 8vw, 3.6rem);
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+}
+
+.popup--placa .popup__texto {
+  color: rgba(255, 255, 255, .88);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+.popup--placa .popup__acciones { margin-top: var(--space-5); }
 /* El botón en grande: en este formato es lo único que se toca. */
 .popup--placa .popup__acciones .btn { font-size: var(--fs-md); padding: 0.95em 1.4em; }
 /* Sobre una foto, el botón de contorno blanco se pierde. Se rellena. */
@@ -2730,8 +2789,36 @@ p { color: var(--color-tinta); }
 @media (max-width: 480px) {
   .popup__cuerpo { padding: var(--space-5); }
   .popup__titulo { font-size: var(--fs-lg); }
-  .popup--placa { min-height: 400px; }
-  .popup--placa .popup__titulo { font-size: clamp(1.6rem, 8vw, 2.2rem); }
+  /* Va con .popup__panel adelante a propósito: la regla de arriba se escribe
+     así y, con menos peso, este min-height no la pisaba. Perdí un rato
+     buscándolo en el alto del panel cuando el problema era de especificidad:
+     en CSS, min-height siempre le gana a max-height, así que un min-height
+     que no se pisa deja el techo sin efecto y el aviso se sale de pantalla. */
+  .popup__panel.popup--placa { min-height: 420px; }
+  /* En un celular 180px de foto son casi media pantalla del aviso. */
+  .popup--placa .popup__cuerpo { margin-top: 140px; padding: var(--space-5); }
+}
+
+/* PANTALLA BAJA (un portátil chico, o un celular acostado).
+   --------------------------------------------------------------------------
+   Con poco alto, la franja de foto y el texto no entran los dos. Entra el
+   texto: un aviso que no se lee no sirve, uno sin foto sí.
+
+   LO QUE IMPORTA ACÁ ES QUE EL BOTÓN SE VEA SIN SCROLLEAR. En la primera
+   prueba, en una ventana de 417px, el cuerpo se volvía scrolleable y el
+   "Cómo participar" quedaba abajo del corte: un aviso con el botón escondido
+   es peor que no mostrarlo. Se achican la franja y los espacios hasta que
+   entre todo. El overflow sigue ahí, pero como red, no como plan. */
+@media (max-height: 640px) {
+  .popup__panel.popup--placa { min-height: 0; }
+  .popup--placa .popup__cuerpo {
+    margin-top: 72px;
+    padding: var(--space-4) var(--space-5) var(--space-5);
+  }
+  .popup--placa .popup__titulo { font-size: clamp(1.2rem, 3.2vw, 1.45rem); }
+  .popup--placa .popup__titulo--l { font-size: clamp(1.6rem, 4.6vw, 2rem); }
+  .popup--placa .popup__titulo--xl { font-size: clamp(2rem, 6vw, 2.6rem); }
+  .popup--placa .popup__acciones { margin-top: var(--space-4); }
 }
 
 @media (prefers-reduced-motion: reduce) {

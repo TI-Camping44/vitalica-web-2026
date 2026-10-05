@@ -176,6 +176,29 @@
        foco o del teclado, se arregla para los dos. */
     var estilo = (pop.estilo === 'placa') ? ' popup--placa' : '';
 
+    /* EL TAMAÑO DEL TÍTULO LO DECIDE EL TÍTULO.
+       --------------------------------------------------------------------
+       En la placa, el titular va en grande: ese es el formato. Pero "en
+       grande" no puede ser un número fijo, porque "50% OFF" y "Sorteamos 1
+       pase para el BIGG Under Armour Running Festival" no son el mismo
+       problema. Con un tamaño único, el segundo salía en cinco renglones
+       enormes que tapaban la foto y se cortaban arriba.
+
+       Así que se cuentan los caracteres y se elige el escalón. No es
+       elegante, es lo que hace que marketing pueda escribir lo que quiera
+       sin tener que medir nada ni pedirme que lo ajuste cada vez.
+
+       Los cortes salieron de probar, no de la teoría: hasta 14 entra un
+       titular gigante de una línea; hasta 34 entran dos líneas grandes; de
+       ahí para arriba el título deja de ser un titular y pasa a ser una
+       frase, y una frase se lee, no se grita. */
+    var claseTitulo = '';
+    if (estilo) {
+      var largoTitulo = String(pop.titulo || '').trim().length;
+      if (largoTitulo <= 14) claseTitulo = ' popup__titulo--xl';
+      else if (largoTitulo <= 34) claseTitulo = ' popup__titulo--l';
+    }
+
     caja.innerHTML =
       '<div class="popup__velo" data-popup-cerrar></div>' +
       '<div class="popup__panel' + estilo + '">' +
@@ -187,7 +210,7 @@
           ? '<img class="popup__imagen" src="' + escapar(pop.imagen) + '" alt="" onerror="this.remove()">' : '') +
         '<div class="popup__cuerpo">' +
           (pop.etiqueta ? '<p class="popup__etiqueta">' + escapar(pop.etiqueta) + '</p>' : '') +
-          '<h2 class="popup__titulo" id="popup-titulo">' + escapar(pop.titulo) + '</h2>' +
+          '<h2 class="popup__titulo' + claseTitulo + '" id="popup-titulo">' + escapar(pop.titulo) + '</h2>' +
           (pop.texto ? '<p class="popup__texto">' + escapar(pop.texto) + '</p>' : '') +
           (botones ? '<div class="popup__acciones">' + botones + '</div>' : '') +
         '</div>' +
