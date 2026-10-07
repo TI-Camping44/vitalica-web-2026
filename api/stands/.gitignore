@@ -1,0 +1,5 @@
+# Los stands guardan su propia configuración y sus datos acá adentro.
+# Mismo criterio que el .gitignore de la raíz: lo que tiene claves o datos
+# de personas no se sube nunca.
+config.php
+almacen/
